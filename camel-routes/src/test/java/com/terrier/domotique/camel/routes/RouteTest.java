@@ -1,9 +1,15 @@
 package com.terrier.domotique.camel.routes;
 
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
-
 import org.junit.Test;
 
+
+
+/**
+ * Test de la route
+ * @author vzwingma
+ *
+ */
 public class RouteTest extends CamelBlueprintTestSupport {
 	
     @Override

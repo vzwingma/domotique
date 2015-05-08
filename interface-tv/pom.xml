@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<artifactId>domotique</artifactId>
 		<groupId>com.terrier</groupId>
@@ -10,15 +11,12 @@
 	</parent>
 
 	<groupId>com.terrier.domotique</groupId>
-	<artifactId>camel-routes</artifactId>
+	<artifactId>interface-tv</artifactId>
 	<packaging>bundle</packaging>
 
-	<name>DOMAtique : Routes Camel</name>
-
+	<name>DOMAtique : Interface TV</name>
 
 	<build>
-		<defaultGoal>install</defaultGoal>
-
 		<plugins>
 			<!-- to generate the MANIFEST-FILE of the bundle -->
 			<plugin>
@@ -37,12 +35,20 @@
 				</executions>
 				<configuration>
 					<instructions>
-						<Bundle-SymbolicName>camel-routes</Bundle-SymbolicName>
-						<Private-Package>com.terrier.domotique.camel.routes.*</Private-Package>
+						<Bundle-SymbolicName>interface-tv</Bundle-SymbolicName>
+						<Private-Package>com.terrier.domotique.interfaces.tv.*</Private-Package>
 						<Import-Package>*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http4</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+	</dependencies>
 </project>
