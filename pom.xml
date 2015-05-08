@@ -18,6 +18,7 @@
 	<modules>
 		<module>camel-routes</module>
 		<module>interface-tv</module>
+		<module>interface-box</module>
 	</modules>
 
 

@@ -1,21 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
-		<artifactId>domotique</artifactId>
 		<groupId>com.terrier</groupId>
+		<artifactId>domotique</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-
 	<groupId>com.terrier.domotique</groupId>
-	<artifactId>interface-tv</artifactId>
+	<artifactId>interface-box</artifactId>
+	<name>DOMAtique : Interface Box</name>
 	<packaging>bundle</packaging>
-	<name>DOMAtique : Interface TV</name>
 
-	<build>
+	<description>Box</description>
+	
+		<build>
 		<plugins>
 			<!-- to generate the MANIFEST-FILE of the bundle -->
 			<plugin>
@@ -34,20 +32,12 @@
 				</executions>
 				<configuration>
 					<instructions>
-						<Bundle-SymbolicName>interface-tv</Bundle-SymbolicName>
-						<Private-Package>com.terrier.domotique.interfaces.tv.*</Private-Package>
+						<Bundle-SymbolicName>interface-box</Bundle-SymbolicName>
+						<Private-Package>com.terrier.domotique.interfaces.box.*</Private-Package>
 						<Import-Package>*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-http4</artifactId>
-			<version>${camel.version}</version>
-		</dependency>
-	</dependencies>
 </project>
