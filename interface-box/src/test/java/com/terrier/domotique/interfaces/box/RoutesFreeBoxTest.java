@@ -1,20 +1,17 @@
-package com.terrier.domotique.interfaces.tv;
+package com.terrier.domotique.interfaces.box;
 
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.junit.Test;
 
-
-
 /**
- * Test de la route
+ * Tests des routes Freebox
  * @author vzwingma
  *
  */
-public class RouteTest extends CamelBlueprintTestSupport {
-
+public class RoutesFreeBoxTest extends CamelBlueprintTestSupport {
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "/OSGI-INF/blueprint/interface-tv-blueprint.xml";
+		return "/OSGI-INF/blueprint/interface-box-blueprint.xml";
 	}
 
 	/**
@@ -24,7 +21,9 @@ public class RouteTest extends CamelBlueprintTestSupport {
 	@Test
 	public void testRoutes() throws Exception {
 
-		assertEquals(3, context.getRoutes().size());
+		assertEquals(1, context.getRoutes().size());
+		
+		Thread.sleep(30000);
 
 	}
 

@@ -16,7 +16,7 @@
 	</properties>
 
 	<modules>
-		<module>camel-routes</module>
+		<module>commandes</module>
 		<module>interface-tv</module>
 		<module>interface-box</module>
 	</modules>

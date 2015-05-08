@@ -12,55 +12,14 @@
 		
 		
 		<!-- Commande HTTP à la freebox -->
-		<route id="ITV-Commande">
-			<from uri="direct:process-tv" />
-			<log message="[INTERFACE TV] Commande :  ${body}" loggingLevel="DEBUG"/>
-			<recipientList>
+		<route id="IFBX-ConnexionsSmartphone">
+			<from uri="timer://SupervisionSmartphones?fixedRate=true&amp;period=60s" />
+			<log message="[INTERFACE FREEBOX] Supervision des connexions des smartphones" loggingLevel="INFO"/>
+<!-- 			<recipientList>
 				<simple>{{interface-tv.url.freebox}}?code={{interface-tv.code.freebox}}&amp;key=${body}</simple>
-			</recipientList>
+			</recipientList> -->
 		</route>
 
 
-		<!-- Arrêt de la TV -->
-		<route id="ITV-Stop">
-			<from uri="direct-vm:stop-tv" />
-			<log message="[INTERFACE TV] Commande d'arrêt de la TV" loggingLevel="INFO"/>
-			 <setBody>
-          		<simple>power</simple>
-      		</setBody>
-			<to uri="direct:process-tv" />
-		</route>
-
-		<!-- Démarrage de la TV pour iTélé -->
-		<route id="ITV-Start">
-			<from uri="direct-vm:start-tv" />
-			<log message="[INTERFACE TV] Commandes de démarrage de la TV" loggingLevel="INFO"/>
-			<!-- Démarrage -->
-			 <setBody><simple>power</simple></setBody>
-			<to uri="direct:process-tv" />
-	        <delay><constant>10000</constant></delay>
-			<!-- TV CanalSat -->
-			 <setBody><simple>down</simple></setBody>
-			<to uri="direct:process-tv" />
-			<delay><constant>1000</constant></delay>
-			 <setBody><simple>down</simple></setBody>
-			<to uri="direct:process-tv" />
-			<delay><constant>1000</constant></delay>
-			 <setBody><simple>down</simple></setBody>
-			<to uri="direct:process-tv" />
-			<delay><constant>1000</constant></delay>
-			 <setBody><simple>ok</simple></setBody>
-			<to uri="direct:process-tv" />
-			<delay><constant>1000</constant></delay>
-			<!-- Chaine 102 -->
-			 <setBody><simple>1&amp;long=true</simple></setBody>
-			<to uri="direct:process-tv" />
-			<delay><constant>500</constant></delay>
-			 <setBody><simple>0&amp;long=true</simple></setBody>
-			<to uri="direct:process-tv" />
-			<delay><constant>500</constant></delay>
-			 <setBody><simple>2</simple></setBody>
-			<to uri="direct:process-tv" />
-		</route>
 	</camelContext>
 </blueprint>

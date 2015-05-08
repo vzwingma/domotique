@@ -10,10 +10,10 @@
 	</parent>
 
 	<groupId>com.terrier.domotique</groupId>
-	<artifactId>camel-routes</artifactId>
+	<artifactId>commandes</artifactId>
 	<packaging>bundle</packaging>
 
-	<name>DOMAtique : Routes Camel</name>
+	<name>DOMAtique : Commandes</name>
 
 
 	<build>
