@@ -15,12 +15,6 @@
 			<setBody>
 				<method ref="helloBean" method="hello" />
 			</setBody>
-			<log message="The message contains ${body}" />
-		<!-- 	<to uri="direct-vm:stop-tv" /> -->
-			<delay>
-				<constant>5000</constant>
-			</delay>
-			<to uri="direct-vm:start-tv" />
 		</route>
 	</camelContext>
 

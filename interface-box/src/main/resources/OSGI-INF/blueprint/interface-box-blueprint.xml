@@ -15,6 +15,9 @@
 		<route id="IFBX-ConnexionsSmartphone">
 			<from uri="timer://SupervisionSmartphones?fixedRate=true&amp;period=60s" />
 			<log message="[INTERFACE FREEBOX] Supervision des connexions des smartphones" loggingLevel="INFO"/>
+			
+			http://mafreebox.freebox.fr/api/v3/lan/browser/pub
+			
 <!-- 			<recipientList>
 				<simple>{{interface-tv.url.freebox}}?code={{interface-tv.code.freebox}}&amp;key=${body}</simple>
 			</recipientList> -->
