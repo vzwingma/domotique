@@ -8,7 +8,7 @@
 
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint">
 		<!-- Properties -->
-		<propertyPlaceholder id="properties" location="OSGI-INF/interface-tv.properties" />
+		<propertyPlaceholder id="properties" location="OSGI-INF/interface-box.properties" />
 		
 		
 		<!-- Commande HTTP à la freebox -->
