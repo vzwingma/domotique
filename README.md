@@ -1,5 +1,4 @@
-# domotique #
+### # Домаtique #
 Gestion domotique de la maison
 
-
-visit the wiki : https://github.com/vzwingma/domotique/wiki/
+Lien vers le wiki : https://github.com/vzwingma/domotique/wiki/
