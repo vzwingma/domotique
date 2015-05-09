@@ -12,7 +12,7 @@ public enum NetworkEventEnum {
 	ID("smartphoneEvent.id"),
 	PRESENT("smartphoneEvent.presents");
 	
-	
+	// Id de l'event
 	private String id;
 	
 	private NetworkEventEnum(String id){
