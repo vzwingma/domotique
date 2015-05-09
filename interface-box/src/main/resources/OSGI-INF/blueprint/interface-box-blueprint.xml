@@ -1,28 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
 	xsi:schemaLocation="
        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
 
+
+	<cm:property-placeholder id="domatique-interface-box" persistent-id="domatique-interface-box">
+		<cm:default-properties>	
+			<cm:property name="interface-box.api.3.url" value="http4://mafreebox.freebox.fr/api/v3/" />
+			<cm:property name="interface-box-spv-connexions" value="60" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint">
 		<!-- Properties -->
-		<propertyPlaceholder id="properties" location="OSGI-INF/interface-box.properties" />
-		
-		
+		<propertyPlaceholder id="properties" location="blueprint:domatique-interface-box"/>
+				
 		<!-- Commande HTTP à la freebox -->
-		<route id="IFBX-ConnexionsSmartphone">
-			<from uri="timer://SupervisionSmartphones?fixedRate=true&amp;period=60s" />
-			<log message="[INTERFACE FREEBOX] Supervision des connexions des smartphones" loggingLevel="INFO"/>
-			
-			http://mafreebox.freebox.fr/api/v3/lan/browser/pub
-			
-<!-- 			<recipientList>
-				<simple>{{interface-tv.url.freebox}}?code={{interface-tv.code.freebox}}&amp;key=${body}</simple>
-			</recipientList> -->
+		<route id="IFBX-ConnexionsSmartphones">
+			<from uri="timer://SupervisionSmartphones?fixedRate=true&amp;period={{interface-box-spv-connexions}}s" />
+			<log message="[INTERFACE FREEBOX] Supervision des connexions des smartphones"
+				loggingLevel="INFO" />
+			<!-- Liste des éléments connectés au réseau -->
+			<to uri="direct:ifbx-reseaux" />
+		</route>
+
+		<!-- Commande HTTP à la freebox : Login / Interface réseau / Logout -->
+		<route id="IFBX-ConnexionsReseau">
+			<from uri="direct:ifbx-reseaux" />
+			<to uri="direct:ifbx-connexion" />
+			<!-- Liste des interfaces -->
+			<to uri="{{interface-box.api.3.url}}lan/browser/pub/" />
+			<bean ref="freeboxReseau" method="getListeConnexionsReseau" />
+			<wireTap uri="direct:ifbx-deconnexion" />
+			<to uri="mock:result" />
 		</route>
 
 
+		<!-- Déconnexion de l'API Freebox -->
+		<route id="IFBX-Connexion">
+			<from uri="direct:ifbx-connexion" />
+			<!-- Authentication -->
+			<to uri="{{interface-box.api.3.url}}login" />
+			<bean ref="freeboxAuth" method="authenticate" />
+			<setHeader headerName="CamelHttpMethod">
+				<constant>POST</constant>
+			</setHeader>
+			<to uri="{{interface-box.api.3.url}}login/session" />
+			<bean ref="freeboxAuth" method="getSessionToken" />
+			<!-- Appel token authentifié -->
+			<setHeader headerName="CamelHttpMethod">
+				<constant>GET</constant>
+			</setHeader>
+			<setHeader headerName="X-Fbx-App-Auth">
+				<simple>${body}</simple>
+			</setHeader>
+		</route>
+
+
+
+		<!-- Déconnexion de l'API Freebox -->
+		<route id="IFBX-Deconnexion">
+			<from uri="direct:ifbx-deconnexion" />
+			<!-- Déconnexion -->
+			<setHeader headerName="CamelHttpMethod">
+				<constant>POST</constant>
+			</setHeader>
+			<setHeader headerName="Content-Length">
+				<constant>1</constant>
+			</setHeader>
+			<setBody>
+				<constant>1</constant>
+			</setBody>
+			<to uri="{{interface-box.api.3.url}}login/logout" />
+		</route>
 	</camelContext>
+
+	<!-- Authentification Freebox -->
+	<bean id="freeboxAuth"
+		class="com.terrier.domotique.interfaces.box.impl.FreeboxAuthenticationImpl">
+		<property name="appToken"
+			value="${interface-box.api.3.app.token}" />
+		<property name="appId" value="${interface-box.api.3.app.id}" />
+	</bean>
+
+	<!-- Reseau Freebox -->
+	<bean id="freeboxReseau"
+		class="com.terrier.domotique.interfaces.box.impl.FreeboxReseauImpl" />
+
 </blueprint>

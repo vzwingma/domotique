@@ -10,8 +10,7 @@
 	<artifactId>interface-box</artifactId>
 	<name>DOMAtique : Interface Box</name>
 	<packaging>bundle</packaging>
-
-	<description>Box</description>
+	<description>Interface avec l'API v3 de la FreeBox</description>
 	
 		<build>
 		<plugins>
@@ -40,4 +39,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http4</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+	</dependencies>	
 </project>

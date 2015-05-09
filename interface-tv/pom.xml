@@ -50,4 +50,5 @@
 			<version>${camel.version}</version>
 		</dependency>
 	</dependencies>
+	<description>Interface avec l'API de la télécommande TV Freebox</description>
 </project>

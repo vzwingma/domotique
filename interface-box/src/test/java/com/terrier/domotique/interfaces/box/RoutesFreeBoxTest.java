@@ -21,10 +21,9 @@ public class RoutesFreeBoxTest extends CamelBlueprintTestSupport {
 	@Test
 	public void testRoutes() throws Exception {
 
-		assertEquals(1, context.getRoutes().size());
+		assertEquals(4, context.getRoutes().size());
 		
-		Thread.sleep(30000);
-
+		Thread.sleep(4000);
 	}
 
 }
