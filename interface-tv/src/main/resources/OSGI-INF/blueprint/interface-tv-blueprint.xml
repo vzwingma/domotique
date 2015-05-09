@@ -8,7 +8,7 @@
 
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint">
 		<!-- Properties -->
-		<propertyPlaceholder id="properties" location="domatique-interface-tv.cfg" />
+		<propertyPlaceholder id="properties" location="etc/domatique-interface-tv.cfg" />
 		
 		
 		<!-- Commande HTTP à la freebox -->
@@ -38,27 +38,27 @@
 			<!-- Démarrage -->
 			 <setBody><simple>power</simple></setBody>
 			<to uri="direct:itv-process-tv" />
-	        <delay><constant>10000</constant></delay>
+	        <delay><constant>{{interface-tv.tempo.demarrage}}</constant></delay>
 			<!-- TV CanalSat -->
 			 <setBody><simple>down</simple></setBody>
 			<to uri="direct:itv-process-tv" />
-			<delay><constant>1000</constant></delay>
+			<delay><constant>{{interface-tv.tempo.touche}}</constant></delay>
 			 <setBody><simple>down</simple></setBody>
 			<to uri="direct:itv-process-tv" />
-			<delay><constant>1000</constant></delay>
+			<delay><constant>{{interface-tv.tempo.touche}}</constant></delay>
 			 <setBody><simple>down</simple></setBody>
 			<to uri="direct:itv-process-tv" />
-			<delay><constant>1000</constant></delay>
+			<delay><constant>{{interface-tv.tempo.touche}}</constant></delay>
 			 <setBody><simple>ok</simple></setBody>
 			<to uri="direct:itv-process-tv" />
-			<delay><constant>1000</constant></delay>
+			<delay><constant>5000</constant></delay>
 			<!-- Chaine 102 -->
 			 <setBody><simple>1&amp;long=true</simple></setBody>
 			<to uri="direct:itv-process-tv" />
-			<delay><constant>500</constant></delay>
+			<delay><constant>{{interface-tv.tempo.touche}}</constant></delay>
 			 <setBody><simple>0&amp;long=true</simple></setBody>
 			<to uri="direct:itv-process-tv" />
-			<delay><constant>500</constant></delay>
+			<delay><constant>{{interface-tv.tempo.touche}}</constant></delay>
 			 <setBody><simple>2</simple></setBody>
 			<to uri="direct:itv-process-tv" />
 		</route>

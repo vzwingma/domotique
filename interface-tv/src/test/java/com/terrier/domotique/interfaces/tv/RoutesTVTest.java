@@ -1,6 +1,8 @@
 package com.terrier.domotique.interfaces.tv;
 
+import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -28,4 +30,13 @@ public class RoutesTVTest extends CamelBlueprintTestSupport {
 
 	}
 
+	
+	/**
+	 * Démarrage de la tv
+	 */
+	@Ignore
+	public void commandeRouteStartTV(){
+		template.setDefaultEndpointUri("direct-vm:itv-start-tv");
+		template.send(new DefaultExchange(context));
+	}
 }
