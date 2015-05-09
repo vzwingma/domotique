@@ -14,7 +14,8 @@
 				value="Fj7sTpT/iLpNiB6kA9owGJ143ryRKz5U6ETWlEY9ofoTF0pB0OYv7QrRwwM1ufI/" />
 			<cm:property name="interface-box.api.3.app.id" value="domotique.box" />
 			<cm:property name="interface-box-spv-connexions" value="60" />
-			<cm:property name="interface-box.compteur.chgt.etat" value="3" />
+			<cm:property name="interface-box.compteur.chgt.etat"
+				value="3" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -32,8 +33,6 @@
 				loggingLevel="INFO" logName="com.terrier.domotique.interfaces.box" />
 			<!-- Liste des éléments connectés au réseau -->
 			<to uri="direct-vm:ifbx-reseaux" />
-			<log message="[INTERFACE FREEBOX] Supervision des connexions des smartphones : ${body}"
-				loggingLevel="INFO" logName="com.terrier.domotique.interfaces.box" />
 		</route>
 
 		<!-- Commande HTTP à la freebox : Login / Interface réseau / Logout -->
@@ -45,6 +44,15 @@
 			<wireTap uri="direct:ifbx-deconnexion" />
 			<unmarshal ref="gsonReseauCnxList" />
 			<bean ref="freeboxReseau" method="getChangementPresenceSmartphones" />
+			<!-- Si changement d'état envoi -->
+			<choice>
+				<when>
+					<simple>${body} != null</simple>
+					<log
+						message="[INTERFACE FREEBOX] Présence de smartphones : ${body}"
+						loggingLevel="INFO" logName="com.terrier.domotique.interfaces.box" />
+				</when>
+			</choice>
 		</route>
 
 
