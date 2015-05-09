@@ -38,11 +38,11 @@ public class FreeboxReseauImpl implements IFreeboxReseau {
 	 */
 	@Override
 	public Boolean getChangementPresenceSmartphones(PeripheriquesReseau peripheriquesReseau) {
-		LOG.trace("[FREEBOX] Connexion réseaux : {}", peripheriquesReseau.isSuccess());
+		LOG.trace("[INTERFACE FREEBOX] Connexion réseaux : {}", peripheriquesReseau.isSuccess());
 		
 		int nbSmartphonesActifs = 0;
 		for (PeripheriqueReseau peripherique : peripheriquesReseau.getResult()) {
-			LOG.debug("[FREEBOX]  Périphérique : {} {}, actif={}", 
+			LOG.debug("[INTERFACE FREEBOX]  Périphérique : {} {}, actif={}", 
 					peripherique.getHostType(),
 					peripherique.getPrimaryName(), 
 					peripherique.isActive() && peripherique.isReachable());
@@ -51,22 +51,22 @@ public class FreeboxReseauImpl implements IFreeboxReseau {
 				nbSmartphonesActifs ++;
 			}
 		}
-		LOG.debug("[FREEBOX] Nombres de smartphones actifs : {}", nbSmartphonesActifs);
+		LOG.debug("[INTERFACE FREEBOX] Nombres de smartphones actifs : {}", nbSmartphonesActifs);
 		// Si l'état en cours est "vrai" et qu'il n'y a plus de smartphones actifs 
 		//on diminue le compteur d'un
 		if(nbSmartphonesActifs == 0){
 			compteurAvantChgtEtat --;
-			LOG.debug("[FREEBOX] Perte de signal depuis {} minutes...", limiteAvantChtEtat - compteurAvantChgtEtat);
+			LOG.debug("[INTERFACE FREEBOX] Perte de signal depuis {} minutes...", limiteAvantChtEtat - compteurAvantChgtEtat);
 		}
 		// Si l'état en cours est faux et qu'il y a un smartphone actif : changement d'état immédiat
 		if(nbSmartphonesActifs > 0 && !smartphonesPresents){
-			LOG.debug("[FREEBOX] Détection de smartphones présents : Etat actif");
+			LOG.info("[INTERFACE FREEBOX] Détection de smartphones présents : Etat actif");
 			smartphonesPresents = true;
 			compteurAvantChgtEtat = limiteAvantChtEtat;
 			return Boolean.TRUE;
 		}
 		else if(compteurAvantChgtEtat == 0){
-			LOG.debug("[FREEBOX] Perte de signal depuis {} minutes : Etat inactif", limiteAvantChtEtat);
+			LOG.warn("[INTERFACE FREEBOX] Perte de signal depuis {} minutes : Etat inactif", limiteAvantChtEtat);
 			smartphonesPresents = false;
 			return Boolean.FALSE;
 		}

@@ -32,29 +32,29 @@ public class FreeboxAuthenticationImpl implements IFreeboxAuthentication {
 	@Override
 	public String authenticate(String challengeBody) {
 		
-		LOG.debug("[INTERFACE BOX] Authentification Freebox : Challenge");
-		LOG.debug("[INTERFACE BOX] 	ChallengeBody 	: {}", challengeBody);
+		LOG.debug("[INTERFACE FREEBOX] Authentification Freebox : Challenge");
+		LOG.debug("[INTERFACE FREEBOX] 	ChallengeBody 	: {}", challengeBody);
 
 		int debutChallenge = challengeBody.indexOf("challenge") + 12;
 		int finChallenge = challengeBody.indexOf("\",\"", debutChallenge);
 		String challenge = challengeBody.substring(debutChallenge, finChallenge);
 		challenge = challenge.replaceAll("\\\\", "");
-		LOG.debug("[INTERFACE BOX] 	Challenge 		: {}", challenge);
-		LOG.debug("[INTERFACE BOX]	App Token 		: {}", appToken);
+		LOG.debug("[INTERFACE FREEBOX] 	Challenge 		: {}", challenge);
+		LOG.debug("[INTERFACE FREEBOX]	App Token 		: {}", appToken);
 
 		String password = null;
 		try {
 			password = HmacSha1Signature.calculateRFC2104HMAC(challenge, appToken);
 		} catch (InvalidKeyException | SignatureException
 				| NoSuchAlgorithmException e) {
-			LOG.error("[INTERFACE BOX] Erreur lors du calcul du mot de passe");
+			LOG.error("[INTERFACE FREEBOX] Erreur lors du calcul du mot de passe");
 		}
 		StringBuilder authPOSTBody = new StringBuilder("{\n").append(
 		"	\"app_id\": \"").append(appId).append("\",\n").append(
 		"	\"password\": \"").append(password).append("\"\n").append(
 		"}");
 		
-		LOG.debug("[INTERFACE BOX] >> \n{}", authPOSTBody.toString());
+		LOG.trace("[INTERFACE FREEBOX] >> \n{}", authPOSTBody.toString());
 		
 		return authPOSTBody.toString();
 	}
@@ -64,14 +64,14 @@ public class FreeboxAuthenticationImpl implements IFreeboxAuthentication {
 	 * @see com.terrier.domotique.interfaces.box.IFreeboxAuthentication#getSessionToken(java.lang.String)
 	 */
 	public String getSessionToken(String responseAuth){
-		LOG.debug("[INTERFACE BOX] Session Token response : {}", responseAuth);
+		LOG.debug("[INTERFACE FREEBOX] Session Token response : {}", responseAuth);
 		int debutSessionToken = responseAuth.indexOf("session_token") + 16;
 		int finChallenge = responseAuth.indexOf("\",\"", debutSessionToken);
 		
 		String sessionToken = responseAuth.substring(debutSessionToken, finChallenge);
 		sessionToken = sessionToken.replaceAll("\\\\", "");
 	
-		LOG.debug("[INTERFACE BOX] 	Session Token : {}", sessionToken);
+		LOG.debug("[INTERFACE FREEBOX] 	Session Token : {}", sessionToken);
 		return sessionToken;
 	}
 	

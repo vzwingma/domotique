@@ -29,10 +29,11 @@
 			<from
 				uri="timer://SupervisionSmartphones?fixedRate=true&amp;period={{interface-box-spv-connexions}}s" />
 			<log message="[INTERFACE FREEBOX] Supervision des connexions des smartphones"
-				loggingLevel="INFO" />
+				loggingLevel="INFO" logName="com.terrier.domotique.interfaces.box" />
 			<!-- Liste des éléments connectés au réseau -->
 			<to uri="direct-vm:ifbx-reseaux" />
-
+			<log message="[INTERFACE FREEBOX] Supervision des connexions des smartphones : ${body}"
+				loggingLevel="INFO" logName="com.terrier.domotique.interfaces.box" />
 		</route>
 
 		<!-- Commande HTTP à la freebox : Login / Interface réseau / Logout -->
