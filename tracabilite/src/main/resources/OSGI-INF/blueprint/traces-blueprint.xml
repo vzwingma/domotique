@@ -7,12 +7,21 @@
 
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint"
 		id="ITraces">
+		<!-- Evenements network smartphones -->
 		<route id="ITr-NetworkEvents">
 			<from
 				uri="eventadmin:com/terrier/domotique/interfaces/box/NetworkEvent/CONNECTED" />
 			<log message="[TRACES] Présence de smartphones : ${body}"
 				loggingLevel="INFO" logName="com.terrier.domotique.traces" />
 		</route>
+
+		<!-- Bundles events -->
+		<route id="ITr-BundleEvent">
+			<from uri="eventadmin:org/osgi/framework/BundleEvent/*" />
+			<log message="[TRACES] Evenements des bundles : ${body}"
+				loggingLevel="INFO" logName="com.terrier.domotique.traces" />
+		</route>
+
 	</camelContext>
 
 </blueprint>

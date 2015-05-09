@@ -39,4 +39,16 @@ public class RoutesTVTest extends CamelBlueprintTestSupport {
 		template.setDefaultEndpointUri("direct-vm:itv-start-tv");
 		template.send(new DefaultExchange(context));
 	}
+	
+	
+
+	
+	/**
+	 * Démarrage de la tv
+	 */
+	@Ignore
+	public void commandeRouteStopTV(){
+		template.setDefaultEndpointUri("direct-vm:itv-stop-tv");
+		template.send(new DefaultExchange(context));
+	}
 }
