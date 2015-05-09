@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>com.terrier.domotique</groupId>
 	<artifactId>interface-box</artifactId>
-	<name>DOMAtique : Interface Box</name>
+	<name>DOMAtique : Interface Freebox</name>
 	<packaging>bundle</packaging>
 	<description>Interface avec l'API v3 de la FreeBox</description>
 	
