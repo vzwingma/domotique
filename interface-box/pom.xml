@@ -11,8 +11,8 @@
 	<name>DOMAtique : Interface Freebox</name>
 	<packaging>bundle</packaging>
 	<description>Interface avec l'API v3 de la FreeBox</description>
-	
-		<build>
+
+	<build>
 		<plugins>
 			<!-- to generate the MANIFEST-FILE of the bundle -->
 			<plugin>
@@ -41,6 +41,11 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>com.terrier.domotique</groupId>
+			<artifactId>communs</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-http4</artifactId>
 			<version>${camel.version}</version>
@@ -49,6 +54,17 @@
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-gson</artifactId>
 			<version>${camel.version}</version>
-		</dependency>		
-	</dependencies>	
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-eventadmin</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.eventadmin</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+
+	</dependencies>
 </project>

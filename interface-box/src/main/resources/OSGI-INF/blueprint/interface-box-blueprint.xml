@@ -51,6 +51,7 @@
 					<log
 						message="[INTERFACE FREEBOX] Présence de smartphones : ${body}"
 						loggingLevel="INFO" logName="com.terrier.domotique.interfaces.box" />
+					<to uri="eventadmin:com/terrier/domotique/interfaces/box/NetworkEvent/CONNECTED" />
 				</when>
 			</choice>
 		</route>

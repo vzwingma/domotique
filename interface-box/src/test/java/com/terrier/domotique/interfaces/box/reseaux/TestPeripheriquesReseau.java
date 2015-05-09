@@ -16,6 +16,7 @@ import org.junit.Test;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.terrier.domotique.communs.NetworkEventEnum;
 import com.terrier.domotique.interfaces.box.impl.FreeboxReseauImpl;
 
 /**
@@ -75,7 +76,7 @@ public class TestPeripheriquesReseau extends CamelBlueprintTestSupport {
 		listeConnexionsReseau.setResult(new ArrayList<PeripheriqueReseau>());
 		listeConnexionsReseau.getResult().add(peripherique);
 		// Pas de changement
-		assertTrue(reseau.getChangementPresenceSmartphones(listeConnexionsReseau));
+		assertTrue((Boolean)reseau.getChangementPresenceSmartphones(listeConnexionsReseau).get(NetworkEventEnum.PRESENT.getId()));
 		
 		// Perte du signal 1x
 		peripherique.setReachable(false);
@@ -83,16 +84,15 @@ public class TestPeripheriquesReseau extends CamelBlueprintTestSupport {
 		// Perte du signal 2x
 		assertNull(reseau.getChangementPresenceSmartphones(listeConnexionsReseau));
 		// Perte du signal 3x : Changement d'état
-		assertFalse(reseau.getChangementPresenceSmartphones(listeConnexionsReseau));
+		assertFalse((Boolean)reseau.getChangementPresenceSmartphones(listeConnexionsReseau).get(NetworkEventEnum.PRESENT.getId()));
 		// Perte du signal 4x 
 		assertNull(reseau.getChangementPresenceSmartphones(listeConnexionsReseau));
 		// Perte du signal 5x
 		assertNull(reseau.getChangementPresenceSmartphones(listeConnexionsReseau));
 		// Retrouve le signal
 		peripherique.setReachable(true);
-		assertTrue(reseau.getChangementPresenceSmartphones(listeConnexionsReseau));
+		assertTrue((Boolean)reseau.getChangementPresenceSmartphones(listeConnexionsReseau).get(NetworkEventEnum.PRESENT.getId()));
 		// Pas de changement
 		assertNull(reseau.getChangementPresenceSmartphones(listeConnexionsReseau));
-
 	}
 }

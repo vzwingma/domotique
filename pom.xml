@@ -19,6 +19,7 @@
 		<module>commandes</module>
 		<module>interface-tv</module>
 		<module>interface-box</module>
+		<module>communs</module>
 	</modules>
 
 
