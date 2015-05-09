@@ -5,19 +5,18 @@
        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
-
-
 	<cm:property-placeholder id="domatique-interface-box"
 		persistent-id="domatique-interface-box" update-strategy="reload">
+		<!-- TODO : Supprimer ces clés -->
 		<cm:default-properties>
 			<cm:property name="interface-box.api.3.url" value="http4://mafreebox.freebox.fr/api/v3/" />
 			<cm:property name="interface-box.api.3.app.token"
 				value="Fj7sTpT/iLpNiB6kA9owGJ143ryRKz5U6ETWlEY9ofoTF0pB0OYv7QrRwwM1ufI/" />
 			<cm:property name="interface-box.api.3.app.id" value="domotique.box" />
 			<cm:property name="interface-box-spv-connexions" value="60" />
+			<cm:property name="interface-box.compteur.chgt.etat" value="3" />
 		</cm:default-properties>
 	</cm:property-placeholder>
-
 
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint"
 		id="IFreebox">
@@ -33,6 +32,7 @@
 				loggingLevel="INFO" />
 			<!-- Liste des éléments connectés au réseau -->
 			<to uri="direct-vm:ifbx-reseaux" />
+
 		</route>
 
 		<!-- Commande HTTP à la freebox : Login / Interface réseau / Logout -->
@@ -41,9 +41,9 @@
 			<to uri="direct:ifbx-connexion" />
 			<!-- Liste des interfaces -->
 			<to uri="{{interface-box.api.3.url}}lan/browser/pub/" />
-			<bean ref="freeboxReseau" method="getListeConnexionsReseau" />
 			<wireTap uri="direct:ifbx-deconnexion" />
-			<to uri="mock:result" />
+			<unmarshal ref="gsonReseauCnxList" />
+			<bean ref="freeboxReseau" method="getChangementPresenceSmartphones" />
 		</route>
 
 
@@ -86,6 +86,17 @@
 		</route>
 	</camelContext>
 
+	<!-- define the gson data format, where we configure the data format using 
+		the properties -->
+	<bean id="gsonReseauCnxList" class="org.apache.camel.component.gson.GsonDataFormat">
+		<!-- we want to unmarshal to person pojo -->
+		<property name="unmarshalType"
+			value="com.terrier.domotique.interfaces.box.reseaux.PeripheriquesReseau" />
+		<!-- we want to map fields to use lower case and underscores -->
+		<property name="fieldNamingPolicy" value="LOWER_CASE_WITH_UNDERSCORES" />
+	</bean>
+
+
 	<!-- Authentification Freebox -->
 	<bean id="freeboxAuth"
 		class="com.terrier.domotique.interfaces.box.impl.FreeboxAuthenticationImpl">
@@ -95,6 +106,9 @@
 
 	<!-- Reseau Freebox -->
 	<bean id="freeboxReseau"
-		class="com.terrier.domotique.interfaces.box.impl.FreeboxReseauImpl" />
+		class="com.terrier.domotique.interfaces.box.impl.FreeboxReseauImpl">
+		<property name="compteurAvantChgtEtat" value="${interface-box.compteur.chgt.etat}" />
+	</bean>
+
 
 </blueprint>

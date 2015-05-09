@@ -1,0 +1,85 @@
+{
+    "success": true,
+    "result": [
+        {
+            "l2ident": {
+                "id": "00:AA:3C:64:27:75",
+                "type": "mac_address"
+            },
+            "active": true,
+            "id": "ether-00:aa:3c:64:27:75",
+            "last_time_reachable": 1429964965,
+            "persistent": true,
+            "names": [
+                {
+                    "name": "android-5c56304e9fc39af8",
+                    "source": "dhcp"
+                },
+                {
+                    "name": "android",
+                    "source": "upnp"
+                }
+            ],
+            "vendor_name": "SAMSUNG ELECTRO-MECHANICS",
+            "host_type": "smartphone",
+            "l3connectivities": [
+                {
+                    "addr": "192.168.0.9",
+                    "active": false,
+                    "reachable": false,
+                    "last_activity": 1429964965,
+                    "af": "ipv4",
+                    "last_time_reachable": 1429964965
+                },
+                {
+                    "addr": "0000::3aaa:3cff:fe64:2775",
+                    "active": false,
+                    "reachable": false,
+                    "last_activity": 1429964448,
+                    "af": "ipv6",
+                    "last_time_reachable": 1429963191
+                }
+            ],
+            "reachable": true,
+            "last_activity": 1429964965,
+            "primary_name_manual": true,
+            "primary_name": "GalaxyS3 de Yogik"
+        },
+        {
+            "l2ident": {
+                "id": "00:30:8A:EB:7D:55",
+                "type": "mac_address"
+            },
+            "active": false,
+            "id": "ether-00:30:8a:eb:7d:55",
+            "last_time_reachable": 1375740099,
+            "persistent": true,
+            "names": [
+                {
+                    "name": "android-aa29df510b6c88bb",
+                    "source": "dhcp"
+                },
+                {
+                    "name": "android-Dev",
+                    "source": "mdns"
+                }
+            ],
+            "vendor_name": "Murata Manufactuaring Co.,Ltd.",
+            "host_type": "tablet",
+            "l3connectivities": [
+                {
+                    "addr": "fe80::8a30:8aff:feeb:7d55",
+                    "active": false,
+                    "reachable": false,
+                    "last_activity": 1375740287,
+                    "af": "ipv6",
+                    "last_time_reachable": 1375740099
+                }
+            ],
+            "reachable": false,
+            "last_activity": 1375740287,
+            "primary_name_manual": true,
+            "primary_name": "Android Alissa"
+        }   
+    ]
+}

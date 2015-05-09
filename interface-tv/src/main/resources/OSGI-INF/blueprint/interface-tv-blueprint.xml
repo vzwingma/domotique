@@ -9,7 +9,7 @@
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint" id="IFreeboxTV">
 		<!-- Properties -->
 		<propertyPlaceholder id="properties" location="etc/domatique-interface-tv.cfg" />
-		
+
 		
 		<!-- Commande HTTP à la freebox -->
 		<route id="ITV-Commande">
