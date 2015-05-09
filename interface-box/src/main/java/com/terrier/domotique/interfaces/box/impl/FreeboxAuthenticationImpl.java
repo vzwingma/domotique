@@ -32,7 +32,7 @@ public class FreeboxAuthenticationImpl implements IFreeboxAuthentication {
 	@Override
 	public String authenticate(String challengeBody) {
 		
-		LOG.info("[INTERFACE BOX] Authentification Freebox : Challenge");
+		LOG.debug("[INTERFACE BOX] Authentification Freebox : Challenge");
 		LOG.debug("[INTERFACE BOX] 	ChallengeBody 	: {}", challengeBody);
 
 		int debutChallenge = challengeBody.indexOf("challenge") + 12;
