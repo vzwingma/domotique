@@ -6,7 +6,7 @@
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
 
-	<camelContext xmlns="http://camel.apache.org/schema/blueprint">
+	<camelContext xmlns="http://camel.apache.org/schema/blueprint" id="IFreeboxTV">
 		<!-- Properties -->
 		<propertyPlaceholder id="properties" location="etc/domatique-interface-tv.cfg" />
 		
