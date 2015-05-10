@@ -38,7 +38,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>domatique.commandes</Bundle-SymbolicName>
-						<Private-Package>com.terrier.domotique.camel.routes.*</Private-Package>
+						<Private-Package>com.terrier.domotique.commandes.*</Private-Package>
 						<Import-Package>org.apache.camel.component.jetty9;version="[2.15,3)"
 						,*</Import-Package>
 					</instructions>

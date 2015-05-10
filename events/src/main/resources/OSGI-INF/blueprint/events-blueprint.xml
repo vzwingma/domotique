@@ -12,6 +12,7 @@
 			<from
 				uri="eventadmin:com/terrier/domotique/interfaces/box/NetworkEvent/CONNECTED" />
 			<bean ref="traceEvents" method="traceEvent" />
+			<bean ref="statutsPresences" method="receiveSmartphonesEvent" />
 		</route>
 
 		<!-- Bundles events -->
@@ -26,11 +27,13 @@
 	<!-- Trace des événements -->
 	<bean id="traceEvents" class="com.terrier.domotique.events.impl.TraceEventsImpl" />
 
-	<!-- Trace des événements -->
+	<!-- Statuts des modules -->
 	<bean id="statutsModules" class="com.terrier.domotique.events.impl.StatutsModulesImpl" />
-	
-	
-	<!-- Service des statuts -->
-	<service id="serviceStatutsModules" ref="statutsModules"
-		interface="com.terrier.domotique.events.IStatutsModules" />
+	<!-- Statuts de présence -->
+	<bean id="statutsPresences" class="com.terrier.domotique.events.impl.StatutsPresencesImpl" />
+
+
+	<!-- Services OSGi -->
+	<service id="serviceStatutsModules" ref="statutsModules" interface="com.terrier.domotique.events.IStatutsModules" />
+	<service id="serviceStatutsPresences" ref="statutsPresences" interface="com.terrier.domotique.events.IStatutsPresence" />
 </blueprint>

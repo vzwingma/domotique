@@ -34,18 +34,22 @@
 		<!-- Interface REST de commandes -->
 		<rest path="/rest">
 			<put uri="/tv/stop">
-				<to uri="mock:itv-stop-tv" />
+				<to uri="direct-vm:itv-stop-tv" />
 			</put>
 			<put uri="/tv/start">
-				<to uri="mock:itv-start-tv" />
+				<to uri="direct-vm:itv-start-tv" />
 			</put>
 			<get uri="/modules/status">
 				<to uri="bean:serviceStatutsModules?method=getStatutsModules" />
 			</get>
+			<get uri="/presence/status">
+				<to uri="bean:serviceStatutsPresences?method=getPresence" />
+			</get>			
 		</rest>
 	</camelContext>
 
 	<!-- Référence au service Statuts -->
 	<reference id="serviceStatutsModules" interface="com.terrier.domotique.events.IStatutsModules" />
-
+	
+	<reference id="serviceStatutsPresences" interface="com.terrier.domotique.events.IStatutsPresence" />
 </blueprint>
