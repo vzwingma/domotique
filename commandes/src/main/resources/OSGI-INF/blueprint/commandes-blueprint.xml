@@ -40,9 +40,12 @@
 				<to uri="mock:itv-start-tv" />
 			</put>
 			<get uri="/modules/status">
-				<to uri="direct-vm:itr-statuts-modules" />
+				<to uri="bean:serviceStatutsModules?method=getStatutsModules" />
 			</get>
 		</rest>
 	</camelContext>
+
+	<!-- Référence au service Statuts -->
+	<reference id="serviceStatutsModules" interface="com.terrier.domotique.events.IStatutsModules" />
 
 </blueprint>

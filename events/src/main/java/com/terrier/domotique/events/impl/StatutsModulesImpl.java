@@ -44,21 +44,23 @@ public class StatutsModulesImpl implements IStatutsModules {
 		
 		String topic = event.getTopic();
 		String bundleName = (String)event.getProperty("bundle.symbolicName");
-		// Liste des status KO
-		for (String bundleKOTopic : bundleKOTopics) {
-			if(bundleKOTopic.equals(topic)){
-				statutsBundles.put(bundleName, Boolean.FALSE);
-				return;
+		if(bundleName.contains("domatique")){
+			// Liste des status KO
+			for (String bundleKOTopic : bundleKOTopics) {
+				if(bundleKOTopic.equals(topic)){
+					statutsBundles.put(bundleName, Boolean.FALSE);
+					return;
+				}
 			}
-		}
-		// Liste des statuts OK
-		for (String bundleOKTopic : bundleOKTopics) {
-			if(bundleOKTopic.equals(topic)){
-				statutsBundles.put(bundleName, Boolean.TRUE);
-				return;
+			// Liste des statuts OK
+			for (String bundleOKTopic : bundleOKTopics) {
+				if(bundleOKTopic.equals(topic)){
+					statutsBundles.put(bundleName, Boolean.TRUE);
+					return;
+				}
 			}
+			statutsBundles.put(bundleName, null);
 		}
-		statutsBundles.put(bundleName, null);
 	}
 
 

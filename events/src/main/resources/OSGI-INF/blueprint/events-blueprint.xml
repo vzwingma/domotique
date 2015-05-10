@@ -18,19 +18,19 @@
 		<route id="ITr-BundleEvents">
 			<from uri="eventadmin:org/osgi/framework/BundleEvent/*" />
 			<bean ref="traceEvents" method="traceEvent" />
-			<bean ref="statutsModules" method="receiveBundleEvent" />			
-		</route>
-		
-		<route id="ITr-getBundlesStatuts">
-			<from uri="direct-vm:itr-statuts-modules" />
-			<bean ref="statutsModules" method="getStatutsModules" />			
+			<bean ref="statutsModules" method="receiveBundleEvent" />
 		</route>
 	</camelContext>
 
 
-	<!-- Trace des événements  -->
+	<!-- Trace des événements -->
 	<bean id="traceEvents" class="com.terrier.domotique.events.impl.TraceEventsImpl" />
 
-	<!-- Trace des événements  -->
+	<!-- Trace des événements -->
 	<bean id="statutsModules" class="com.terrier.domotique.events.impl.StatutsModulesImpl" />
+	
+	
+	<!-- Service des statuts -->
+	<service id="serviceStatutsModules" ref="statutsModules"
+		interface="com.terrier.domotique.events.IStatutsModules" />
 </blueprint>
