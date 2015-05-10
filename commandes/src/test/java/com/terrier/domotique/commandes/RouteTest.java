@@ -20,7 +20,6 @@ public class RouteTest extends CamelBlueprintTestSupport {
     @Test
     public void testRoute() throws Exception {
 		assertEquals(3, context.getRoutes().size());
-		
     	Thread.sleep(10000);
     }
 

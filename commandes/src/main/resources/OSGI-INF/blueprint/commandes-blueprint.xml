@@ -6,10 +6,30 @@
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
 
-	<camelContext xmlns="http://camel.apache.org/schema/blueprint" id="IRest">
-		<restConfiguration component="jetty" host="localhost" port="9090">
-		</restConfiguration>
+	<camelContext xmlns="http://camel.apache.org/schema/blueprint"
+		id="IRest">
 
+		<onException>
+			<!-- gestion des erreurs -->
+			<exception>org.apache.camel.component.directvm.DirectVmConsumerNotAvailableException
+			</exception>
+			<!-- we can set the redelivery policy here as well -->
+			<redeliveryPolicy maximumRedeliveries="1" />
+			<!-- mark this as handled -->
+			<handled>
+				<constant>true</constant>
+			</handled>
+			<setBody>
+				<constant>Le module n'est pas disponible</constant>
+			</setBody>
+			<setHeader headerName="CamelHttpResponseCode">
+				<constant>404</constant>
+			</setHeader>
+		</onException>
+
+		<restConfiguration component="jetty" host="localhost"
+			port="9090">
+		</restConfiguration>
 
 		<!-- Interface REST de commandes -->
 		<rest path="/rest">
@@ -21,7 +41,7 @@
 			</put>
 			<get uri="/modules/status">
 				<to uri="direct-vm:itr-statuts-modules" />
-			</get>			
+			</get>
 		</rest>
 	</camelContext>
 

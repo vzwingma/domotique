@@ -30,6 +30,10 @@ public enum NetworkEventEnum {
 
 
 
+	/**
+	 * @param id id de l'enum
+	 * @return l'enum NetworkEnum
+	 */
 	public NetworkEventEnum getEnumById(String id){
 		for (NetworkEventEnum event : NetworkEventEnum.values()) {
 			if(event.getId().equals(id)){

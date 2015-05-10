@@ -39,7 +39,7 @@
 					<instructions>
 						<Bundle-SymbolicName>domatique.commandes</Bundle-SymbolicName>
 						<Private-Package>com.terrier.domotique.camel.routes.*</Private-Package>
-						<Import-Package>org.apache.camel.component.jetty8;version="[2.15,3)"
+						<Import-Package>org.apache.camel.component.jetty9;version="[2.15,3)"
 						,*</Import-Package>
 					</instructions>
 				</configuration>
@@ -50,7 +50,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-jetty</artifactId>
+			<artifactId>camel-jetty9</artifactId>
 			<version>${camel.version}</version>
 		</dependency>
 	</dependencies>
