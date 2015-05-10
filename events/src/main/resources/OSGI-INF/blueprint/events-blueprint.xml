@@ -6,22 +6,23 @@
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint"
-		id="ITraces">
+		id="IEvents">
 		<!-- Evenements network smartphones -->
 		<route id="ITr-NetworkEvents">
 			<from
 				uri="eventadmin:com/terrier/domotique/interfaces/box/NetworkEvent/CONNECTED" />
-			<log message="[TRACES] Présence de smartphones : ${body}"
-				loggingLevel="INFO" logName="com.terrier.domotique.traces" />
+			<bean ref="traceEvents" method="traceEvent" />
 		</route>
 
 		<!-- Bundles events -->
 		<route id="ITr-BundleEvent">
 			<from uri="eventadmin:org/osgi/framework/BundleEvent/*" />
-			<log message="[TRACES] Evenements des bundles : ${body}"
-				loggingLevel="INFO" logName="com.terrier.domotique.traces" />
+			<bean ref="traceEvents" method="traceEvent" />
 		</route>
-
 	</camelContext>
+
+
+	<!-- Authentification Freebox -->
+	<bean id="traceEvents" class="com.terrier.domotique.events.impl.TraceEventsImpl" />
 
 </blueprint>

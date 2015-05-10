@@ -32,8 +32,10 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>interface-box</Bundle-SymbolicName>
-						<Private-Package>com.terrier.domotique.interfaces.box.*</Private-Package>
-						<Import-Package>*</Import-Package>
+						<Private-Package>com.terrier.domotique.interfaces.box.impl.*</Private-Package>
+						<Import-Package>
+							com.terrier.domotique.communs;version="[0.0,1)",
+							*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -42,7 +44,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.terrier.domotique</groupId>
-			<artifactId>communs</artifactId>
+			<artifactId>events</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

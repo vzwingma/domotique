@@ -66,6 +66,7 @@ public class FreeboxReseauImpl implements IFreeboxReseau {
 		
 		Map<String, Object> eventSmartphones = new HashMap<>();
 		eventSmartphones.put(NetworkEventEnum.ID.getId(), UUID.randomUUID().toString());
+		
 		// Si l'état en cours est faux et qu'il y a un smartphone actif : changement d'état immédiat
 		if(nbSmartphonesActifs > 0 && !smartphonesPresents){
 			LOG.info("[INTERFACE FREEBOX] Détection de smartphones présents : Etat actif");

@@ -14,7 +14,7 @@
 	<artifactId>interface-tv</artifactId>
 	<packaging>bundle</packaging>
 	<name>DOMAtique : Interface TV</name>
-
+	<description>Interface avec l'API de la télécommande TV Freebox</description>
 	<build>
 		<plugins>
 			<!-- to generate the MANIFEST-FILE of the bundle -->
@@ -35,8 +35,9 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>interface-tv</Bundle-SymbolicName>
-						<Private-Package>com.terrier.domotique.interfaces.tv.*</Private-Package>
-						<Import-Package>*</Import-Package>
+						<Private-Package>com.terrier.domotique.interfaces.tv.impl.*</Private-Package>
+						<Import-Package>com.terrier.domotique.communs;version="[0.0,1)",
+							*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -49,6 +50,11 @@
 			<artifactId>camel-http4</artifactId>
 			<version>${camel.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.terrier.domotique</groupId>
+			<artifactId>events</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
-	<description>Interface avec l'API de la télécommande TV Freebox</description>
+
 </project>
