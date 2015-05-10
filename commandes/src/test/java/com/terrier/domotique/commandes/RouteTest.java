@@ -1,4 +1,4 @@
-package com.terrier.domotique.camel.routes;
+package com.terrier.domotique.commandes;
 
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.junit.Test;
