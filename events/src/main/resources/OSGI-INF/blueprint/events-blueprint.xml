@@ -15,14 +15,22 @@
 		</route>
 
 		<!-- Bundles events -->
-		<route id="ITr-BundleEvent">
+		<route id="ITr-BundleEvents">
 			<from uri="eventadmin:org/osgi/framework/BundleEvent/*" />
 			<bean ref="traceEvents" method="traceEvent" />
+			<bean ref="statutsModules" method="receiveBundleEvent" />			
+		</route>
+		
+		<route id="ITr-getBundlesStatuts">
+			<from uri="direct-vm:itr-statuts-modules" />
+			<bean ref="statutsModules" method="getStatutsModules" />			
 		</route>
 	</camelContext>
 
 
-	<!-- Authentification Freebox -->
+	<!-- Trace des événements  -->
 	<bean id="traceEvents" class="com.terrier.domotique.events.impl.TraceEventsImpl" />
 
+	<!-- Trace des événements  -->
+	<bean id="statutsModules" class="com.terrier.domotique.events.impl.StatutsModulesImpl" />
 </blueprint>

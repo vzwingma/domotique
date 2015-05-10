@@ -6,20 +6,22 @@
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
 
-	<camelContext xmlns="http://camel.apache.org/schema/blueprint">
-		<restConfiguration component="jetty" host="localhost"
-			port="9090">
+	<camelContext xmlns="http://camel.apache.org/schema/blueprint" id="IRest">
+		<restConfiguration component="jetty" host="localhost" port="9090">
 		</restConfiguration>
 
 
 		<!-- Interface REST de commandes -->
 		<rest path="/rest">
-			<get uri="/tv/stop">
-				<to uri="direct-vm:itv-stop-tv" />
-			</get>
-			<get uri="/tv/start">
-				<to uri="direct-vm:itv-start-tv" />
-			</get>
+			<put uri="/tv/stop">
+				<to uri="mock:itv-stop-tv" />
+			</put>
+			<put uri="/tv/start">
+				<to uri="mock:itv-start-tv" />
+			</put>
+			<get uri="/modules/status">
+				<to uri="direct-vm:itr-statuts-modules" />
+			</get>			
 		</rest>
 	</camelContext>
 

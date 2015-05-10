@@ -18,6 +18,7 @@ public class TraceEventsImpl implements ITraceEvents {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TraceEventsImpl.class);
 
+	
 	/* (non-Javadoc)
 	 * @see com.terrier.domotique.events.ITraceEvents#traceEvent(org.w3c.dom.events.Event)
 	 */
