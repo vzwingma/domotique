@@ -8,6 +8,9 @@
 
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint"
 		id="IRest">
+		
+		<!-- Properties -->
+		<propertyPlaceholder id="properties" location="etc/domatique-commandes.cfg" />
 
 		<onException>
 			<!-- gestion des erreurs -->
@@ -27,8 +30,8 @@
 			</setHeader>
 		</onException>
 
-		<restConfiguration component="jetty" host="localhost"
-			port="9090">
+		<restConfiguration component="jetty" host="{{commandes.rest.host}}"
+			port="{{commandes.rest.port}}">
 		</restConfiguration>
 
 		<!-- Interface REST de commandes -->
