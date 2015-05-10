@@ -40,7 +40,7 @@
 				</executions>
 				<configuration>
 					<instructions>
-						<Bundle-SymbolicName>events</Bundle-SymbolicName>
+						<Bundle-SymbolicName>domatique.events</Bundle-SymbolicName>
 						<Private-Package>com.terrier.domotique.events.impl.*</Private-Package>
 						<Import-Package>*</Import-Package>
 					</instructions>
