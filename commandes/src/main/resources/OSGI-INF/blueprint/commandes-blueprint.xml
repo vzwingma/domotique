@@ -5,17 +5,22 @@
        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
-	<bean id="helloBean" class="com.terrier.domotique.camel.routes.HelloBean">
-		<property name="say" value="Hi from Camel" />
-	</bean>
 
 	<camelContext xmlns="http://camel.apache.org/schema/blueprint">
-		<route id="timerToLog">
-			<from uri="timer:foo?period=50000" />
-			<setBody>
-				<method ref="helloBean" method="hello" />
-			</setBody>
-		</route>
+		<restConfiguration component="jetty" host="localhost"
+			port="9090">
+		</restConfiguration>
+
+
+		<!-- Interface REST de commandes -->
+		<rest path="/rest">
+			<get uri="/tv/stop">
+				<to uri="direct-vm:itv-stop-tv" />
+			</get>
+			<get uri="/tv/start">
+				<to uri="direct-vm:itv-start-tv" />
+			</get>
+		</rest>
 	</camelContext>
 
 </blueprint>

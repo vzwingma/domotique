@@ -14,17 +14,14 @@ public class RouteTest extends CamelBlueprintTestSupport {
 	
     @Override
     protected String getBlueprintDescriptor() {
-        return "/OSGI-INF/blueprint/blueprint.xml";
+        return "/OSGI-INF/blueprint/commandes-blueprint.xml";
     }
 
     @Test
     public void testRoute() throws Exception {
-        // the route is timer based, so every 5th second a message is send
-        // we should then expect at least one message
-        getMockEndpoint("mock:result").expectedMinimumMessageCount(1);
-
-        // assert expectations
-        assertMockEndpointsSatisfied();
+		assertEquals(2, context.getRoutes().size());
+		
+    	Thread.sleep(10000);
     }
 
 }
