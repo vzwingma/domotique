@@ -30,6 +30,7 @@
 			</setHeader>
 		</onException>
 
+		<!-- Configuration REST -->
 		<restConfiguration component="jetty" host="{{commandes.rest.host}}"
 			port="{{commandes.rest.port}}">
 		</restConfiguration>
