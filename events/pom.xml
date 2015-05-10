@@ -11,11 +11,11 @@
 	</parent>
 
 	<groupId>com.terrier.domotique</groupId>
-	<artifactId>tracabilite</artifactId>
+	<artifactId>events</artifactId>
 	<packaging>bundle</packaging>
 
-  <name>DOMAtique : Traces</name>
-<description>Module de traçabilité</description>
+  <name>DOMAtique : Events</name>
+<description>Module de gestion des événements</description>
 
 
   <build>
