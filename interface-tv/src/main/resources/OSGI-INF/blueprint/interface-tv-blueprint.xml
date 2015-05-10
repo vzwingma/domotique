@@ -15,8 +15,11 @@
 		<route id="ITV-Commande">
 			<from uri="direct:itv-process-tv" />
 			<log message="[INTERFACE TV] Commande :  ${body}" loggingLevel="DEBUG"/>
+			<setHeader headerName="CamelHttpMethod">
+				<constant>GET</constant>
+			</setHeader>
 			<recipientList>
-				<simple>{{interface-tv.url.freebox}}?code={{interface-tv.code.freebox}}&amp;key=${body}</simple>
+				<simple>{{interface-tv.url.freebox}}?code={{interface-tv.code.freebox}}&amp;key=${body}&amp;bridgeEndpoint=true</simple>
 			</recipientList>
 		</route>
 
