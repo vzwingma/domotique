@@ -43,6 +43,9 @@
 			<put uri="/tv/start">
 				<to uri="direct-vm:itv-start-tv" />
 			</put>
+			<put uri="/tv/chaine/{chaine}">
+				<to uri="direct-vm:itv-channel-tv" />
+			</put>			
 			<get uri="/modules/status">
 				<to uri="bean:serviceStatutsModules?method=getStatutsModules" />
 			</get>
@@ -52,7 +55,7 @@
 		</rest>
 	</camelContext>
 
-	<!-- Référence au service Statuts -->
+	<!-- Référence aux services Statuts -->
 	<reference id="serviceStatutsModules" interface="com.terrier.domotique.events.IStatutsModules" />
 	
 	<reference id="serviceStatutsPresences" interface="com.terrier.domotique.events.IStatutsPresence" />
