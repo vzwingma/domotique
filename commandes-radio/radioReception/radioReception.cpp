@@ -139,7 +139,7 @@ int main (int argc, char** argv)
 	    unsigned long recipient = 0;
 		
 		t = pulseIn(pin, LOW, 1000000);
-		
+
 		//Verrou 1
 		while((t < 2200 || t > 3000)){
 			t = pulseIn(pin, LOW,1000000);
@@ -151,19 +151,18 @@ int main (int argc, char** argv)
 		while(i < 64)
 		{
 			t = pulseIn(pin, LOW, 1000000);
-			cout << "t = " << t << endl;
 			
 			//Définition du bit (0 ou 1)
 	        if(t > 180 && t < 420)
 			{
 				bit = 0;
-				log("0");
+				cout << "bit 0      t = " << t << endl;
 			}
 			
 	        else if(t > 1280 && t < 1480)
 			{
 				bit = 1;
-				log("1");
+				cout << "bit 1      t = " << t << endl;
 			}
 			else
 			{
@@ -216,25 +215,25 @@ int main (int argc, char** argv)
 	
 		log("------------------------------");
 		log("Donnees detectees");
-		cout << "sender " << sender << endl;
+		cout << "    telecommande " << sender << endl;
 		if(group)
 		{
-			cout << "group command" << endl;
+			cout << "    commande groupe" << endl;
 		}
 		else
 		{
-			cout << "no group" << endl;
+			cout << "    pas de groupe" << endl;
 		}
 
 		if(on)
 		{
-			cout << "on" << endl;
+			cout << "    on" << endl;
 		}
 		else
 		{
-			cout << "off" << endl;
+			cout << "    off" << endl;
 		}
-		cout << "recipient " << recipient << endl;
+		cout << "    bouton " << recipient << endl;
 	}else{
 		log("Aucune donnee...");
 	}

@@ -29,8 +29,6 @@ void log(string a){
 	cout << a << endl;
 }
 
-
-
 // Scheduler en real time pour utiliser les microsecondes
 void scheduler_realtime() {
 
@@ -53,22 +51,23 @@ void scheduler_standard() {
 
 
 
+
 //Envois d'une pulsation (passage de l'etat haut a l'etat bas)
-//1 = 310µs haut puis 1340µs bas
-//0 = 310µs haut puis 310µs bas
+//1 = 281 haut puis 1346 bas
+//0 = 281 haut puis 281 bas
 void sendBit(bool b) {
- if (b) {
-   digitalWrite(pin, HIGH);
-   delayMicroseconds(310);   //275 originally, but tweaked.
-   digitalWrite(pin, LOW);
-   delayMicroseconds(1340);  //1225 originally, but tweaked.
- }
- else {
-   digitalWrite(pin, HIGH);
-   delayMicroseconds(310);   //275 orinally, but tweaked.
-   digitalWrite(pin, LOW);
-   delayMicroseconds(310);   //275 orinally, but tweaked.
- }
+	 if (b) {
+	   digitalWrite(pin, HIGH);
+	   delayMicroseconds(281);   //281 orinally, but tweaked 310
+	   digitalWrite(pin, LOW);
+	   delayMicroseconds(1346);  //1225 orinally, but tweaked 1340
+	 }
+	 else {
+	   digitalWrite(pin, HIGH);
+	   delayMicroseconds(281);   //281 orinally, but tweaked 310
+	   digitalWrite(pin, LOW);
+	   delayMicroseconds(281);   //281 orinally, but tweaked 310
+	 }
 }
 
 //Calcul le nombre 2^chiffre indiqué, fonction utilisé par itob pour la conversion decimal/binaire
@@ -79,6 +78,7 @@ unsigned long power2(int power){
 	}
 	return integer;
 } 
+
 
 //Convertis un nombre en binaire, nécessite le nombre, et le nombre de bits souhaité en sortie (ici 26)
 // Stocke le résultat dans le tableau global "bit2"
@@ -105,8 +105,6 @@ void itobInterruptor(unsigned long integer, int length)
 }
 
 
-
-
 //Envoie d'une paire de pulsation radio qui definissent 1 bit réel : 0 =01 et 1 =10
 //c'est le codage de manchester qui necessite ce petit bouzin, ceci permet entre autres de dissocier les données des parasites
 void sendPair(bool b) {
@@ -131,13 +129,13 @@ void transmit(int blnOn)
 
  // Sequence de verrou anoncant le départ du signal au recepeteur
  digitalWrite(pin, HIGH);
- delayMicroseconds(275);     // un bit de bruit avant de commencer pour remettre les delais du recepteur a 0
+ delayMicroseconds(281);     // un bit de bruit avant de commencer pour remettre les delais du recepteur a 0
  digitalWrite(pin, LOW);
  delayMicroseconds(9900);     // premier verrou de 9900µs
  digitalWrite(pin, HIGH);   // high again
- delayMicroseconds(275);      // attente de 275µs entre les deux verrous
+ delayMicroseconds(281);      // attente de 281µs entre les deux verrous
  digitalWrite(pin, LOW);    // second verrou de 2675µs
- delayMicroseconds(2675);
+ delayMicroseconds(2772);
  digitalWrite(pin, HIGH);  // On reviens en état haut pour bien couper les verrous des données
 
  // Envoie du code emetteur (272946 = 1000010101000110010  en binaire)
@@ -165,9 +163,12 @@ void transmit(int blnOn)
 }
  
  digitalWrite(pin, HIGH);   // coupure données, verrou
- delayMicroseconds(275);      // attendre 275µs
+ delayMicroseconds(281);      // attendre 281µs
  digitalWrite(pin, LOW);    // verrou 2 de 2675µs pour signaler la fermeture du signal
+
 }
+
+
 
 
 
@@ -181,7 +182,6 @@ int main (int argc, char** argv)
 		return 1;
 	}
 
-
 	scheduler_realtime();
 
 	log(">>>*<<<");
@@ -189,7 +189,7 @@ int main (int argc, char** argv)
 	sender = atoi(argv[2]);
 	interruptor = atoi(argv[3]);
 	onoff = argv[4];
-	
+		
 	string logcmd = "   Commande " + onoff + " sur telecommande " + argv[2] + " / bouton : " + argv[3] + " (pin #" + argv[1] + ")";
 	log(logcmd);
 
@@ -203,7 +203,7 @@ int main (int argc, char** argv)
     pinMode(pin, OUTPUT);
 	log("   Pin GPIO correctement configure en sortie");
 
-	itob(sender,26);            // convertion du code de l'emetteur en code binaire
+	itob(sender,26);            // conversion du code de l'emetteur (ici 8217034) en code binaire
 	itobInterruptor(interruptor,4);
 	
 	
@@ -221,9 +221,7 @@ int main (int argc, char** argv)
 		 delay(10);                // attendre 10 ms (sinon le socket nous ignore)
 	 }
 	}
-
 	 log("<<<*>>>");    // execution terminée.
-
 	scheduler_standard();
 }
 
