@@ -6,11 +6,13 @@ if ping_success then
 	if ( otherdevices['Smartphone V'] == 'Off') then
 		print("	Le smartphone V est présent")
 		commandArray['Smartphone V']='On'
+		commandArray['changement_status_smartphones']='1'
     end
 else
 	if (otherdevices['Smartphone V'] == 'On') then
 		print("	Le smartphone V est absent")
 		commandArray['Smartphone V']='Off'
+		commandArray['changement_status_smartphones']='1'
 	end
 end
 
@@ -20,11 +22,13 @@ if ping_success then
 	if ( otherdevices['Smartphone S'] == 'Off') then
 		print("	Le smartphone S est présent")
 		commandArray['Smartphone V']='On'
+		commandArray['changement_status_smartphones']='1'
 	end
 else
 	if (otherdevices['Smartphone S'] == 'On') then
 		print("	Le smartphone S est absent")
 		commandArray['Smartphone S']='Off'
+		commandArray['changement_status_smartphones']='1'
 	end
 end
 return commandArray
