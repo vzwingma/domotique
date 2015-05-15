@@ -102,9 +102,14 @@ int main (int argc, char** argv)
 {
 	//On passe en temps réel
 	scheduler_realtime();
-	log(">>>*<<<");
-	//on récupere l'argument 1, qui est le numéro de Pin GPIO auquel est connecté le recepteur radio
-	pin = atoi(argv[1]);
+	
+	string command;
+	string path = "php ";
+	//on récupere l'argument 1, qui est le chemin vers le fichier php
+	path.append(argv[1]);
+	log("Demarrage du programme");
+	//on récupere l'argument 2, qui est le numéro de Pin GPIO auquel est connecté le recepteur radio
+	pin = atoi(argv[2]);
 	//Si on ne trouve pas la librairie wiringPI, on arrête l'execution
     if(wiringPiSetup() == -1)
     {
@@ -115,8 +120,7 @@ int main (int argc, char** argv)
     }
     pinMode(pin, INPUT);
 	log("Pin GPIO configure en entree");
-	delay(1000);
-
+    
 	
 	//On boucle pour ecouter les signaux
 	for(;;)
@@ -138,37 +142,33 @@ int main (int argc, char** argv)
 		//mise a zero de l'idenfiant de la rangée de bouton
 	    unsigned long recipient = 0;
 		
+		command = path+" ";
 		t = pulseIn(pin, LOW, 1000000);
 		
 		//Verrou 1
 		while((t < 2200 || t > 3000)){
 			t = pulseIn(pin, LOW,1000000);
 		}
-		cout << "Verrou 1 detecte. t = " << t << endl;
-
-		log("Debut de la recuperation des donnees");
+		log("Verrou 1 detecte");
 		// données
 		while(i < 64)
 		{
 			t = pulseIn(pin, LOW, 1000000);
-			cout << "t = " << t << endl;
+			//cout << "t = " << t << endl;
 			
 			//Définition du bit (0 ou 1)
 	        if(t > 180 && t < 420)
 			{
 				bit = 0;
-				log("0");
 			}
 			
 	        else if(t > 1280 && t < 1480)
 			{
 				bit = 1;
-				log("1");
 			}
 			else
 			{
 				i = 0;
-				log("Hors des intervalles. Arret de la detection");
 				break;
 			}
 			
@@ -217,29 +217,42 @@ int main (int argc, char** argv)
 		log("------------------------------");
 		log("Donnees detectees");
 		cout << "sender " << sender << endl;
+		
+		//on construit la commande qui vas envoyer les parametres au PHP
+		command.append(longToString(sender));
 		if(group)
 		{
+			command.append(" on");
 			cout << "group command" << endl;
 		}
 		else
 		{
+			command.append(" off");
 			cout << "no group" << endl;
 		}
 
 		if(on)
 		{
+			command.append(" on");
 			cout << "on" << endl;
 		}
 		else
 		{
+			command.append(" off");
 			cout << "off" << endl;
 		}
+		command.append(" "+longToString(recipient));
 		cout << "recipient " << recipient << endl;
+		log("Execution de la commande PHP");
+		//Et hop, on envoie tout ça au PHP
+		//system(command.c_str());
 	}else{
 		log("Aucune donnee...");
 	}
+	
     	delay(3000);
     }
-	log("<<<*>>>");
+	
 	scheduler_standard();
 }
+
