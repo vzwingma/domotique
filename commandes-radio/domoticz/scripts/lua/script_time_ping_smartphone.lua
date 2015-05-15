@@ -1,6 +1,6 @@
 commandArray = {}
-print(" Debut ping Smartphone V ")
-ping_success=os.execute('ping -c1 192.168.1.67')
+print(" Debut ping Smartphone V (" .. uservariables["IP_Smartphone_V"] .. ")")
+ping_success=os.execute('ping -c1 ' .. uservariables["IP_Smartphone_V"])
 if ping_success then
 	print("ping Smartphone V success")
      if ( otherdevices['Smartphone V'] == 'Off') then
