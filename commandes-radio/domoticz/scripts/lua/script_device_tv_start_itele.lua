@@ -1,14 +1,17 @@
 commandArray = {}
 if ( devicechanged['Freebox Player'] == 'On' ) then
-	print("*	Démarrage de la télévision	*")
+	print("[TV] 	Démarrage de la télévision")
 	-- Test de la variable
 	freeboxCode = uservariables["freebox_code"]
 	freeboxChannel = uservariables["freebox_channel"]
-	if( freeboxCode == nil or freeboxChannel == nil ) then
-		print("[TV][ERREUR] Les variables {freebox_code} et {freebox_channel} ne sont pas définies dans Domoticz")
+	scriptShDir = uservariables["script_sh_dir"]
+	if( freeboxCode == nil or freeboxChannel == nil or scriptShDir == nil ) then
+		print("[TV][ERREUR] Les variables {freebox_code} et {freebox_channel} ou {scriptShDir} ne sont pas définies dans Domoticz")
 		return 512
 	else
-		print("[TV] 	Appel du script  ~/appli/domoticz/scripts/bash/script_commandes_tv_start_itele.sh " .. freeboxCode .. " " .. freeboxChannel)
+		scriptName = "script_commandes_tv_start_itele.sh"
+		print("[TV] 	Appel du script  " .. scriptShDir .. "/" .. scriptName .. " " .. freeboxCode .. " " .. freeboxChannel)
+		os.execute("nohup sh " .. scriptShDir .. "/" .. scriptName .. " " .. freeboxCode .. " " .. freeboxChannel .. " >> " .. scriptShDir .. "/../logs/script_commandes_tv_start_itele.log &")
 	end	
 end 
 return commandArray
