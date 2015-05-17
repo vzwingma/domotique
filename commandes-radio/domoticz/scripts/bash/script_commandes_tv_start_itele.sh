@@ -26,12 +26,12 @@ callUrlFreebox() {
 	fi
 	
 	echo "$(timestamp) [TV] Appel de l'URL : [$url]"
-#	curl $url
+		curl $url
 	
 	if [ "$tempo" > 0 ] 
 	then
 		echo "$(timestamp) [TV]    Tempo de $tempo secondes";
-#		sleep $tempo;
+		sleep $tempo;
 	fi
 }
 
