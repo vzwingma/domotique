@@ -1,5 +1,5 @@
 commandArray = {}
-print("Tests de présence des smartphones (" .. uservariables["IP_Smartphone_V"] .. ") & (" .. uservariables["IP_Smartphone_S"] .. ")")
+print("	Tests de présence des smartphones (" .. uservariables["IP_Smartphone_V"] .. ") & (" .. uservariables["IP_Smartphone_S"] .. ")")
 ping_success=os.execute('ping -c1 ' .. uservariables["IP_Smartphone_V"])
 if ping_success then
 	print("  ping Smartphone V OK")
