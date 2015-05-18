@@ -1,49 +1,77 @@
 #!/bin/bash
 
 
-freeboxCode=$1
-appToken=Fj7sTpT/iLpNiB6kA9owGJ143ryRKz5U6ETWlEY9ofoTF0pB0OYv7QrRwwM1ufI/
-appId=domotique.box
-
-apiv3=http://mafreebox.freebox.fr/api/v3
-
-# Date
+# Fonction Date pour les logs
 timestamp() {
   date +"%d/%m/%y %T"
 }
 
+if [ $# -lt 7 ]
+then
+    echo "$(timestamp) [FREEBOX] Le script requiert 6 paramètres dans les UserVariables de Domoticz : "
+	echo "$(timestamp) [FREEBOX] - freebox_appid		: id applicatif défini lors de l'enregistrement de l'application dans FreeboxOS"
+	echo "$(timestamp) [FREEBOX] - freebox_apptoken		: token applicatif créé lors de l'enregistrement de l'application dans FreeboxOS"
+	echo "$(timestamp) [FREEBOX] - freebox_id_Smartphone_V	: id du périphérique Smartphone V" 
+	echo "$(timestamp) [FREEBOX] - interrupteur_id_Smartphone_V : id de l'interrupteur correspondant dans Domoticz "
+	echo "$(timestamp) [FREEBOX] - freebox_id_Smartphone_S		: id du périphérique Smartphone S" 
+	echo "$(timestamp) [FREEBOX] - interrupteur_id_Smartphone_S : id de l'interrupteur correspondant dnas Domoticz"
+	echo "$(timestamp) [FREEBOX] - domoticz_basic_auth : login/mdp en Basic Authentication pour les appels vers Domoticz"
+    exit 1
+fi
+
+freebox_appid=$1
+freebox_apptoken=$2
+# Hook car Domoticz ajoute index.html dans la variable freebox_apptoken 
+freebox_apptoken=${freebox_apptoken//index.html/}
+freebox_id_Smartphone_V=$3
+freebox_id_Smartphone_V=${freebox_id_Smartphone_V//\"/}
+interrupteur_id_Smartphone_V=$4
+freebox_id_Smartphone_S=$5
+freebox_id_Smartphone_S=${freebox_id_Smartphone_S//\"/}
+interrupteur_id_Smartphone_S=$6
+domoticz_basic_auth=$7
+
+# Init des variables
+statut_smartphone_V="Off"
+statut_smartphone_S="Off"
+
+sessionToken=""
+apiFreeboxv3=http://mafreebox.freebox.fr/api/v3
+apiDomoticz="http://localhost:8080/json.htm?type=command&param=switchlight&level=0" # &idx=16&switchcmd=On
+
+
+# Fonction log
 log() {
 	echo "$(timestamp) [FREEBOX] $1";
 }
 
-jsonValue() {
-	KEY=$1
-	num=$2
-	awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
-}
 
-sessionToken=""
+# Fonction de connexion à la Freebox pour récupérer le sessionToken
 connectToFreebox(){
-log "Connexion à la Freebox"
-# Appel de login pour charger le challenge
-	DATA=`curl -s $apiv3/login`
-#	log $DATA
+	log "Connexion à la Freebox"
+		# Appel de login pour charger le challenge
+		DATA=`curl -s $apiFreeboxv3/login`
+		# Résultat de l'appel Login
+		# log $DATA
 
-	challenge=`echo $DATA | jsonValue challenge 1`
-	challenge=${challenge//\\/}
+		challenge=`echo $DATA | jq '.result.challenge'`
+		challenge=${challenge//\\/}
+		challenge=${challenge//\"/}
 	log "  Challenge : $challenge"
 
-log "Calcul HMAC SHA1"
-	log "  AppToken : $appToken"
-	password=`echo -n $challenge | openssl dgst -sha1 -hmac $appToken | cut -c10-200`
+	log "Calcul HMAC SHA1"
+	log "  AppToken : $freebox_apptoken"
+		password=`echo -n $challenge | openssl dgst -sha1 -hmac $freebox_apptoken | cut -c10-200`
 	log "  Password : $password"
 
-# Connect
-	DATA=`curl -s -H "Content-Type: application/json" -X POST -d '{ "app_id": "'$appId'","password": "'$password'" }' $apiv3/login/session/`
-#	log $DATA
+	# Connect
+	DATA=`curl -s -H "Content-Type: application/json" -X POST -d '{ "app_id": "'$freebox_appid'","password": "'$password'" }' $apiFreeboxv3/login/session/`
+	#	connexion à la session
+	#	log $DATA
 
-	sessionToken=`echo $DATA | jsonValue session_token 1`
-	sessionToken=${sessionToken//\\/}
+		sessionToken=`echo $DATA | jq '.result.session_token'`
+		sessionToken=${sessionToken//\\/}
+		sessionToken=${sessionToken//\"/}
 	log "  Session Token : $sessionToken"
 }
 
@@ -55,8 +83,51 @@ log "Statuts des périphériques réseau Freebox";
 
 # Connexion à la freebox
 connectToFreebox
-DATA=`curl -s -H "Content-Type: application/json" -H "X-Fbx-App-Auth: "$sessionToken -X GET $apiv3/lan/browser/pub/`
-log $DATA
-echo $DATA | jsonValue type 1
+# Appel sur la liste des périphériques
+log "Recherche des périphériques connus de la Freebox"
+DATA=`curl -s -H "Content-Type: application/json" -H "X-Fbx-App-Auth: "$sessionToken -X GET $apiFreeboxv3/lan/browser/pub/`
 
-log "FIN";
+# Simplification des résultats sous forme d'un arbre JSON {nom/type/reachable/active} pour chaque resultat
+DATA=`echo $DATA | jq '[.result | .[] | {active : .active, reachable : .reachable, type : .host_type, nom : .names[0].name, id : .id}]'`
+# log $DATA
+# Liste des résultats
+size=`echo $DATA | jq '. | length'`
+
+log "  Nombre de périphériques :  $size"
+
+i=1
+while [ "$i" -le "$size" ]
+do
+	type=`echo $DATA | jq '.['$i'].type'`
+	type=${type//\"/}
+	reachable=`echo $DATA | jq '.['$i'].reachable'`
+  	active=`echo $DATA | jq '.['$i'].active'`
+	id=`echo $DATA | jq '.['$i'].id'`
+	id=${id//\"/}
+
+	if [[ "$reachable" = true && "$active" = true && "$type" == "smartphone" ]]
+	then
+		if [ "$id" == "$freebox_id_Smartphone_V" ] 
+		then
+			log "> Le smartphone V est connecté"
+			statut_smartphone_V="On"
+		elif [ "$id" == "$freebox_id_Smartphone_S" ]
+		then
+			log "> Le smartphone S est connecté"
+			statut_smartphone_S="On"
+		fi
+fi
+	i=$(($i+1))
+done
+
+log " Envoi des statuts des smartphones dans Domoticz"
+	url=$apiDomoticz"&idx="$interrupteur_id_Smartphone_V"&switchcmd="$statut_smartphone_V
+	log "  Appel de $url"
+	resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
+	log "  > $resultat"
+	url=$apiDomoticz"&idx="$interrupteur_id_Smartphone_S"&switchcmd="$statut_smartphone_S
+	log "  Appel de $url"
+	resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
+	log "  > $resultat"
+	
+log "FIN"
