@@ -19,10 +19,7 @@ else
 
 	scriptName="script_commandes_freebox_network_status.sh"
 	print("[FREEBOX] Appel du script " .. scriptName .. " \"" .. freebox_appid .. "\" \"###APPTOKEN###\" " .. freebox_id_Smartphone_V .. " " .. interrupteur_id_Smartphone_V .. " " .. freebox_id_Smartphone_S .. " " .. interrupteur_id_Smartphone_S .. " ###BasicAuthentication###")
-	resultat=os.execute(scriptShDir .. "/" .. scriptName .. " \"" .. freebox_appid .. "\" \"" .. freebox_apptoken .. "\" " .. freebox_id_Smartphone_V .. " " .. interrupteur_id_Smartphone_V .. " " .. freebox_id_Smartphone_S .. " " .. interrupteur_id_Smartphone_S .. " \"" .. domoticz_basic_auth.. "\" >> " .. scriptShDir .. "/../logs/script_commandes_freebox_network_status.log")
-	if resultat ~= true then
-		print("[FREEBOX][ERREUR] L'appel au script a échoué")
-	end
+	os.execute("nohup " .. scriptShDir .. "/" .. scriptName .. " \"" .. freebox_appid .. "\" \"" .. freebox_apptoken .. "\" " .. freebox_id_Smartphone_V .. " " .. interrupteur_id_Smartphone_V .. " " .. freebox_id_Smartphone_S .. " " .. interrupteur_id_Smartphone_S .. " \"" .. domoticz_basic_auth.. "\" >> " .. scriptShDir .. "/../logs/script_commandes_freebox_network_status.log &")
 end
 
 return commandArray
