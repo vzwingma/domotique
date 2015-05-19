@@ -127,14 +127,14 @@ log " Recherche des statuts actuels des interrupteurs"
 	DATA=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
 	statut_actuel_V=`echo $DATA | jq '.result[0].Status'`
 	statut_actuel_V=${statut_actuel_V//\"/}
-	log "  > $statut_actuel_V"
+	log "  > $statut_actuel_V =? $statut_smartphone_V"
 
 	url=$apiDomoticz"type=devices&rid="$interrupteur_id_Smartphone_S
 	log "  Appel de $url"
-	resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
+	DATA=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
 	statut_actuel_S=`echo $DATA | jq '.result[0].Status'`
 	statut_actuel_S=${statut_actuel_S//\"/}
-	log "  > $statut_actuel_S"
+	log "  > $statut_actuel_S =? $statut_smartphone_S"
 	
 	
 log " Envoi des statuts des smartphones dans Domoticz"
