@@ -145,7 +145,7 @@ log " Envoi des statuts des smartphones dans Domoticz"
 		resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
 		log "  > $resultat"
 	fi
-	if [ "$statut_smartphone_V" != "$statut_actuel_S" ] 
+	if [ "$statut_smartphone_S" != "$statut_actuel_S" ] 
 	then
 		url=$apiDomoticz"type=command&param=switchlight&level=0&idx="$interrupteur_id_Smartphone_S"&switchcmd="$statut_smartphone_S
 		log "  Appel de $url"
