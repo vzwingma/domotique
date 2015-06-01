@@ -6,15 +6,14 @@ timestamp() {
   date +"%d/%m/%y %T"
 }
 
-if [ $# -lt 7 ]
+if [ $# -lt 6 ]
 then
     echo "$(timestamp) [FREEBOX] Le script requiert 6 paramètres dans les UserVariables de Domoticz : "
 	echo "$(timestamp) [FREEBOX] - freebox_appid		: id applicatif défini lors de l'enregistrement de l'application dans FreeboxOS"
 	echo "$(timestamp) [FREEBOX] - freebox_apptoken		: token applicatif créé lors de l'enregistrement de l'application dans FreeboxOS"
 	echo "$(timestamp) [FREEBOX] - freebox_id_Smartphone_V	: id du périphérique Smartphone V" 
-	echo "$(timestamp) [FREEBOX] - interrupteur_id_Smartphone_V : id de l'interrupteur correspondant dans Domoticz "
-	echo "$(timestamp) [FREEBOX] - freebox_id_Smartphone_S		: id du périphérique Smartphone S" 
-	echo "$(timestamp) [FREEBOX] - interrupteur_id_Smartphone_S : id de l'interrupteur correspondant dnas Domoticz"
+	echo "$(timestamp) [FREEBOX] - freebox_id_Smartphone_S	: id du périphérique Smartphone S" 
+	echo "$(timestamp) [FREEBOX] - interrupteur_id_alarme : id de l'interrupteur correspondant dans Domoticz"
 	echo "$(timestamp) [FREEBOX] - domoticz_basic_auth : login/mdp en Basic Authentication pour les appels vers Domoticz"
     exit 1
 fi
@@ -25,16 +24,15 @@ freebox_apptoken=$2
 freebox_apptoken=${freebox_apptoken//index.html/}
 freebox_id_Smartphone_V=$3
 freebox_id_Smartphone_V=${freebox_id_Smartphone_V//\"/}
-interrupteur_id_Smartphone_V=$4
-freebox_id_Smartphone_S=$5
+freebox_id_Smartphone_S=$4
 freebox_id_Smartphone_S=${freebox_id_Smartphone_S//\"/}
-interrupteur_id_Smartphone_S=$6
-domoticz_basic_auth=$7
+interrupteur_id_alarme=$5
+domoticz_basic_auth=$6
 
 # Init des variables
-statut_smartphone_V="Off"
-statut_smartphone_S="Off"
-
+statut_smartphone_V=false
+statut_smartphone_S=false
+statut_alarme="On"
 sessionToken=""
 apiFreeboxv3=http://mafreebox.freebox.fr/api/v3
 apiDomoticz="http://localhost:8080/json.htm?" # switchlight&level=0&idx=16&switchcmd=On
@@ -110,44 +108,30 @@ do
 		if [ "$id" == "$freebox_id_Smartphone_V" ] 
 		then
 			log "	> Le smartphone V est connecté"
-			statut_smartphone_V="On"
+			statut_alarme="Off"
 		elif [ "$id" == "$freebox_id_Smartphone_S" ]
 		then
 			log "	> Le smartphone S est connecté"
-			statut_smartphone_S="On"
+			statut_alarme="Off"
 		fi
 fi
 	i=$(($i+1))
 done
 
-log " Recherche des statuts actuels des interrupteurs"
 
-	url=$apiDomoticz"type=devices&rid="$interrupteur_id_Smartphone_V
+log " Recherche des statuts actuels de l'interrupteur Alarme"
+
+	url=$apiDomoticz"type=devices&rid="$interrupteur_id_alarme
 	log "  Appel de $url"
 	DATA=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
-	statut_actuel_V=`echo $DATA | jq '.result[0].Status'`
-	statut_actuel_V=${statut_actuel_V//\"/}
-	log "  > $statut_actuel_V =? $statut_smartphone_V"
-
-	url=$apiDomoticz"type=devices&rid="$interrupteur_id_Smartphone_S
-	log "  Appel de $url"
-	DATA=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
-	statut_actuel_S=`echo $DATA | jq '.result[0].Status'`
-	statut_actuel_S=${statut_actuel_S//\"/}
-	log "  > $statut_actuel_S =? $statut_smartphone_S"
+	statut_actuel_Interrupteur=`echo $DATA | jq '.result[0].Status'`
+	statut_actuel_Interrupteur=${statut_actuel_Interrupteur//\"/}
+	log "  > $statut_actuel_Interrupteur =? $statut_alarme"
 	
-	
-log " Envoi des statuts des smartphones dans Domoticz"
-	if [ "$statut_smartphone_V" != "$statut_actuel_V" ] 
+	if [ "$statut_alarme" != "$statut_actuel_Interrupteur" ] 
 	then
-		url=$apiDomoticz"type=command&param=switchlight&level=0&idx="$interrupteur_id_Smartphone_V"&switchcmd="$statut_smartphone_V
-		log "  Appel de $url"
-		resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
-		log "  > $resultat"
-	fi
-	if [ "$statut_smartphone_S" != "$statut_actuel_S" ] 
-	then
-		url=$apiDomoticz"type=command&param=switchlight&level=0&idx="$interrupteur_id_Smartphone_S"&switchcmd="$statut_smartphone_S
+		log " Envoi du statut de l'alarme dans Domoticz"	
+		url=$apiDomoticz"type=command&param=switchlight&level=0&idx="$interrupteur_id_alarme"&switchcmd="$statut_alarme
 		log "  Appel de $url"
 		resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
 		log "  > $resultat"
