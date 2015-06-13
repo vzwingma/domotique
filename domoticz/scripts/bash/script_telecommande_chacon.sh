@@ -17,12 +17,16 @@ timestamp() {
   date +"%d/%m/%y %T"
 }
 
-echo  "">> $DOMOTICZ_DIR/logs/telecommandeChacon.log
-echo  "$(timestamp) [DI/O] Ecriture sur le pin [$pin] " >> $DOMOTICZ_DIR/logs/telecommandeChacon.log
-echo  "$(timestamp) [DI/O]  Commande $onoff" >> $DOMOTICZ_DIR/logs/telecommandeChacon.log 
+daystamp() {
+  date +"%a"
+}
 
-for b in 1 2
+echo  "">> $DOMOTICZ_DIR/logs/script_telecommande_chacon.log
+echo  "$(timestamp) [DI/O] Ecriture sur le pin [$pin] " >> $DOMOTICZ_DIR/logs/script_telecommande_chacon_$(daystamp).log
+echo  "$(timestamp) [DI/O]  Commande $onoff" >> $DOMOTICZ_DIR/logs/script_telecommande_chacon_$(daystamp).log 
+
+for b in 1 2 3 4 5
 do
-   sudo $RADIO_DIR/radioEmission $pin $telecommande $bouton $onoff >> $DOMOTICZ_DIR/logs/telecommandeChacon.log
+   sudo $RADIO_DIR/radioEmission $pin $telecommande $bouton $onoff >> $DOMOTICZ_DIR/logs/script_telecommande_chacon_$(daystamp).log
 done
-echo  "$(timestamp) [DI/O] Fin de la commande" >> $DOMOTICZ_DIR/logs/telecommandeChacon.log
+echo  "$(timestamp) [DI/O] Fin de la commande" >> $DOMOTICZ_DIR/logs/script_telecommande_chacon_$(daystamp).log
