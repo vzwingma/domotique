@@ -184,7 +184,7 @@ int main (int argc, char** argv)
 
 	scheduler_realtime();
 
-	log(">>>*<<<");
+//	log(">>>*<<<");
 	pin = atoi(argv[1]);
 	sender = atoi(argv[2]);
 	interruptor = atoi(argv[3]);
@@ -201,7 +201,7 @@ int main (int argc, char** argv)
 
     }
     pinMode(pin, OUTPUT);
-	log("   Pin GPIO correctement configure en sortie");
+//	log("   Pin GPIO correctement configure en sortie");
 
 	itob(sender,26);            // conversion du code de l'emetteur (ici 8217034) en code binaire
 	itobInterruptor(interruptor,4);
@@ -221,7 +221,7 @@ int main (int argc, char** argv)
 		 delay(10);                // attendre 10 ms (sinon le socket nous ignore)
 	 }
 	}
-	 log("<<<*>>>");    // execution terminée.
+//      log("<<<*>>>");    // execution terminée.
 	scheduler_standard();
 }
 
