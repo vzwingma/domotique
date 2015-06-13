@@ -12,7 +12,7 @@ if ( devicechanged['Freebox Player'] == 'On' ) then
 		scriptName = "script_commandes_tv_start_itele.sh"
 		datelog=os.date("%a")
 		print("[TV] 	Appel du script  " .. scriptShDir .. "/" .. scriptName .. " " .. freeboxCode .. " " .. freeboxChannel)
-		os.execute("nohup sh " .. scriptShDir .. "/" .. scriptName .. " " .. freeboxCode .. " " .. freeboxChannel .. " >> " .. scriptShDir .. "/../logs/script_commandes_tv_start_itele_" .. datelog .. ".log" &")
+		os.execute("nohup sh " .. scriptShDir .. "/" .. scriptName .. " " .. freeboxCode .. " " .. freeboxChannel .. " >> " .. scriptShDir .. "/../logs/script_commandes_tv_start_itele_" .. datelog .. ".log &")
 		print("[TV] Les logs sont dans logs/script_commandes_tv_start_itele_" .. datelog .. ".log")
 	end	
 end 
