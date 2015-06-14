@@ -36,7 +36,7 @@ callUrlFreebox() {
 }
 
 # Démarrage
-callUrlFreebox $freeboxCode "power" false 30
+# callUrlFreebox $freeboxCode "power" false 30 / Plus d'appel à power puisqu'elle démarre automatiquement avec l'interrupteur
 # CanalSat	
 callUrlFreebox $freeboxCode "down" false 1
 callUrlFreebox $freeboxCode "down" false 1

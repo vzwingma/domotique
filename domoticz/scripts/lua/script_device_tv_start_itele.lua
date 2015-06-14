@@ -1,3 +1,4 @@
+#!/usr/bin/lua
 commandArray = {}
 if ( devicechanged['Freebox Player'] == 'On' ) then
 	print("[TV] 	Démarrage de la télévision")
