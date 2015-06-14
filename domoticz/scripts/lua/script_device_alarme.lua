@@ -7,11 +7,15 @@ scriptShDir = uservariables["script_sh_dir"]
 
 -- Fonction d'envoi de SMS via l'API Freebox mobile
 function envoiSMS (message)
-	print("[ALARME] Envoi du sms '" .. message .. "' avec le user " .. freeboxSMSUser)
-	datelog=os.date("%a")
-	
-	freeboxSMS_API_URL = "https://smsapi.free-mobile.fr/sendmsg?"
-    os.execute("curl '".. freeboxSMS_API_URL .. "user=" .. freeboxSMSUser .. "&pass=" .. freeboxSMSPass .. "&msg=" .. message .. "' >> " .. scriptShDir .. "/../logs/script_device_alarme_" .. datelog .. ".log")
+	if( freeboxSMSUser == nil or freeboxSMSPass == nil or scriptShDir == nil) then
+		print("[ALARME] ERREUR les variables [free_sms_user] [free_sms_pass] et [script_sh_dir] ne sont pas toutes définies dans Domoticz. Impossible d'envoyer de SMS")
+	else
+		print("[ALARME] Envoi du sms '" .. message .. "' avec le user " .. freeboxSMSUser)
+		datelog=os.date("%a")
+		
+		freeboxSMS_API_URL = "https://smsapi.free-mobile.fr/sendmsg?"
+		os.execute("curl '".. freeboxSMS_API_URL .. "user=" .. freeboxSMSUser .. "&pass=" .. freeboxSMSPass .. "&msg=" .. message .. "' >> " .. scriptShDir .. "/../logs/script_device_alarme_" .. datelog .. ".log")
+	end
 end
 
 
