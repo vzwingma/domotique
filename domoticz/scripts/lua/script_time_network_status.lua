@@ -17,7 +17,7 @@ else
 	print("[FREEBOX] Test de présence des smartphones (" .. uservariables["freebox_id_Smartphone_V"] .. ") & (" .. uservariables["freebox_id_Smartphone_S"] .. ")")
 
 	scriptName="script_commandes_freebox_network_status.sh"
-	print("[FREEBOX] Appel du script " .. scriptName .. " \"" .. freebox_appid .. "\" \"###APPTOKEN###\" " .. freebox_id_Smartphone_V .. " " .. freebox_id_Smartphone_S .. " " .. interrupteur_id_alarme .. " ###BasicAuthentication###")
+	-- print("[FREEBOX] Appel du script " .. scriptName .. " '" .. freebox_appid .. "' '#APPTOKEN#' " .. freebox_id_Smartphone_V .. " " .. freebox_id_Smartphone_S .. " " .. interrupteur_id_alarme .. " #BasicAuthentication#")
 	datelog=os.date("%a")
 	
 	os.execute("nohup " .. scriptShDir .. "/" .. scriptName .. " \"" .. freebox_appid .. "\" \"" .. freebox_apptoken .. "\" " .. freebox_id_Smartphone_V .. " " .. freebox_id_Smartphone_S .. " " .. interrupteur_id_alarme .. " \"" .. domoticz_basic_auth.. "\" >> " .. scriptShDir .. "/../logs/script_commandes_freebox_network_status_" .. datelog .. ".log &")
