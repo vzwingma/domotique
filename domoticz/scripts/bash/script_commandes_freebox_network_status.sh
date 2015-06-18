@@ -36,7 +36,10 @@ statut_alarme="On"
 sessionToken=""
 apiFreeboxv3=http://mafreebox.freebox.fr/api/v3
 apiDomoticz="http://localhost:8080/json.htm?" # switchlight&level=0&idx=16&switchcmd=On
-
+# Compteur alarme
+varname_nb_out="interrupteur_nb_smartphone_out"
+interrupteur_nb_smartphone_out=0
+alarme_seuil=5
 
 # Fonction log
 log() {
@@ -73,15 +76,33 @@ connectToFreebox(){
 	log "  Session Token : $sessionToken"
 }
 
+# Recherche du compteur avant alarme
+getNbSmartphonesOut(){
+	interrupteur_nb_smartphone_out=`cat /tmp/$varname_nb_out.tmp`
+	if [ "$interrupteur_nb_smartphone_out" == "" ]
+	then
+		interrupteur_nb_smartphone_out=0
+	fi
+	return $interrupteur_nb_smartphone_out
+}
 
-echo ""
-echo ""
+# Envoi du statut de l'alarme
+sendStatutAlarme(){
+	log " Envoi du statut de l'alarme dans Domoticz"	
+	url=$apiDomoticz"type=command&param=switchlight&level=0&idx="$interrupteur_id_alarme"&switchcmd="$statut_alarme
+	log "  Appel de $url"
+	resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
+	log "  > $resultat"	
+	rm -f /tmp/$varname_nb_out.tmp
+}
+
 echo ""
 log "Statuts des périphériques réseau Freebox";
 
 # Connexion à la freebox
 connectToFreebox
 # Appel sur la liste des périphériques
+log ""
 log "Recherche des périphériques connus de la Freebox"
 DATA=`curl -s -H "Content-Type: application/json" -H "X-Fbx-App-Auth: "$sessionToken -X GET $apiFreeboxv3/lan/browser/pub/`
 
@@ -118,23 +139,36 @@ fi
 	i=$(($i+1))
 done
 
-
+log ""
 log " Recherche des statuts actuels de l'interrupteur Alarme"
 
-	url=$apiDomoticz"type=devices&rid="$interrupteur_id_alarme
-	log "  Appel de $url"
-	DATA=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
+	urlStatut=$apiDomoticz"type=devices&rid="$interrupteur_id_alarme
+#	log "  Appel de $urlStatut"
+	DATA=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $urlStatut`
 	statut_actuel_Interrupteur=`echo $DATA | jq '.result[0].Status'`
 	statut_actuel_Interrupteur=${statut_actuel_Interrupteur//\"/}
 	log "  > $statut_actuel_Interrupteur =? $statut_alarme"
 	
+	
 	if [ "$statut_alarme" != "$statut_actuel_Interrupteur" ] 
 	then
-		log " Envoi du statut de l'alarme dans Domoticz"	
-		url=$apiDomoticz"type=command&param=switchlight&level=0&idx="$interrupteur_id_alarme"&switchcmd="$statut_alarme
-		log "  Appel de $url"
-		resultat=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $url`
-		log "  > $resultat"
-	fi
+		# Si changement de statut et qu'il est à On : On compte 5 (minutes) avant de faire réellement le changement
+		if [ "$statut_alarme" == "On" ] 
+		then
+			getNbSmartphonesOut
+			interrupteur_nb_smartphone_out=$((interrupteur_nb_smartphone_out+1))
+			log "  > Compteur de mise en alarme = $interrupteur_nb_smartphone_out / $alarme_seuil"
+
+			if [ "$interrupteur_nb_smartphone_out" == "$alarme_seuil" ]
+			then
+				log "** Activation de l'alarme **"
+				# Envoi du statut de l'alarme dans Domoticz
+				sendStatutAlarme	
+			fi
 	
+		else
+			# Changement à Off : Immédiat
+			sendStatutAlarme		
+		fi
+	fi
 log "FIN"

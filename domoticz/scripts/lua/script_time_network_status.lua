@@ -1,5 +1,5 @@
 commandArray = {}
-print("[FREEBOX] Statuts des périphériques réseau Freebox")
+-- print("[FREEBOX] Statuts des périphériques réseau Freebox")
 
 scriptShDir = uservariables["script_sh_dir"]
 
