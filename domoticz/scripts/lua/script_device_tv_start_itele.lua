@@ -40,7 +40,7 @@ end
 -- @param appuilong : appui long ? 
 -- @param tempo : tempo d'après la commande en seconde
 function callUrlFreebox(freeboxCode, key, appuilong, tempo)
-	url="http://hd1.freebox.fr/pub/remote_control?code=" .. freeboxCode .. "\&key=" .. key
+	url="http://hd1.freebox.fr/pub/remote_control?code=" .. freeboxCode .. "\\&key=" .. key
 	if( appuilong == true ) then
 		url=url .. "\&long=true"
 	end
