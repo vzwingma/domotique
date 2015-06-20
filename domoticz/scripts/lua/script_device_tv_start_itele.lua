@@ -40,13 +40,13 @@ end
 -- @param appuilong : appui long ? 
 -- @param tempo : tempo d'après la commande en seconde
 function callUrlFreebox(freeboxCode, key, appuilong, tempo)
-	url="http://hd1.freebox.fr/pub/remote_control?code=" .. freeboxCode .. "\\&key=" .. key
+	url="http://hd1.freebox.fr/pub/remote_control?code=" .. freeboxCode .. "&key=" .. key
 	if( appuilong == true ) then
-		url=url .. "\&long=true"
+		url=url .. "&long=true"
 	end
 	
 	log("Appel de l'URL : [" .. url .. "]")
-	os.execute("curl ".. url)
+	os.execute("curl '".. url .. "'")
 	
 	if( tempo > 0 ) then
 		log("  Tempo de " .. tempo .. " secondes")
@@ -64,9 +64,8 @@ if ( devicechanged['Freebox Player'] == 'On' ) then
 	-- Test de la variable
 	freeboxCode = uservariables["freebox_code"]
 	freeboxChannel = uservariables["freebox_channel"]
-	scriptShDir = uservariables["script_sh_dir"]
-	if( freeboxCode == nil or freeboxChannel == nil or scriptShDir == nil ) then
-		error("[ERREUR] Les variables {freebox_code} et {freebox_channel} ou {scriptShDir} ne sont pas définies dans Domoticz")
+	if( freeboxCode == nil or freeboxChannel == nil ) then
+		error("[ERREUR] Les variables {freebox_code} et {freebox_channel} ne sont pas définies dans Domoticz")
 		return 512
 	else
 		-- Lancement de la commande télé dans une coroutine
