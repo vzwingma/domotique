@@ -17,11 +17,7 @@ timestamp() {
   date +"%d/%m/%y %T"
 }
 
-daystamp() {
-  date +"%a"
-}
-
-SCRIPT_LOG_DIR="$DOMOTICZ_DIR/logs/script_telecommande_chacon_$(daystamp)log"
+SCRIPT_LOG_DIR="$DOMOTICZ_DIR/logs/script_telecommande_chacon.log"
 
 echo  "">> $SCRIPT_LOG_DIR
 echo  "$(timestamp) [DI/O] Ecriture sur le pin [$pin] " >> $SCRIPT_LOG_DIR
