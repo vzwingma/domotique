@@ -158,7 +158,7 @@ log " Recherche des statuts actuels de l'interrupteur Alarme"
 			getNbSmartphonesOut
 			interrupteur_nb_smartphone_out=$((interrupteur_nb_smartphone_out+1))
 			log "  > Compteur de mise en alarme = $interrupteur_nb_smartphone_out / $alarme_seuil"
-
+			echo $interrupteur_nb_smartphone_out > /tmp/$varname_nb_out.tmp
 			if [ "$interrupteur_nb_smartphone_out" == "$alarme_seuil" ]
 			then
 				log "** Activation de l'alarme **"
