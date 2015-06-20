@@ -112,8 +112,7 @@ function updateAlarmeStatus(etat_peripheriques)
 	local SEUIL_ALARME = 5
 	local TMPDIR_COMPTEUR_OUT = "/tmp/compteur_smartphone_out.tmp"
 	-- Activation de l'alarme au bout de 5 min
-	etat_peripheriques = false
-	
+
 	if(not etat_peripheriques and etatActuelAlarme == "Off") then
 		compteurOff=readAll(TMPDIR_COMPTEUR_OUT)
 		if(compteurOff == "") then
@@ -156,10 +155,3 @@ else
 end
 
 return commandArray
-
-
-
-
-
-
-
