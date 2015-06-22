@@ -27,7 +27,7 @@ function commandeTeleCanalSat(freeboxCode, freeboxChannel)
 	for i=1,size,1 
 	do
 		touche=string.sub(freeboxChannel, i, i)
-		callUrlFreebox(freeboxCode, touche, false, 0.5)
+		callUrlFreebox(freeboxCode, touche, true, 0.5)
 	end
 end
 
