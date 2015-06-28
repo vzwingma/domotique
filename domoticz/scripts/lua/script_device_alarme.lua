@@ -28,6 +28,8 @@ end
 
 -- print("[ALARME] Vérification du statut de l'alarme")
 -- Activation de l'alarme : Arrêt de la tv & lampe
+	now=os.date("%H%M")
+
 if ( devicechanged['Alarme'] == 'On' ) then
 
 	log("Activation de l'alarme")
@@ -38,7 +40,6 @@ if ( devicechanged['Alarme'] == 'On' ) then
 	-- Désactivation de l'alarme 
 elseif ( devicechanged['Alarme'] == 'Off' ) then
 	log("Désactivation de l'alarme")
-	now=os.date("%H%M")
 	-- En journée : Allumage de la télévision
 	if( now <= "2230" and now >= "0700" ) then
 		envoiSMS("Alarme désactivée - Bonjour")
@@ -48,5 +49,11 @@ elseif ( devicechanged['Alarme'] == 'Off' ) then
 		envoiSMS("Alarme désactivée - Bonne nuit")
 		commandArray['Scene:Bonne nuit'] = 'On'
 	end
+elseif( otherdevices['Alarme'] == 'On' and now == '0000') then
+	-- En soirée et alarme. Arrêt de tous les interrupteurs
+	envoiSMS("Alarme activée - Arrêt global")
+	commandArray['Lampe Chambre'] = 'Off'
+	commandArray['Interrupteur Cuisine'] = 'Off'
+	commandArray['Interrupteur Salon'] = 'Off'
 end
 return commandArray
