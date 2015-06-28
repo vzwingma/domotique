@@ -40,7 +40,7 @@ elseif ( devicechanged['Alarme'] == 'Off' ) then
 	log("Désactivation de l'alarme")
 	now=os.date("%H%M")
 	-- En journée : Allumage de la télévision
-	if( now <= "2230" ) then
+	if( now <= "2230" and now >= "0700" ) then
 		envoiSMS("Alarme désactivée - Bonjour")
 		commandArray['Scene:Démarrer télévision'] = 'On'
 	else
