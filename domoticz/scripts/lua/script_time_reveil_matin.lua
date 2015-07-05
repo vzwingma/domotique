@@ -15,7 +15,7 @@ function lancementReveil()
 		log(jour_courant .. " : Réveil à " .. heure_reveil)
 		-- print("[REVEIL]             == " .. heure_courante .. " ? " .. tostring((heure_courante == heure_reveil)))
 		
-		if( jour_courant == 'San' or jour_courant == 'Sat') then
+		if( jour_courant == 'Sun' or jour_courant == 'Sat') then
 			log("Annulation du réveil : C'est le week-end")
 		elseif(otherdevices['Alarme'] == 'On') then
 			log("Annulation du réveil : Personne n'est à la maison")
