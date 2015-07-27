@@ -41,7 +41,7 @@ end
 -- Fonction de la connexion à la Freebox
 -- Authentification pour récupérer le tokenDeSession
 function connectToFreebox()
-	log ("Connexion à la Freebox")
+	-- log ("Connexion à la Freebox")
 	local TMPDIR_CHALLENGE = "/tmp/challenge.tmp"
 	local TMPDIR_APPTOKEN =  "/tmp/apptoken.tmp"
 	local TMPDIR_SESSIONTOKEN =  "/tmp/sessiontoken.tmp"
@@ -142,7 +142,7 @@ if( freebox_apptoken == nil or freebox_appid == nil or freebox_id_Smartphone_V =
 else
 	log("Test de présence des smartphones (" .. uservariables["freebox_id_Smartphone_V"] .. ") & (" .. uservariables["freebox_id_Smartphone_S"] .. ")")
 
-	log("Chargement de la librairie JSON")
+	-- log("Chargement de la librairie JSON")
 	JSON = (loadfile "/home/pi/appli/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
 
 	-- Connexion à la freebox
