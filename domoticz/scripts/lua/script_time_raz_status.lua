@@ -42,8 +42,9 @@ if( otherdevices['Interrupteur Cuisine'] == 'On'  and (now == '00:00' or now == 
 	envoiSMS("Forçage OFF de l'interrupteur cuisine")
 	commandArray['Interrupteur Cuisine'] = 'Off'
 end
-if( otherdevices['Alarme'] == 'On' and now == '00:00') then
-	-- En soirée et alarme activée => Arrêt de tous les interrupteurs
+	-- En soirée et alarme activée => Arrêt de tous les interrupteurs ssi c'est nécessaire
+if( otherdevices['Alarme'] == 'On' and now == '00:00' and 
+	(commandArray['Lampe Chambre'] == 'On' or commandArray['Interrupteur Cuisine'] = 'On' or commandArray['Interrupteur Salon'] = 'On')) then
 	log("Alarme activée - Arrêt global")
 	envoiSMS("Alarme activée - Arrêt global")
 	commandArray['Lampe Chambre'] = 'Off'
