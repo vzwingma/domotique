@@ -21,6 +21,7 @@ function commandeTeleCanalSat(freeboxCode, freeboxChannel)
 	callUrlFreebox(freeboxCode, "down", false, 1)
 	callUrlFreebox(freeboxCode, "down", false, 1)
 	callUrlFreebox(freeboxCode, "down", false, 1)
+	callUrlFreebox(freeboxCode, "down", false, 1)
 	callUrlFreebox(freeboxCode, "ok", false, 10)
 	-- Découpage de la chaine en chiffre : appui long
 	size=string.len(freeboxChannel)
