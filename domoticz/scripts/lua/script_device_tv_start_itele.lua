@@ -71,8 +71,8 @@ if ( devicechanged['Freebox Player'] == 'On' ) then
 	else
 		-- Lancement de la commande télé dans une coroutine
 		co = coroutine.create(function ()
-					commandeTeleCanalSat(freeboxCode, freeboxChannel)
-				end
+			commandeTeleCanalSat(freeboxCode, freeboxChannel)
+			end
 		)
 		coroutine.resume(co)
 	end	
