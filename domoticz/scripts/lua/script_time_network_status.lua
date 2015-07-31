@@ -72,7 +72,13 @@ function connectToFreebox()
 	-- log("  Session Token : " .. session_token)
 end
 
-
+-- Fonction de la deconnexion à la Freebox
+function disconnectToFreebox()
+	local TMPDIR_DISCONNECT = "/tmp/challenge.tmp"
+	os.execute("curl -s -H \"X-Fbx-App-Auth: " .. session_token .. "\" -X POST " .. apiFreeboxv3 .. "/login/logout > " .. TMPDIR_DISCONNECT)
+	local disconnect = readAll(TMPDIR_DISCONNECT)
+	log("  Deconnexion Freebox API : " .. disconnect)
+end
 -- Fonction de recherche des périphériques connectés
 -- Connexion à lan/browser/pub/ pour lister les périphériques
 -- @param session_token : token de session Freebox
@@ -145,13 +151,14 @@ else
 	-- log("Chargement de la librairie JSON")
 	JSON = (loadfile "/home/pi/appli/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
 
-	-- Connexion à la freebox
+	-- Connexion à la Freebox
 	connectToFreebox()
 	-- Recherche des périphériques connectés
 	peripheriques_up = getPeripheriquesConnectes()
 	-- Mise à jour de l'alarme
 	updateAlarmeStatus(peripheriques_up)
-	log("FIN")
+	-- Déconnexion à la Freebox
+	disconnectToFreebox()
 end
 
 return commandArray
