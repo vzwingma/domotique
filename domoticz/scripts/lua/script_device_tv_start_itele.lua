@@ -18,7 +18,7 @@ function commandeTeleCanalSat(freeboxCode, freeboxChannel)
 	-- Démarrage
 	callUrlFreebox(freeboxCode, "power", false, 30)
 	-- CanalSat	
-	callUrlFreebox(freeboxCode, "down", false, 1)
+	-- callUrlFreebox(freeboxCode, "down", false, 1)
 	callUrlFreebox(freeboxCode, "down", false, 1)
 	callUrlFreebox(freeboxCode, "down", false, 1)
 	callUrlFreebox(freeboxCode, "down", false, 1)
