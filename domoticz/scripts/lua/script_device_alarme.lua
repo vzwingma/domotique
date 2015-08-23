@@ -49,5 +49,5 @@ elseif ( devicechanged['Alarme'] == 'Off' ) then
 		envoiSMS("Alarme désactivée - Bonne nuit")
 		commandArray['Scene:Bonne nuit'] = 'On'
 	end
-
+end
 return commandArray
