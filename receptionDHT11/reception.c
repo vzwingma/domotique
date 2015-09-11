@@ -71,7 +71,7 @@ int* read_dht11_dat()
 	}
 	else
 	{
-		printf( "Data not good, skip\n" );
+		printf( "[DHT11] Les données sont incorrectes. Recheche... \n" );
 	}
 }
  
@@ -92,7 +92,7 @@ int main( void )
 		
 		printf( "Humidite = %d.%d %%, Température = %d.%d *C \n",
 		dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3] );
-		printf("|%d|%d|", dht11_dat[2]*10 + dht11_dat[3] , dht11_dat[0] * 10 + dht11_dat[1]);
+//		printf("|%d|%d|", dht11_dat[2]*10 + dht11_dat[3] , dht11_dat[0] * 10 + dht11_dat[1]);
 		if(dht11_dat[0] > 0 && dht11_dat[2] > 0){
 			exit(0);
 		}
