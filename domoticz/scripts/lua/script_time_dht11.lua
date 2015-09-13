@@ -19,7 +19,7 @@ function readLine(file)
 		return ""
 	else
 		local content = f:read("*all")
-		log(content)
+		-- log(content)
 		f:close()
 		return content
 	end
@@ -50,6 +50,37 @@ function readFromDHT11()
 	return splitString(readLine(TMPDIR_DHT11), '|')
 end
 
+-- Controle des données
+function controlData(dht11hydro, dht11temp)
+
+	local oldvalues = splitString(otherdevices_svalues["DHT11"], ";")
+	local dht11_oldhydro = oldvalues[2]
+	local dht11_oldtemp = oldvalues[1]
+	log("Anciennes valeurs : Humidite = " .. dht11_oldhydro .. " %, Température = " .. dht11_oldtemp .. "°C")
+	
+	local deltaHydro = (dht11hydro - dht11_oldhydro)/dht11_oldhydro * 100
+	local deltaTemp = (dht11temp - dht11_oldtemp)/dht11_oldtemp * 100
+	
+	log("Delta Temp " .. deltaTemp .. "% / Humidite " .. deltaHydro .. "%")
+	
+	if(dht11hydro < 0 or dht11hydro > 100) then
+		error("[DHT11] La valeur d'humidité [" .. dht11hydro .. "] est incohérente. Annulation de la mesure")
+		return false
+	end
+	if(math.abs(deltaHydro) > 30) then
+		error("[DHT11] Le changement d'humidité [" .. deltaHydro .. "]% est incohérent (> 30%). Attention")
+		return true
+	end
+	if(dht11temp < 0 or dht11temp > 40) then
+		error("[DHT11] La valeur de température [" .. dht11temp .. "] est incohérente. Annulation de la mesure")
+		return false
+	end
+	if(math.abs(deltaTemp) > 30) then
+		error("[DHT11] Le changement de températeur[" .. deltaTemp .. "]% est incohérent (> 30%). Attention")
+		return true
+	end
+	return true
+end
 
 
 -- Boucle principale
@@ -58,10 +89,13 @@ if( id_dht11 == nil ) then
 	return 512
 else
 	local dht11Values = readFromDHT11()
-	dht11temp=dht11Values[2] / 10
-	dht11hydro=dht11Values[3] / 10
-	-- commande de mise à jour vers Domoticz
-	commandeTH=id_dht11 .. "|0|" .. dht11temp .. ";" .. dht11hydro .. ";1"
-	commandArray['UpdateDevice']=commandeTH
+	local dht11temp=dht11Values[2] / 10
+	local dht11hydro=dht11Values[3] / 10
+	log("                    Humidite = " .. dht11hydro .. " %, Température = " .. dht11temp .. "°C")
+	if(controlData(dht11hydro, dht11temp)) then
+		-- commande de mise à jour vers Domoticz
+		commandeTH=id_dht11 .. "|0|" .. dht11temp .. ";" .. dht11hydro .. ";1"
+		commandArray['UpdateDevice']=commandeTH
+	end
 end
 return commandArray
