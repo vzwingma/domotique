@@ -5,6 +5,8 @@ commandArray = {}
 local id_dht11=uservariables["interrupteur_id_dht11"]
 local APPLI_DIR="/home/pi/appli/receptionDHT11/receptionDHT11"
 
+local SEUIL_DELTA=30
+
 -- LOG
 function log(message)
 	print("[DHT11] " .. message)
@@ -67,17 +69,23 @@ function controlData(dht11hydro, dht11temp)
 		error("[DHT11] La valeur d'humidité [" .. dht11hydro .. "] est incohérente. Annulation de la mesure")
 		return false
 	end
-	if(math.abs(deltaHydro) > 30) then
-		error("[DHT11] Le changement d'humidité [" .. deltaHydro .. "]% est incohérent (> 30%). Attention")
-		return true
+	if(math.abs(deltaHydro) > SEUIL_DELTA) then
+		log("Le changement d'humidité [" .. deltaHydro .. "]% est incohérent (> " .. SEUIL_DELTA .. "%). Attention")
+		if(deltaHydro > 0) then
+			dht11hydro = dht11_oldhydro * ((100 + SEUIL_DELTA) / 100)
+		else
+			dht11hydro = dht11_oldhydro * ((100 - SEUIL_DELTA) / 100)
+		end
+		log("Réajustement de la valeur d'humidité à " .. dht11hydro .. "%")
+		--return true
 	end
 	if(dht11temp < 0 or dht11temp > 40) then
 		error("[DHT11] La valeur de température [" .. dht11temp .. "] est incohérente. Annulation de la mesure")
 		return false
 	end
-	if(math.abs(deltaTemp) > 30) then
-		error("[DHT11] Le changement de températeur[" .. deltaTemp .. "]% est incohérent (> 30%). Attention")
-		return true
+	if(math.abs(deltaTemp) > SEUIL_DELTA) then
+		error("[DHT11] Le changement de température [" .. deltaTemp .. "]% est incohérent (> " .. SEUIL_DELTA .. "%). Attention")
+		return false
 	end
 	return true
 end
