@@ -1,3 +1,10 @@
 /.settings
 /.project
 /.classpath
+
+domoticz/logs/baretail.exe
+*.udm
+domoticz/logs/domoticz.log
+*.bat
+domoticz/logs/plink.exe
+*.log
