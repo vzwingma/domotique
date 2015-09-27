@@ -12,43 +12,46 @@ timestamp() {
 
 # Fonction
 function log {
-	echo "$(timestamp) [DI/O] " $1  >> $SCRIPT_LOG_DIR
+	echo "$(timestamp) [DI/O] " $1 >> $SCRIPT_LOG_DIR
 }  
 
 # Vérification des paramètres
-if [ $# -ne 2 ]        
+if [ $# -ne 3 ]
 then                   
     log "ERREUR : le nombre d'arguments du script n'est pas correct."
-    log "ERREUR Parametre 1 : N° du bouton [0 ; 2] ou [3 ; 5]"
-    log "ERREUR Parametre 2 : Etat [on|off] \n "
+    log "ERREUR Parametre 1 : Code télécommande"
+	log "ERREUR Parametre 2 : N° du bouton [0 ; 2]"
+    log "ERREUR Parametre 3 : Etat [on|off]"
     exit 1
 fi
 
 
 # N° Wiring du GPIO
 pin=0
-# Code de télécommande 
-telecommande=16679162
+# Codes de télécommandes radio
+telecommande1=16679162
+telecommande2=17337810
+telecommande=$1
 # Bouton O à 2 pour la télécommande 1 et de 3 à 5 pour la télécommande 2
-bouton=$1
+bouton=$2
 # on ou off
-onoff=$2
+onoff=$3
 
 
-if [ "$bouton" -gt "5" ]||[ "$bouton" -lt "0" ] 
+if [ "$bouton" -gt "2" ]||[ "$bouton" -lt "0" ] 
 then
-    log "ERREUR le bouton $bouton est incorrect"
-    return 512
+    log "ERREUR la valeur du bouton [$bouton] est incorrecte"
+    exit 512
 fi
-notelecommande=$(($bouton/2))
 
 
-
+log "Utilisation de la télécommande $telecommande" 
 log "Ecriture sur le pin [$pin] "
-log "Commande $onoff"
+log "Commande $onoff sur le bouton $bouton"
 
 for b in 1 2 3 4 5
 do
- #  sudo $RADIO_DIR/radioEmission $pin $telecommande $bouton $onoff >> $SCRIPT_LOG_DIR
+	log "radioEmission $pin $telecommande $bouton $onoff"
+	sudo $RADIO_DIR/radioEmission $pin $telecommande $bouton $onoff >> $SCRIPT_LOG_DIR
 done
 log "Fin de la commande"
