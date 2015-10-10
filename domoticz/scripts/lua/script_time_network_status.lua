@@ -136,7 +136,13 @@ function updateAlarmeStatus(etat_peripheriques)
 		-- Désactivation immédiate
 		logAlarme("Désactivation de l'alarme")
 		commandArray['Alarme']="Off"
+		os.execute("echo 0 > " .. TMPDIR_COMPTEUR_OUT)
 	end
+	
+	if(etat_peripheriques) then
+		-- logAlarme("Remise à zéro du compte de l'alarme")
+		os.execute("echo 0 > " .. TMPDIR_COMPTEUR_OUT)
+	end	
 end
 
 

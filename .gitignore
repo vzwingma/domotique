@@ -8,3 +8,4 @@ domoticz/logs/domoticz.log
 *.bat
 domoticz/logs/plink.exe
 *.log
+*.1
