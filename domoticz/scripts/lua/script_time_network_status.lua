@@ -5,14 +5,17 @@ freebox_apptoken=uservariables["freebox_apptoken"]
 freebox_apptoken=freebox_apptoken:gsub("index.html", "")
 
 freebox_appid=uservariables["freebox_appid"]
-freebox_id_Smartphone_V=uservariables["freebox_id_Smartphone_V"]
-freebox_id_Smartphone_S=uservariables["freebox_id_Smartphone_S"]
+freebox_mac_adress_smartphones=uservariables["freebox_mac_adress_smartphones"]
 
 -- URL des API
 apiFreeboxv3="http://mafreebox.freebox.fr/api/v3"
 apiDomoticz="http://localhost:8080/json.htm?"
 -- Session Token
 session_token=""
+-- 
+local patternMacAdresses = string.format("([^%s]+)", ";")
+
+
 
 -- LOG
 function log(message)
@@ -82,8 +85,7 @@ end
 -- Fonction de recherche des périphériques connectés
 -- Connexion à lan/browser/pub/ pour lister les périphériques
 -- @param session_token : token de session Freebox
--- @param : freebox_id_Smartphone_V : id du smartphone dans la freebox
--- @param : freebox_id_Smartphone_S : id du smartphone dans la freebox
+-- @param : freebox_mac_adress_smartphones : liste des adresses mac connectées à la Freebox
 -- @return périphériques connectés ?
 function getPeripheriquesConnectes() 
 
@@ -97,12 +99,14 @@ function getPeripheriquesConnectes()
 	-- Liste des périphériques
 	for index, peripherique in pairs(json_peripheriques.result) do
 	
-		if(freebox_id_Smartphone_V == peripherique.id or freebox_id_Smartphone_S == peripherique.id)
-		then
-			log("Calcul du statut du périphérique " .. peripherique.id)
-			log("   Actif   : " .. tostring(peripherique.active) .. ", Présent : " .. tostring(peripherique.reachable))
-			if(peripherique.active and peripherique.reachable) then
-				etatSmartphone = true
+		for mac in string.gmatch(freebox_mac_adress_smartphones, patternMacAdresses) do
+			local peripherique_mac_adress = "ether-" .. mac:lower()
+			if(peripherique_mac_adress == peripherique.id)
+			then
+				log("Statut du périphérique [" .. mac .. "]  :  actif:" .. tostring(peripherique.active) .. ",	présent:" .. tostring(peripherique.reachable))
+				if(peripherique.active and peripherique.reachable) then
+					etatSmartphone = true
+				end
 			end
 		end
 	end
@@ -148,12 +152,11 @@ end
 
 
 -- Boucle principale
-if( freebox_apptoken == nil or freebox_appid == nil or freebox_id_Smartphone_V == nil or freebox_id_Smartphone_S == nil ) then
-	error("[FREEBOX] Les variables {freebox_apptoken}, {freebox_appid}, {freebox_id_Smartphone_V}, {freebox_id_Smartphone_S} ne sont pas définies dans Domoticz")
+if( freebox_apptoken == nil or freebox_appid == nil or freebox_mac_adress_smartphones == nil ) then
+	error("[FREEBOX] Les variables {freebox_apptoken}, {freebox_appid}, {freebox_mac_adress_smartphones} ne sont pas définies dans Domoticz")
 	return 512
 else
-	log("Test de présence des smartphones (" .. uservariables["freebox_id_Smartphone_V"] .. ") & (" .. uservariables["freebox_id_Smartphone_S"] .. ")")
-
+	log("Test de présence des appareils d'adresses MAC (" .. freebox_mac_adress_smartphones .. ")")
 	-- log("Chargement de la librairie JSON")
 	JSON = (loadfile "/home/pi/appli/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
 
