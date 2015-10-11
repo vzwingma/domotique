@@ -9,3 +9,4 @@ domoticz/logs/domoticz.log
 domoticz/logs/plink.exe
 *.log
 *.1
+domoticz/scripts/bash/script_initd_detecteur_presence.sh
