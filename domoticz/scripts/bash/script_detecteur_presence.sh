@@ -27,17 +27,6 @@ fi
 pin=$1
 capteur_id_presence=$2
 domoticz_basic_auth="Basic "$3
-# Envoi du statut de présence,
-function getValeurCourantePresence {
-	presence=$#
-	# Appel de la valeur courante
-	urlStatut=$API_DOMOTICZ"type=devices&rid=$capteur_id_presence"
-	# log "  Appel de $urlStatut pour la présence $presence"
-	DATA=`curl -s -H "Authorization: $domoticz_basic_auth" -X GET $urlStatut`
-	# log " $DATA"
-	statut_actuel_presence=`echo $DATA | jq '.result[0].Visibility'`
-	log "Valeur courante : $statut_actuel_presence"
-}
 
 
 # Envoi du statut de l'alarme
