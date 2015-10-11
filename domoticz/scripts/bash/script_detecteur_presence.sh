@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 SCRIPT_LOG_DIR=/home/pi/appli/domoticz/scripts/logs/script_detecteur_presence.log
 
 API_DOMOTICZ="http://localhost:8080/json.htm?"
@@ -10,7 +10,7 @@ timestamp() {
 }
 
 # Fonction
-function log {
+log() {
 	echo "$(timestamp) [PIR] " $1 >> $SCRIPT_LOG_DIR
 }  
 
@@ -30,7 +30,7 @@ domoticz_basic_auth="Basic "$3
 
 
 # Envoi du statut de l'alarme
-function sendNotificationPresence {
+sendNotificationPresence() {
 	log " Envoi du statut de présence [$valeur_courante] dans Domoticz"	
 	statut_capteur="Off"
 	if [ $valeur_courante -eq "1" ]
