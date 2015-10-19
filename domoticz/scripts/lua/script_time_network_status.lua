@@ -5,6 +5,8 @@ freebox_apptoken=uservariables["freebox_apptoken"]
 freebox_apptoken=freebox_apptoken:gsub("index.html", "")
 
 freebox_appid=uservariables["freebox_appid"]
+freebox_id_Smartphone_V=uservariables["freebox_id_Smartphone_V"]
+freebox_id_Smartphone_S=uservariables["freebox_id_Smartphone_S"]
 freebox_mac_adress_smartphones=uservariables["freebox_mac_adress_smartphones"]
 
 -- URL des API
@@ -80,12 +82,13 @@ function disconnectToFreebox()
 	local TMPDIR_DISCONNECT = "/tmp/challenge.tmp"
 	os.execute("curl -s -H \"X-Fbx-App-Auth: " .. session_token .. "\" -X POST " .. apiFreeboxv3 .. "/login/logout > " .. TMPDIR_DISCONNECT)
 	local disconnect = readAll(TMPDIR_DISCONNECT)
-	log("  Deconnexion Freebox API : " .. disconnect)
+	-- log("  Deconnexion Freebox API : " .. disconnect)
 end
 -- Fonction de recherche des périphériques connectés
 -- Connexion à lan/browser/pub/ pour lister les périphériques
 -- @param session_token : token de session Freebox
--- @param : freebox_mac_adress_smartphones : liste des adresses mac connectées à la Freebox
+-- @param : freebox_id_Smartphone_V : id du smartphone dans la freebox
+-- @param : freebox_id_Smartphone_S : id du smartphone dans la freebox
 -- @return périphériques connectés ?
 function getPeripheriquesConnectes() 
 
@@ -96,6 +99,7 @@ function getPeripheriquesConnectes()
 	local commandeurl="curl -s -H \"Content-Type: application/json\" -H \"X-Fbx-App-Auth: " .. session_token .. "\" -X GET " .. apiFreeboxv3 .. "/lan/browser/pub/"
 	os.execute(commandeurl .. " > " .. TMP_PERIPHERIQUES)
 	local json_peripheriques = JSON:decode(readAll(TMP_PERIPHERIQUES))
+	local etatSmartphone = false
 	-- Liste des périphériques
 	for index, peripherique in pairs(json_peripheriques.result) do
 	
@@ -103,10 +107,11 @@ function getPeripheriquesConnectes()
 			local peripherique_mac_adress = "ether-" .. mac:lower()
 			if(peripherique_mac_adress == peripherique.id)
 			then
-				log("Statut du périphérique [" .. mac .. "]  :  actif:" .. tostring(peripherique.active) .. ",	présent:" .. tostring(peripherique.reachable))
 				if(peripherique.active and peripherique.reachable) then
 					etatSmartphone = true
 				end
+				log("Statut du périphérique [" .. mac .. "]  :  actif:" .. tostring(etatSmartphone))
+				
 			end
 		end
 	end

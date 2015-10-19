@@ -6,6 +6,8 @@ local id_dht11=uservariables["interrupteur_id_dht11"]
 local APPLI_DIR="/home/pi/appli/receptionDHT11/receptionDHT11"
 
 local SEUIL_DELTA=30
+local dht11temp
+local dht11hydro
 
 -- LOG
 function log(message)
@@ -84,8 +86,13 @@ function controlData(dht11hydro, dht11temp)
 		return false
 	end
 	if(math.abs(deltaTemp) > SEUIL_DELTA) then
-		error("[DHT11] Le changement de température [" .. deltaTemp .. "]% est incohérent (> " .. SEUIL_DELTA .. "%). Attention")
-		return false
+		log("[DHT11] Le changement de température [" .. deltaTemp .. "]% est incohérent (> " .. SEUIL_DELTA .. "%). Attention")
+		if(deltaTemp > 0) then
+			dht11temp = dht11_oldtemp * ((100 + SEUIL_DELTA) / 100)
+		else
+			dht11temp = dht11_oldtemp * ((100 - SEUIL_DELTA) / 100)
+		end
+		log("Réajustement de la valeur de température à " .. dht11temp .. "°C")
 	end
 	return true
 end
@@ -97,8 +104,8 @@ if( id_dht11 == nil ) then
 	return 512
 else
 	local dht11Values = readFromDHT11()
-	local dht11temp=dht11Values[2] / 10
-	local dht11hydro=dht11Values[3] / 10
+	dht11temp=dht11Values[2] / 10
+	dht11hydro=dht11Values[3] / 10
 	log("                    Humidite = " .. dht11hydro .. " %, Température = " .. dht11temp .. "°C")
 	if(controlData(dht11hydro, dht11temp)) then
 		-- commande de mise à jour vers Domoticz
