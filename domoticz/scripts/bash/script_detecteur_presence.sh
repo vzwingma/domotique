@@ -3,7 +3,7 @@ SCRIPT_LOG_DIR=/home/pi/appli/domoticz/scripts/logs/script_detecteur_presence.lo
 
 API_DOMOTICZ="http://localhost:8080/json.htm?"
 valeur_courante=0
-
+EXPIRATION_DATE=0
 # Fonction Date pour les logs
 timestamp() {
   date +"%d/%m/%y %T"
@@ -46,20 +46,40 @@ sendNotificationPresence() {
 
 # Boucle principale
 log "Lecture du pin [$pin]" 
-
-
 while [ true ]
 do
-   # printf %s $a
-   a=`gpio read $pin`
-   
-   if [ $a -ne $valeur_courante ]
-	then                   
-		log "Changement du statut de présence : $a"
-		valeur_courante=$a
-		# Envoi de la notificationd de présence
-		sendNotificationPresence $a
-		
-	fi
-   
+	# printf %s $a
+	a=`gpio read $pin`
+
+	dateCapteurs=`date +"%Y%m%d%H%M%S"`
+			
+	# Présence
+	if [ $a -eq "1" ]
+	then
+		# Mise à jour de la date d'expiration
+		EXPIRATION_DATE=$(date -d "+30 seconds" +"%Y%m%d%H%M%S")
+		#log "[ $dateCapteurs ] Mise à jour de la date d'expiration du statut de présence $EXPIRATION_DATE"
+		# Changement de la valeur
+		if [ $a -ne $valeur_courante ] 
+		then 
+			# Envoi de la notificationd de présence
+			valeur_courante=$a
+			log "Changement du statut de présence : $a"
+			sendNotificationPresence
+		fi
+	# Absence
+	elif [ $a -ne $valeur_courante ]
+	then
+		# Absence => On mets à jour seulement au bout de 30 secondes
+		if [ $dateCapteurs -ge $EXPIRATION_DATE ] 
+		then
+			log "Changement du statut de présence : $a"
+			valeur_courante=$a
+			EXPIRATION_DATE=$(date +"%Y%m%d%H%M%S")
+			# Envoi de la notification de présence
+			sendNotificationPresence
+		#else
+		#	log "Le statut On expire seulement à $EXPIRATION_DATE."
+		fi
+	fi   
 done
