@@ -13,14 +13,16 @@ end
 function commandeTeleCanalSat(freeboxCode, freeboxChannel)
 	datelog=os.date("%a")
 	log("Démarrage de la FreeboxTV [" .. freeboxCode .. "] sur la chaine " .. freeboxChannel)
-	
-	-- callUrlFreebox(freeboxCode, "power", false, 10)
 	-- Démarrage
 	callUrlFreebox(freeboxCode, "power", false, 30)
+	-- Son à 0
+	callUrlFreebox(freeboxCode, "vol_dec", true, 0.5)
+	callUrlFreebox(freeboxCode, "vol_dec", true, 0.5)
+	callUrlFreebox(freeboxCode, "vol_dec", true, 0.5)
+	callUrlFreebox(freeboxCode, "vol_dec", true, 0.5)
+	callUrlFreebox(freeboxCode, "vol_dec", true, 0.5)
 	-- CanalSat	
-	-- callUrlFreebox(freeboxCode, "down", false, 1)
-	callUrlFreebox(freeboxCode, "left", false, 0.5)
-	callUrlFreebox(freeboxCode, "right", false, 0.5)	
+	callUrlFreebox(freeboxCode, "home", false, 0.5)	
 	callUrlFreebox(freeboxCode, "down", false, 0.5)
 	callUrlFreebox(freeboxCode, "down", false, 0.5)
 	callUrlFreebox(freeboxCode, "down", false, 0.5)
@@ -32,6 +34,10 @@ function commandeTeleCanalSat(freeboxCode, freeboxChannel)
 		touche=string.sub(freeboxChannel, i, i)
 		callUrlFreebox(freeboxCode, touche, true, 0.5)
 	end
+	callUrlFreebox(freeboxCode, "vol_inc", true, 1)
+	callUrlFreebox(freeboxCode, "vol_inc", false, 1)
+	callUrlFreebox(freeboxCode, "vol_inc", false, 1)
+	callUrlFreebox(freeboxCode, "vol_inc", false, 1)
 end
 
 
