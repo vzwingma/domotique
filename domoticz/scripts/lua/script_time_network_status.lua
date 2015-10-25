@@ -107,11 +107,10 @@ function getPeripheriquesConnectes()
 			local peripherique_mac_adress = "ether-" .. mac:lower()
 			if(peripherique_mac_adress == peripherique.id)
 			then
+				log("Statut du périphérique [" .. mac .. "]  :  actif:" .. tostring((peripherique.active and peripherique.reachable)))
 				if(peripherique.active and peripherique.reachable) then
 					etatSmartphone = true
 				end
-				log("Statut du périphérique [" .. mac .. "]  :  actif:" .. tostring(etatSmartphone))
-				
 			end
 		end
 	end
