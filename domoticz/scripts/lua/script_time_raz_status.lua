@@ -29,7 +29,7 @@ end
 -- Script permettant de remettre à zéro les statuts des interrupteurs
 -- ou de forcer l'activation de scénarios afin de revenir dans un statut normal
 now=os.date("%H:%M")
-log("Mise à jour des statuts à " .. now)
+log("Mise à zéro des statuts à " .. now)
 -- Arrêt de lampe chambre à 00:00 et 06:00 
 if( otherdevices['Lampe Chambre'] == 'On'  and (now == '00:00' or now == '06:00')) then
 	log("Forçage OFF de la lampe chambre")
