@@ -5,8 +5,7 @@ freebox_apptoken=uservariables["freebox_apptoken"]
 freebox_apptoken=freebox_apptoken:gsub("index.html", "")
 
 freebox_appid=uservariables["freebox_appid"]
-freebox_id_Smartphone_V=uservariables["freebox_id_Smartphone_V"]
-freebox_id_Smartphone_S=uservariables["freebox_id_Smartphone_S"]
+-- Liste des adresse MAC des smartphones sur la Freebox
 freebox_mac_adress_smartphones=uservariables["freebox_mac_adress_smartphones"]
 
 -- URL des API
@@ -87,8 +86,8 @@ end
 -- Fonction de recherche des périphériques connectés
 -- Connexion à lan/browser/pub/ pour lister les périphériques
 -- @param session_token : token de session Freebox
--- @param : freebox_id_Smartphone_V : id du smartphone dans la freebox
--- @param : freebox_id_Smartphone_S : id du smartphone dans la freebox
+-- @param apiFreeboxv3 : URL de l'API Freebox
+-- @param freebox_mac_adress_smartphones: variable domoticz de la liste des adresses MAC à vérifier
 -- @return périphériques connectés ?
 function getPeripheriquesConnectes() 
 
@@ -102,7 +101,7 @@ function getPeripheriquesConnectes()
 	local etatSmartphone = false
 	-- Liste des périphériques
 	for index, peripherique in pairs(json_peripheriques.result) do
-	
+
 		for mac in string.gmatch(freebox_mac_adress_smartphones, patternMacAdresses) do
 			local peripherique_mac_adress = "ether-" .. mac:lower()
 			if(peripherique_mac_adress == peripherique.id)
