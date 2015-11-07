@@ -6,8 +6,8 @@ local id_dht11=uservariables["interrupteur_id_dht11"]
 local APPLI_DIR="/home/pi/appli/receptionDHT11/receptionDHT11"
 
 local SEUIL_DELTA=30
-local dht11temp
-local dht11hydro
+local dht11temp=0
+local dht11hydro=0
 
 -- LOG
 function log(message)
@@ -55,46 +55,45 @@ function readFromDHT11()
 end
 
 -- Controle des données
-function controlData(dht11hydro, dht11temp)
+function controlData(new_dht11hydro, new_dht11temp)
 
 	local oldvalues = splitString(otherdevices_svalues["DHT11"], ";")
 	local dht11_oldhydro = oldvalues[2]
 	local dht11_oldtemp = oldvalues[1]
 	log("Anciennes valeurs : Humidite = " .. dht11_oldhydro .. " %, Température = " .. dht11_oldtemp .. "°C")
 	
-	local deltaHydro = (dht11hydro - dht11_oldhydro)/dht11_oldhydro * 100
-	local deltaTemp = (dht11temp - dht11_oldtemp)/dht11_oldtemp * 100
+	local deltaHydro = (new_dht11hydro - dht11_oldhydro)/dht11_oldhydro * 100
+	local deltaTemp = (new_dht11temp - dht11_oldtemp)/dht11_oldtemp * 100
 	
 	log("Delta Temp " .. deltaTemp .. "% / Humidite " .. deltaHydro .. "%")
 	
-	if(dht11hydro < 0 or dht11hydro > 100) then
-		error("[DHT11] La valeur d'humidité [" .. dht11hydro .. "] est incohérente. Annulation de la mesure")
-		return false
+	if(new_dht11hydro < 0 or new_dht11hydro > 100) then
+		error("[DHT11] La valeur d'humidité [" .. new_dht11hydro .. "] est incohérente. Annulation de la mesure")
+		return nil
 	end
-	if(math.abs(deltaHydro) > SEUIL_DELTA) then
+	if(math.abs(deltaHydro) > SEUIL_DELTA) then	
 		log("Le changement d'humidité [" .. deltaHydro .. "]% est incohérent (> " .. SEUIL_DELTA .. "%). Attention")
 		if(deltaHydro > 0) then
-			dht11hydro = dht11_oldhydro * ((100 + SEUIL_DELTA) / 100)
+			new_dht11hydro = dht11_oldhydro * ((100 + SEUIL_DELTA) / 100)
 		else
-			dht11hydro = dht11_oldhydro * ((100 - SEUIL_DELTA) / 100)
+			new_dht11hydro = dht11_oldhydro * ((100 - SEUIL_DELTA) / 100)
 		end
-		log("Réajustement de la valeur d'humidité à " .. dht11hydro .. "%")
-		--return true
+		log("Réajustement de la valeur d'humidité à " .. new_dht11hydro .. "%")
 	end
-	if(dht11temp < 0 or dht11temp > 40) then
-		error("[DHT11] La valeur de température [" .. dht11temp .. "] est incohérente. Annulation de la mesure")
-		return false
+	if(new_dht11temp < 0 or new_dht11temp > 40) then
+		error("[DHT11] La valeur de température [" .. new_dht11temp .. "] est incohérente. Annulation de la mesure")
+		return nil
 	end
 	if(math.abs(deltaTemp) > SEUIL_DELTA) then
 		log("[DHT11] Le changement de température [" .. deltaTemp .. "]% est incohérent (> " .. SEUIL_DELTA .. "%). Attention")
 		if(deltaTemp > 0) then
-			dht11temp = dht11_oldtemp * ((100 + SEUIL_DELTA) / 100)
+			new_dht11temp = dht11_oldtemp * ((100 + SEUIL_DELTA) / 100)
 		else
-			dht11temp = dht11_oldtemp * ((100 - SEUIL_DELTA) / 100)
+			new_dht11temp = dht11_oldtemp * ((100 - SEUIL_DELTA) / 100)
 		end
-		log("Réajustement de la valeur de température à " .. dht11temp .. "°C")
+		log("Réajustement de la valeur de température à " .. new_dht11temp .. "°C")
 	end
-	return true
+	return id_dht11 .. "|0|" .. new_dht11temp .. ";" .. new_dht11hydro .. ";1"
 end
 
 
@@ -104,12 +103,14 @@ if( id_dht11 == nil ) then
 	return 512
 else
 	local dht11Values = readFromDHT11()
-	dht11temp=dht11Values[2] / 10
+	dht11temp=dht11Values[2] / 10	
 	dht11hydro=dht11Values[3] / 10
 	log("                    Humidite = " .. dht11hydro .. " %, Température = " .. dht11temp .. "°C")
-	if(controlData(dht11hydro, dht11temp)) then
+	
+	commandeTH=controlData(dht11hydro, dht11temp)
+	if(commandeTH ~= nil) then
 		-- commande de mise à jour vers Domoticz
-		commandeTH=id_dht11 .. "|0|" .. dht11temp .. ";" .. dht11hydro .. ";1"
+		log("Commande : " .. commandeTH)
 		commandArray['UpdateDevice']=commandeTH
 	end
 end
