@@ -57,7 +57,7 @@ do
 	if [ $a -eq "1" ]
 	then
 		# Mise à jour de la date d'expiration
-		EXPIRATION_DATE=$(date -d "+30 seconds" +"%Y%m%d%H%M%S")
+		EXPIRATION_DATE=$(date -d "+3 minutes" +"%Y%m%d%H%M%S")
 		#log "[ $dateCapteurs ] Mise à jour de la date d'expiration du statut de présence $EXPIRATION_DATE"
 		# Changement de la valeur
 		if [ $a -ne $valeur_courante ] 
