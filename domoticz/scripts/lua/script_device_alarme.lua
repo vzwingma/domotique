@@ -54,7 +54,7 @@ if ( devicechanged['Alarme'] or devicechanged['Capteur PIR'] ) then
 	log("Statut de l'alarme		" .. otherdevices['Alarme'])
 	log("Statut du détecteur de présence	" .. otherdevices['Capteur PIR'])
 	
-	if( otherdevices['Alarme'] == 'On' and otherdevices['Alarme'] == 'On' ) then
+	if( otherdevices['Alarme'] == 'On' and otherdevices['Capteur PIR'] == 'On' ) then
 		log("[ALERTE] Présence de quelqu'un alors que l'alarme est activée")
 		envoiSMS("[ALERTE INTRUSION] Présence de quelqu'un alors que l'alarme est activée")
 	end
