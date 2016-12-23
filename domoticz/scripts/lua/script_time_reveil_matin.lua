@@ -2,7 +2,7 @@ commandArray = {}
 
 heure_reveil = uservariables["reveil_heure"]
 
-api_holidays = "http://holidayapi.com/v1/holidays?country=FR&year"
+api_holidays = "http://holidayapi.com/v1/holidays?key=cae6007e-78f0-4ae1-8354-9b8b3db124e1&country=FR&year"
 local TMPDIR_HOLIDAYS = "/tmp/holidays.tmp"
 	
 -- LOG

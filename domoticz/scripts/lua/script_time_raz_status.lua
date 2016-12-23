@@ -30,11 +30,11 @@ end
 -- ou de forcer l'activation de scénarios afin de revenir dans un statut normal
 now=os.date("%H:%M")
 log("Mise à zéro des statuts à " .. now)
--- Arrêt de lampe chambre à 00:00 et 06:00 
-if( otherdevices['Lampe Chambre'] == 'On'  and (now == '00:00' or now == '06:00')) then
-	log("Forçage OFF de la lampe chambre")
-	envoiSMS("Forçage OFF de la lampe chambre")
-	commandArray['Lampe Chambre'] = 'Off'
+-- Arrêt de Interrupteur Musique à 00:00 et 06:00 
+if( otherdevices['Interrupteur Musique'] == 'On'  and (now == '00:00' or now == '06:00')) then
+	log("Forçage OFF de Interrupteur Musique")
+	envoiSMS("Forçage OFF de Interrupteur Musique")
+	commandArray['Interrupteur Musique'] = 'Off'
 end
 -- Arrêt de lampe chambre à 00:00 et 06:00 
 if( otherdevices['Interrupteur Cuisine'] == 'On'  and (now == '00:00' or now == '06:00')) then
@@ -44,10 +44,10 @@ if( otherdevices['Interrupteur Cuisine'] == 'On'  and (now == '00:00' or now == 
 end
 	-- En soirée et alarme activée => Arrêt de tous les interrupteurs ssi c'est nécessaire
 if( otherdevices['Alarme'] == 'On' and now == '00:00' and 
-	(commandArray['Lampe Chambre'] == 'On' or commandArray['Interrupteur Cuisine'] == 'On' or commandArray['Interrupteur Salon'] == 'On')) then
+	(commandArray['Interrupteur Musique'] == 'On' or commandArray['Interrupteur Cuisine'] == 'On' or commandArray['Interrupteur Salon'] == 'On')) then
 	log("Alarme activée - Arrêt global")
 	envoiSMS("Alarme activée - Arrêt global")
-	commandArray['Lampe Chambre'] = 'Off'
+	commandArray['Interrupteur Musique'] = 'Off'
 	commandArray['Interrupteur Cuisine'] = 'Off'
 	commandArray['Interrupteur Salon'] = 'Off'
 end

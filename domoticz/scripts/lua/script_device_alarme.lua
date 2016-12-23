@@ -20,7 +20,9 @@ function envoiSMS (message)
 		datelog=os.date("%a")
 		
 		freeboxSMS_API_URL = "https://smsapi.free-mobile.fr/sendmsg?"
-		os.execute("curl '".. freeboxSMS_API_URL .. "user=" .. freeboxSMSUser .. "&pass=" .. freeboxSMSPass .. "&msg=" .. message .. "'")
+		local commandeSMS = "curl '".. freeboxSMS_API_URL .. "user=" .. freeboxSMSUser .. "&pass=" .. freeboxSMSPass .. "&msg=" .. message .. "'"
+		log(""..commandeSMS)
+		os.execute(commandeSMS)
 	end
 end
 
@@ -28,12 +30,11 @@ end
 
 -- print("[ALARME] Vérification du statut de l'alarme")
 now=os.date("%H%M")
-
 if ( devicechanged['Alarme'] == 'On' ) then
 
 	log("Activation de l'alarme")
 	envoiSMS("Alarme activée")
-	commandArray['Lampe Chambre'] = 'Off'
+	commandArray['Interrupteur Musique'] = 'Off'
 	commandArray['Scene:Arrêter télévision'] = 'On'
 
 	-- Désactivation de l'alarme 
@@ -56,7 +57,7 @@ if ( devicechanged['Alarme'] or devicechanged['Capteur PIR'] ) then
 	
 	if( otherdevices['Alarme'] == 'On' and otherdevices['Capteur PIR'] == 'On' ) then
 		log("[ALERTE] Présence de quelqu'un alors que l'alarme est activée")
-		envoiSMS("[ALERTE INTRUSION]")
+		envoiSMS("ALERTE INTRUSION")
 	end
 end
 
