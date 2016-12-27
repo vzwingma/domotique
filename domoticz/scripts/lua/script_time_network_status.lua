@@ -1,15 +1,9 @@
 commandArray = {}
--- print("[FREEBOX] Statuts des périphériques réseau Freebox")
-
-freebox_apptoken=uservariables["freebox_apptoken"]
-freebox_apptoken=freebox_apptoken:gsub("index.html", "")
-
-freebox_appid=uservariables["freebox_appid"]
 -- Liste des adresse MAC des smartphones sur la Freebox
-freebox_mac_adress_smartphones=uservariables["freebox_mac_adress_smartphones"]
+mac_adress_smartphones=uservariables["mac_adress_smartphones"]
 
 -- URL des API
-apiFreeboxv3="http://mafreebox.freebox.fr/api/v3"
+apiLiveBox="http://livebox.home"
 apiDomoticz="http://localhost:8080/json.htm?"
 -- Session Token
 session_token=""
@@ -20,7 +14,7 @@ local patternMacAdresses = string.format("([^%s]+)", ";")
 
 -- LOG
 function log(message)
-	print("[FREEBOX] " .. message)
+	print("[ORANGE] " .. message)
 end
 
 function logAlarme(message)
@@ -41,48 +35,6 @@ function readAll(file)
 	end
 end
 
-
--- Fonction de la connexion à la Freebox
--- Authentification pour récupérer le tokenDeSession
-function connectToFreebox()
-	-- log ("Connexion à la Freebox")
-	local TMPDIR_CHALLENGE = "/tmp/challenge.tmp"
-	local TMPDIR_APPTOKEN =  "/tmp/apptoken.tmp"
-	local TMPDIR_SESSIONTOKEN =  "/tmp/sessiontoken.tmp"
-	
-	-- CHALLENGE : Appel de login pour charger le challenge
-	os.execute("curl -s " .. apiFreeboxv3 .. "/login > " .. TMPDIR_CHALLENGE)
-	local json_challenge = JSON:decode(readAll(TMPDIR_CHALLENGE))
-	local challenge = json_challenge.result.challenge
-	-- log("  Challenge : " .. challenge)
-
-	-- APP  TOKEN : Calcul du mot de passe
-	-- log("Calcul HMAC SHA1")
-	-- log("  AppToken : " .. freebox_apptoken)
-	os.execute("echo -n " .. challenge .. " | openssl dgst -sha1 -hmac " .. freebox_apptoken .. " | cut -c10-200 > " .. TMPDIR_APPTOKEN)
-	local password = readAll(TMPDIR_APPTOKEN)
-	password=password:gsub("\n", "")
-	-- log("  Password : " .. password)
-	
-	-- CONNEXION Session Connect
-	local table_app_session = {}
-	table_app_session["app_id"]=freebox_appid
-	table_app_session["password"]=password
-	local json_app_session = JSON:encode_pretty(table_app_session)
-	--	connexion à la session
-	os.execute("curl -s -H \"Content-Type: application/json\" -X POST -d '" .. json_app_session .. "' " .. apiFreeboxv3 .. "/login/session/ > " .. TMPDIR_SESSIONTOKEN)
-	local json_session_token = JSON:decode(readAll(TMPDIR_SESSIONTOKEN))
-	session_token=json_session_token.result.session_token
-	-- log("  Session Token : " .. session_token)
-end
-
--- Fonction de la deconnexion à la Freebox
-function disconnectToFreebox()
-	local TMPDIR_DISCONNECT = "/tmp/challenge.tmp"
-	os.execute("curl -s -H \"X-Fbx-App-Auth: " .. session_token .. "\" -X POST " .. apiFreeboxv3 .. "/login/logout > " .. TMPDIR_DISCONNECT)
-	local disconnect = readAll(TMPDIR_DISCONNECT)
-	-- log("  Deconnexion Freebox API : " .. disconnect)
-end
 -- Fonction de recherche des périphériques connectés
 -- Connexion à lan/browser/pub/ pour lister les périphériques
 -- @param session_token : token de session Freebox
@@ -94,20 +46,20 @@ function getPeripheriquesConnectes()
 	local TMP_PERIPHERIQUES = "/tmp/peripheriques.tmp"
 
 	--  Appel sur la liste des périphériques
-	log("Recherche des périphériques connus de la Freebox")
-	local commandeurl="curl -s -H \"Content-Type: application/json\" -H \"X-Fbx-App-Auth: " .. session_token .. "\" -X GET " .. apiFreeboxv3 .. "/lan/browser/pub/"
+	log("Recherche des périphériques connus de la LiveBox Orange")
+	local commandeurl="curl -X POST -H 'Cache-Control: no-cache' -d '' " .. apiLiveBox .. "/sysbus/Devices:get"
 	os.execute(commandeurl .. " > " .. TMP_PERIPHERIQUES)
+	-- log(">>" .. commandeurl.. "<<")
 	local json_peripheriques = JSON:decode(readAll(TMP_PERIPHERIQUES))
 	local etatSmartphone = false
 	-- Liste des périphériques
-	for index, peripherique in pairs(json_peripheriques.result) do
-
-		for mac in string.gmatch(freebox_mac_adress_smartphones, patternMacAdresses) do
-			local peripherique_mac_adress = "ether-" .. mac:lower()
-			if(peripherique_mac_adress == peripherique.id)
+	for index, peripherique in pairs(json_peripheriques.status) do
+--		log("Statut du périphérique " .. index .. " :: " .. peripherique.Key)
+		for mac in string.gmatch(mac_adress_smartphones, patternMacAdresses) do
+			if(mac == peripherique.Key)
 			then
-				log("Statut du périphérique [" .. peripherique.primary_name .. "] [" .. mac .. "]  :  actif:" .. tostring((peripherique.active and peripherique.reachable)))
-				if(peripherique.active and peripherique.reachable) then
+				log("Statut du périphérique [" .. peripherique.Name .. "] [" .. mac .. "]  :  actif:" .. tostring((peripherique.Active)))
+				if(peripherique.Active) then
 					etatSmartphone = true
 				end
 			end
@@ -155,22 +107,18 @@ end
 
 
 -- Boucle principale
-if( freebox_apptoken == nil or freebox_appid == nil or freebox_mac_adress_smartphones == nil ) then
-	error("[FREEBOX] Les variables {freebox_apptoken}, {freebox_appid}, {freebox_mac_adress_smartphones} ne sont pas définies dans Domoticz")
+if( mac_adress_smartphones == nil ) then
+	error("[ORANGE] La variable {mac_adress_smartphones} ne sont pas définies dans Domoticz")
 	return 512
 else
-	log("Test de présence des appareils d'adresses MAC (" .. freebox_mac_adress_smartphones .. ")")
+	log("Test de présence des appareils d'adresses MAC (" .. mac_adress_smartphones .. ")")
 	-- log("Chargement de la librairie JSON")
 	JSON = (loadfile "/home/pi/appli/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
 
-	-- Connexion à la Freebox
-	connectToFreebox()
 	-- Recherche des périphériques connectés
 	peripheriques_up = getPeripheriquesConnectes()
 	-- Mise à jour de l'alarme
 	updateAlarmeStatus(peripheriques_up)
-	-- Déconnexion à la Freebox
-	disconnectToFreebox()
 end
 
 return commandArray
