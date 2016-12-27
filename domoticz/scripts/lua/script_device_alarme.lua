@@ -41,7 +41,7 @@ if ( devicechanged['Alarme'] == 'On' ) then
 	-- Désactivation de l'alarme 
 elseif ( devicechanged['Alarme'] == 'Off' ) then
 	log("Désactivation de l'alarme")
-	-- En journée : Allumage de la télévision
+	-- En journée : Allumage de la télévision et la lampe 1
 	if( now <= "2230" and now >= "0700" ) then
 		envoiSMS("Alarme désactivée - Bonjour")
 		commandArray['Scene:Démarrer télévision'] = 'On'
