@@ -34,9 +34,7 @@ if ( devicechanged['Alarme'] == 'On' ) then
 
 	log("Activation de l'alarme")
 	envoiSMS("Alarme activée")
-	commandArray['Lampe 1'] = 'Off'
-	commandArray['Lampe 2'] = 'Off'
-	commandArray['Scene:Arrêter télévision'] = 'On'
+	commandArray['Scene:Alarme On'] = 'On'
 
 	-- Désactivation de l'alarme 
 elseif ( devicechanged['Alarme'] == 'Off' ) then
