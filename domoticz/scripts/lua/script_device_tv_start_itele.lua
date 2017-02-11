@@ -53,13 +53,13 @@ function callUrlLivebox(ip_livebox_tv, key, appuilong)
 		url=baseurl .. "0"
 	end
 	
-	log("Appel de l'URL : [" .. url .. "]")
+	-- log("Appel de l'URL : [" .. url .. "]")
 	os.execute("curl '".. url .. "'")
 	
 	if( appuilong == true ) then
 		os.execute("sleep 1")
 		url=baseurl .. "2"
-		log("Appel de l'URL : [" .. url .. "]")
+	--	log("Appel de l'URL : [" .. url .. "]")
 		os.execute("curl '".. url .. "'")
 	end
 end

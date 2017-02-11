@@ -42,7 +42,7 @@ elseif ( devicechanged['Alarme'] == 'Off' ) then
 	-- En journée : Allumage de la télévision et la lampe 1
 	if( now <= "2230" and now >= "0700" ) then
 		envoiSMS("Alarme désactivée - Bonjour")
-		commandArray['Scene:Démarrer télévision'] = 'On'
+		commandArray['Scene:Télévision'] = 'On'
 		commandArray['Lampe 1'] = 'On'
 	else
 		-- En soirée : Bonne nuit
