@@ -80,7 +80,7 @@ if( heure_reveil == nil) then
 	return 512
 else
 	-- log("Chargement de la librairie JSON")
-	JSON = (loadfile "/home/pi/appli/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
+	JSON = (loadfile "/src/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
 
 	-- Mise à jour du fichier de la liste des jours fériés
 	update_holidays_data()

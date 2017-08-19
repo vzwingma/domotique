@@ -113,7 +113,7 @@ if( mac_adress_smartphones == nil ) then
 else
 	log("Test de présence des appareils d'adresses MAC (" .. mac_adress_smartphones .. ")")
 	-- log("Chargement de la librairie JSON")
-	JSON = (loadfile "/home/pi/appli/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
+	JSON = (loadfile "/src/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
 
 	-- Recherche des périphériques connectés
 	peripheriques_up = getPeripheriquesConnectes()
