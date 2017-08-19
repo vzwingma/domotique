@@ -17,15 +17,19 @@ docker build -t vzwingma/domoticz:arm $DOCKER_PATH/.
 function createConteneur {
 	echo "Création du conteneur "
 	docker rm --force domoticz
-	docker run --name=domoticz --privileged -d \
+	docker run --name=domoticz -d \
+		--privileged \
+		--restart=always \
 		-p 8080:8080 \
+		-p 443:443 \
+		-e TZ=Europe/Paris \
+		-v /etc/timezone:/etc/timezone:ro \
+		-v /etc/localtime:/etc/localtime:ro \
 		-v $DOMOTICZ_PATH/database:/config \
 		-v $DOMOTICZ_PATH/www/images/floorplans:/src/domoticz/www/images/floorplans \
 		-v $DOMOTICZ_PATH/scripts/python:/src/domoticz/scripts/python \
 		-v $DOMOTICZ_PATH/scripts/lua:/src/domoticz/scripts/lua \
-		# -t joshuacox/mkdomoticz:arm
 		-t vzwingma/domoticz:arm
-
 }
 
 # createImage
