@@ -3,7 +3,7 @@ commandArray = {}
 
 -- Variables
 local id_dht11=uservariables["interrupteur_id_dht11"]
-local url="http://192.168.1.17:9000/cmd/recepteurDHT11"
+local url="http://dht11:9000/cmd/recepteurDHT11"
 local SEUIL_DELTA=30
 local dht11temp=0
 local dht11hydro=0
