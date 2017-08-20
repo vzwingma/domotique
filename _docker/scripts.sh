@@ -8,9 +8,9 @@ DOMOTICZ_PATH=$HOME_PATH/domoticz/
 ####################################
 function createImages {
 	echo "Construction de l'image vzwingma/domoticz:arm"
-	docker build -t vzwingma/domoticz:arm $DOCKER_PATH/domoticz/.
+	#docker build -t vzwingma/domoticz:arm $DOCKER_PATH/domoticz/.
 	echo "Chargement de l'image WiringPi"
-	docker pull hypriot/wiringpi
+	docker build -t vzwingma/wiringpi:arm $DOCKER_PATH/wiringPi/.
 }
 
 ####################################
@@ -34,5 +34,18 @@ function createConteneurDomoticz {
 		-t vzwingma/domoticz:arm
 }
 
-# createImages
-createConteneurDomoticz
+function createConteneurDHT11 {
+	echo "Création du conteneur DHT11"
+	docker rm --force dht11
+	docker run --name=dht11 \
+		--privileged \
+		-p 9000:9000 \
+		--device /dev/ttyAMA0:/dev/ttyAMA0 \
+		--device /dev/mem:/dev/mem \
+		-v /home/pi/appli/receptionDHT11:/data \
+		-it vzwingma/wiringpi:arm bash
+}
+
+createImages
+#createConteneurDomoticz
+createConteneurDHT11
