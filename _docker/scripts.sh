@@ -1,21 +1,23 @@
 #/bin/bash
 HOME_PATH=/home/pi/appli
-DOCKER_PATH=$HOME_PATH/_docker/domoticz
+DOCKER_PATH=$HOME_PATH/_docker
 DOMOTICZ_PATH=$HOME_PATH/domoticz/
 
 ####################################
 #	IMAGES DOCKER
 ####################################
-function createImage {
-echo "Construction de l'image vzwingma/domoticz:arm"
-docker build -t vzwingma/domoticz:arm $DOCKER_PATH/.
+function createImages {
+	echo "Construction de l'image vzwingma/domoticz:arm"
+	docker build -t vzwingma/domoticz:arm $DOCKER_PATH/domoticz/.
+	echo "Chargement de l'image WiringPi"
+	docker pull hypriot/wiringpi
 }
 
 ####################################
 #	CONTENEURS DOCKER
 ####################################
-function createConteneur {
-	echo "Création du conteneur "
+function createConteneurDomoticz {
+	echo "Création du conteneur Domoticz"
 	docker rm --force domoticz
 	docker run --name=domoticz -d \
 		--privileged \
@@ -32,5 +34,5 @@ function createConteneur {
 		-t vzwingma/domoticz:arm
 }
 
-# createImage
-createConteneur
+# createImages
+createConteneurDomoticz
