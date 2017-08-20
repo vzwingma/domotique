@@ -17,7 +17,7 @@ int* read_dht11_dat()
 {
 	uint8_t laststate	= HIGH;
 	uint8_t counter		= 0;
-	uint8_t j		= 0, i;
+	uint8_t j			= 0, i;
  
 	dht11_dat[0] = dht11_dat[1] = dht11_dat[2] = dht11_dat[3] = dht11_dat[4] = 0;
  
@@ -92,8 +92,8 @@ int main( void )
 		
 		// Création de JSON à la main
 		printf("{");
-		printf("   \"temperature\":\"%d\",", dht11_dat[0] * 10 + dht11_dat[1]);
-		printf("   \"humidite\":\"%d\",", dht11_dat[2]*10 + dht11_dat[3]);
+		printf("   \"temperature\":\"%d.%d\",", dht11_dat[0], dht11_dat[1]);
+		printf("   \"humidite\":\"%d.%d\",", dht11_dat[2], dht11_dat[3]);
 		printf("    \"log\":\"Humidite = %d.%d %%, Temperature = %d.%d *C \"", dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
 		printf("}");
 		
