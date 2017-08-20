@@ -3,8 +3,7 @@ commandArray = {}
 
 -- Variables
 local id_dht11=uservariables["interrupteur_id_dht11"]
-local APPLI_DIR="/home/pi/appli/receptionDHT11/receptionDHT11"
-
+local url="http://192.168.1.17:9000/cmd/recepteurDHT11"
 local SEUIL_DELTA=30
 local dht11temp=0
 local dht11hydro=0
@@ -17,41 +16,28 @@ end
 -- Fonction de lecture du contenu d'un fichier
 -- @param : chemin vers le fichier
 -- @return le contenu du fichier
-function readLine(file)
+function readAll(file)
     local f = io.open(file, "rb")
 	if(f == nil) then
 		return ""
 	else
 		local content = f:read("*all")
-		-- log(content)
 		f:close()
 		return content
 	end
 end
 
--- Fonction de split 
--- @param inputstr : chaine à splitter
--- @param sep : séparateur
-function splitString(inputstr, sep)
-        if sep == nil then
-                sep = "%s"
-        end
-        local t={} ; i=1
-        for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-                t[i] = str
-				-- log(" Split [" .. i .. "] " .. str)
-                i = i + 1
-        end
-        return t
-end
-
 
 -- Lecture depuis le DHT11
 function readFromDHT11()
-	local TMPDIR_DHT11 = "/tmp/dht11.tmp"
-	log("Récupération des valeurs du DHT11")
-	os.execute("sudo " .. APPLI_DIR .. " > " .. TMPDIR_DHT11)
-	return splitString(readLine(TMPDIR_DHT11), '|')
+	log("Récupération des valeurs du DHT11 : [" .. url .. "]")
+	local TMP_DHT11 = "/tmp/dht11.tmp"
+	local returnValue = os.execute("curl '".. url .. "' > " .. TMP_DHT11)
+	if returnValue then
+		return JSON:decode(readAll(TMP_DHT11))
+	else
+		error("[DHT11] Erreur lors de l'execution de " .. url)
+	end
 end
 
 -- Controle des données
@@ -102,16 +88,23 @@ if( id_dht11 == nil ) then
 	error("[DHT11] La variable {interrupteur_id_dht11} n'est pas définie dans Domoticz")
 	return 512
 else
+	-- log("Chargement de la librairie JSON")
+	JSON = (loadfile "/src/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
+
 	local dht11Values = readFromDHT11()
-	dht11temp=dht11Values[2] / 10	
-	dht11hydro=dht11Values[3] / 10
-	log("                    Humidite = " .. dht11hydro .. " %, Température = " .. dht11temp .. "°C")
-	
-	commandeTH=controlData(dht11hydro, dht11temp)
-	if(commandeTH ~= nil) then
-		-- commande de mise à jour vers Domoticz
-		log("Commande : " .. commandeTH)
-		commandArray['UpdateDevice']=commandeTH
+	if( id_dht11 ~= nil and dht11Values ~= nil) then
+		dht11temp=dht11Values.temperature
+		dht11hydro=dht11Values.humidite
+		log("                    Humidite = " .. dht11hydro .. " %, Température = " .. dht11temp .. "°C")
+		
+		commandeTH=controlData(dht11hydro, dht11temp)
+		if(commandeTH ~= nil) then
+			-- commande de mise à jour vers Domoticz
+			log("Commande : " .. commandeTH)
+			commandArray['UpdateDevice']=commandeTH
+		end
+	else
+		error("[DHT11] Erreur lors de la lecture de DHT11")
 	end
 end
 return commandArray
