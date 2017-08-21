@@ -27,10 +27,26 @@ function readAll(file)
 	end
 end
 
+-- Fonction de split 
+-- @param inputstr : chaine à splitter
+-- @param sep : séparateur
+function splitString(inputstr, sep)
+        if sep == nil then
+                sep = "%s"
+        end
+        local t={} ; i=1
+        for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+                t[i] = str
+                -- log(" Split [" .. i .. "] " .. str)
+                i = i + 1
+        end
+        return t
+end
 
 -- Lecture depuis le DHT11
 function readFromDHT11()
-	log("Récupération des valeurs du DHT11 : [" .. url .. "]")
+	log("Récupération des valeurs du DHT11")
+	log("[" .. url .. "]")
 	local TMP_DHT11 = "/tmp/dht11.tmp"
 	local returnValue = os.execute("curl '".. url .. "' > " .. TMP_DHT11)
 	if returnValue then
@@ -42,6 +58,8 @@ end
 
 -- Controle des données
 function controlData(new_dht11hydro, new_dht11temp)
+
+	log("Anciennes valeurs " .. otherdevices_svalues["DHT11"])
 
 	local oldvalues = splitString(otherdevices_svalues["DHT11"], ";")
 	local dht11_oldhydro = oldvalues[2]
@@ -102,6 +120,8 @@ else
 			-- commande de mise à jour vers Domoticz
 			log("Commande : " .. commandeTH)
 			commandArray['UpdateDevice']=commandeTH
+		else
+			log("Pas de mise à jour de la température")
 		end
 	else
 		error("[DHT11] Erreur lors de la lecture de DHT11")
