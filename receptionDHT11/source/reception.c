@@ -92,8 +92,8 @@ int main( void )
 		
 		// Création de JSON à la main
 		printf("{");
-		printf("   \"temperature\":\"%d.%d\",", dht11_dat[0], dht11_dat[1]);
-		printf("   \"humidite\":\"%d.%d\",", dht11_dat[2], dht11_dat[3]);
+		printf("   \"temperature\":%d.%d,", dht11_dat[0], dht11_dat[1]);
+		printf("   \"humidite\":%d.%d,", dht11_dat[2], dht11_dat[3]);
 		printf("    \"log\":\"Humidite = %d.%d %%, Temperature = %d.%d *C \"", dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
 		printf("}");
 		
