@@ -40,12 +40,13 @@ function createConteneurDHT11 {
 	docker run --name=dht11 -d \
 		--privileged \
 		-p 9000:9000 \
+		-p 9100:9100 \
 		--device /dev/ttyAMA0:/dev/ttyAMA0 \
 		--device /dev/mem:/dev/mem \
 		-v $HOME_PATH/receptionDHT11:/data/bin \
 		-it vzwingma/wiringpi:arm
 }
 
-createImages
+# createImages
 createConteneurDHT11
 createConteneurDomoticz

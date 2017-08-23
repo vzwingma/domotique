@@ -9,5 +9,6 @@ COPY node_modules /data/node_modules
 COPY server.js /data/server.js
 
 EXPOSE 9000
+EXPOSE 9100
 
 ENTRYPOINT ["nodejs", "server"]

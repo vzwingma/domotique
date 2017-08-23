@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var extapp = express();
 var exec = require('child_process').exec;
 
 
@@ -30,8 +31,12 @@ function executeCommande(commande, response){
 //**********************************
 // Info
 app.get('/_info', function (req, res) {
-   res.send('NodeJS GPIO app running');
+   res.send('Le moteur de commande GPIO est fonctionnel');
 })
+extapp.get('/_info', function (req, res) {
+   res.send('Le moteur de commande GPIO est fonctionnel');
+})
+
 // Réception de commande
 app.get('/cmd/:commande', function (request, response) {
 	// Réception commande
@@ -39,10 +44,11 @@ app.get('/cmd/:commande', function (request, response) {
 })
 
 
-// Lancement du serveur HTTP
+// Lancement du serveur HTTP interne
 var server = app.listen(9000, function () {
-   var host = server.address().address
-   var port = server.address().port
-   
-   console.log("NodeJS GPIO app listening at [%s]", port)
+   console.log("NodeJS GPIO démarré sur [%s]", server.address().port)
+})
+// Lancement du serveur HTTP externe
+var extserver = extapp.listen(9100, function () {
+   console.log("GPIO app démarré sur [%s]", extserver.address().port)
 })
