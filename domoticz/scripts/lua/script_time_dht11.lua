@@ -45,8 +45,7 @@ end
 
 -- Lecture depuis le DHT11
 function readFromDHT11()
-	log("Récupération des valeurs du DHT11")
-	log("[" .. url .. "]")
+	-- log("Récupération des valeurs du DHT11 : [" .. url .. "]")
 	local TMP_DHT11 = "/tmp/dht11.tmp"
 	local returnValue = os.execute("curl '".. url .. "' > " .. TMP_DHT11)
 	if returnValue then
@@ -59,12 +58,12 @@ end
 -- Controle des données
 function controlData(new_dht11hydro, new_dht11temp)
 
-	log("Anciennes valeurs " .. otherdevices_svalues["DHT11"])
+	-- log("Anciennes valeurs " .. otherdevices_svalues["DHT11"])
 
 	local oldvalues = splitString(otherdevices_svalues["DHT11"], ";")
 	local dht11_oldhydro = oldvalues[2]
 	local dht11_oldtemp = oldvalues[1]
-	log("Anciennes valeurs : Humidite = " .. dht11_oldhydro .. " %, Température = " .. dht11_oldtemp .. "°C")
+	-- log("Anciennes valeurs : Humidite = " .. dht11_oldhydro .. " %, Température = " .. dht11_oldtemp .. "°C")
 	
 	local deltaHydro = (new_dht11hydro - dht11_oldhydro)/dht11_oldhydro * 100
 	local deltaTemp = (new_dht11temp - dht11_oldtemp)/dht11_oldtemp * 100
@@ -118,7 +117,7 @@ else
 		commandeTH=controlData(dht11hydro, dht11temp)
 		if(commandeTH ~= nil) then
 			-- commande de mise à jour vers Domoticz
-			log("Commande : " .. commandeTH)
+			-- log("Commande : " .. commandeTH)
 			commandArray['UpdateDevice']=commandeTH
 		else
 			log("Pas de mise à jour de la température")
