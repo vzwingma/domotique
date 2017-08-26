@@ -2,7 +2,7 @@ commandArray = {}
 
 heure_reveil = uservariables["reveil_heure"]
 
-api_holidays = "http://holidayapi.com/v1/holidays?key=cae6007e-78f0-4ae1-8354-9b8b3db124e1&country=FR&year"
+api_holidays = "https://holidayapi.com/v1/holidays?key=cae6007e-78f0-4ae1-8354-9b8b3db124e1&country=FR&year"
 local TMPDIR_HOLIDAYS = "/tmp/holidays.tmp"
 	
 -- LOG
@@ -29,17 +29,16 @@ end
 -- SSI l'année change
 function update_holidays_data()	
 	annee_courante=os.date("%Y")
-
 	-- Vérification de la date du fichier. Si l'année change : Appel de l'API pour mise à jour
 	local TMPDIR_HOLIDAYS_DATE = "/tmp/holidays.date.tmp"
-	os.execute("stat --printf='%y' " .. TMPDIR_HOLIDAYS .. " | cut -c1-4 > " .. TMPDIR_HOLIDAYS_DATE)
-	local holidays_update = string.gsub(readAll(TMPDIR_HOLIDAYS_DATE), "\n", "")
-
+	local holidays_update = readAll(TMPDIR_HOLIDAYS_DATE)
+	log("Année courante [".. annee_courante .. "] vs année chargée : [".. holidays_update.."]")
 	if( annee_courante ~= holidays_update) then 
 		log("Mise à jour de la liste des jours fériés")
-		local commande = "curl -s '" .. api_holidays .. "=" .. annee_courante .."' > " .. TMPDIR_HOLIDAYS
-		log("Execution de la commande de mise à jour : " .. commande)
+		local commande = "curl -v  -X GET 'https://api.tuxx.co.uk/2.0/holidays/holidays.php?date_start="..annee_courante.."-01-01&date_end="..annee_courante.."-12-31&regions=France&lang=fr' > " .. TMPDIR_HOLIDAYS
+		-- log("Execution de la commande de mise à jour : " .. commande)
 		os.execute(commande)
+		os.execute("printf " .. annee_courante .. " > " .. TMPDIR_HOLIDAYS_DATE)
 	-- else
 	--	log("Pas de mise à jour ")
 	end
@@ -60,10 +59,10 @@ function lancementReveil()
 	elseif(otherdevices['Alarme'] == 'Off') then
 		-- Vérification des jours fériés	
 		local json_holidays = JSON:decode(readAll(TMPDIR_HOLIDAYS))
-		for index, holiday_data in pairs(json_holidays.holidays) do
-			-- log("H=".. index .. " >> " .. holiday_data[1].name)
-			if(index == date_courante) then
-				log("Annulation du réveil : C'est " .. holiday_data[1].name)
+		for index, holiday_data in pairs(json_holidays) do
+			-- log("H=".. index .. " >> " .. holiday_data.holiday)
+			if(holiday_data.date_start == date_courante and holiday_data.type == "holiday") then
+				log("Annulation du réveil : C'est " .. holiday_data.holiday)
 				return
 			end
 		end
@@ -84,7 +83,6 @@ else
 
 	-- Mise à jour du fichier de la liste des jours fériés
 	update_holidays_data()
-	
 	heure_courante=os.date("%H:%M")
 	if(heure_courante == heure_reveil) then
 		-- print("[REVEIL]             == " .. heure_courante .. " ? " .. tostring((heure_courante == heure_reveil)))

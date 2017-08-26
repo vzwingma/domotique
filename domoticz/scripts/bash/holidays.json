@@ -1,0 +1,198 @@
+[
+    {
+        "holiday": "Vacances de Noël",
+        "date_start": "2016-12-18",
+        "date_end": "2017-01-02",
+        "type": "school_holiday",
+        "region": "Zone A"
+    },
+    {
+        "holiday": "Vacances de Noël",
+        "date_start": "2016-12-18",
+        "date_end": "2017-01-02",
+        "type": "school_holiday",
+        "region": "Zone C"
+    },
+    {
+        "holiday": "Vacances de Noël",
+        "date_start": "2016-12-18",
+        "date_end": "2017-01-02",
+        "type": "school_holiday",
+        "region": "Zone B"
+    },
+    {
+        "holiday": "Jour de l'an",
+        "date_start": "2017-01-01",
+        "date_end": "2017-01-01",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Vacances d'hiver ",
+        "date_start": "2017-02-05",
+        "date_end": "2017-02-19",
+        "type": "school_holiday",
+        "region": "Zone C"
+    },
+    {
+        "holiday": "Vacances d'hiver ",
+        "date_start": "2017-02-12",
+        "date_end": "2017-02-26",
+        "type": "school_holiday",
+        "region": "Zone B"
+    },
+    {
+        "holiday": "Vacances d'hiver ",
+        "date_start": "2017-02-19",
+        "date_end": "2017-03-05",
+        "type": "school_holiday",
+        "region": "Zone A"
+    },
+    {
+        "holiday": "Vacances de printemps",
+        "date_start": "2017-04-02",
+        "date_end": "2017-04-17",
+        "type": "school_holiday",
+        "region": "Zone C"
+    },
+    {
+        "holiday": "Vacances de printemps",
+        "date_start": "2017-04-09",
+        "date_end": "2017-04-23",
+        "type": "school_holiday",
+        "region": "Zone B"
+    },
+    {
+        "holiday": "Vacances de printemps",
+        "date_start": "2017-04-16",
+        "date_end": "2017-05-01",
+        "type": "school_holiday",
+        "region": "Zone A"
+    },
+    {
+        "holiday": "Lundi de Pâques",
+        "date_start": "2017-04-17",
+        "date_end": "2017-04-17",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Fête du travail",
+        "date_start": "2017-05-01",
+        "date_end": "2017-05-01",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Fête de la Victoire",
+        "date_start": "2017-05-08",
+        "date_end": "2017-05-08",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Ascension",
+        "date_start": "2017-05-25",
+        "date_end": "2017-05-25",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Lundi de Pentecôte",
+        "date_start": "2017-06-05",
+        "date_end": "2017-06-05",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Vacances d'été",
+        "date_start": "2017-07-09",
+        "date_end": "2017-09-03",
+        "type": "school_holiday",
+        "region": "Zone A"
+    },
+    {
+        "holiday": "Vacances d'été",
+        "date_start": "2017-07-09",
+        "date_end": "2017-09-03",
+        "type": "school_holiday",
+        "region": "Zone B"
+    },
+    {
+        "holiday": "Vacances d'été",
+        "date_start": "2017-07-09",
+        "date_end": "2017-09-03",
+        "type": "school_holiday",
+        "region": "Zone C"
+    },
+    {
+        "holiday": "Fête Nationale",
+        "date_start": "2017-07-14",
+        "date_end": "2017-07-14",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Assomption",
+        "date_start": "2017-08-15",
+        "date_end": "2017-08-15",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Vacances de la Toussaint",
+        "date_start": "2017-10-22",
+        "date_end": "2017-11-05",
+        "type": "school_holiday",
+        "region": "Zone A"
+    },
+    {
+        "holiday": "Vacances de la Toussaint",
+        "date_start": "2017-10-22",
+        "date_end": "2017-11-05",
+        "type": "school_holiday",
+        "region": "Zone C"
+    },
+    {
+        "holiday": "Vacances de la Toussaint",
+        "date_start": "2017-10-22",
+        "date_end": "2017-11-05",
+        "type": "school_holiday",
+        "region": "Zone B"
+    },
+    {
+        "holiday": "Toussaint",
+        "date_start": "2017-11-01",
+        "date_end": "2017-11-01",
+        "type": "holiday",
+        "region": "France"
+    },
+    {
+        "holiday": "Vacances de Noël",
+        "date_start": "2017-12-24",
+        "date_end": "2018-01-07",
+        "type": "school_holiday",
+        "region": "Zone A"
+    },
+    {
+        "holiday": "Vacances de Noël",
+        "date_start": "2017-12-24",
+        "date_end": "2018-01-07",
+        "type": "school_holiday",
+        "region": "Zone C"
+    },
+    {
+        "holiday": "Vacances de Noël",
+        "date_start": "2017-12-24",
+        "date_end": "2018-01-07",
+        "type": "school_holiday",
+        "region": "Zone B"
+    },
+    {
+        "holiday": "Noël",
+        "date_start": "2017-12-25",
+        "date_end": "2017-12-25",
+        "type": "holiday",
+        "region": "France"
+    }
+]
