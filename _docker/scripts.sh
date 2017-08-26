@@ -11,6 +11,8 @@ function createImages {
 	docker pull vzwingmann/domoticz:arm
 	echo "Pull de l'image GPIO DHT11"
 	docker pull vzwingmann/wiringpi:arm-dht11
+	echo "Pull de l'image GPIO Radio"
+	docker pull vzwingmann/wiringpi:arm-radio
 }
 
 ####################################
@@ -39,6 +41,7 @@ function createConteneurDHT11 {
 	docker rm --force dht11
 	docker run --name=dht11 -d \
 		--privileged \
+		-e "APP_NAME=DHT11" \
 		-p 9000:9000 \
 		-p 9100:9100 \
 		--device /dev/ttyAMA0:/dev/ttyAMA0 \
@@ -46,6 +49,24 @@ function createConteneurDHT11 {
 		-it vzwingmann/wiringpi:arm-dht11
 }
 
-createImages
-createConteneurDHT11
-createConteneurDomoticz
+function createConteneurRadio {
+	echo "Création du conteneur Radio"
+	docker rm --force radio
+	docker run --name=radio -d \
+		--privileged \
+		-e "APP_NAME=Radio" \
+		-p 9001:9000 \
+		-p 9101:9100 \
+		--device /dev/ttyAMA0:/dev/ttyAMA0 \
+		--device /dev/mem:/dev/mem \
+		-it vzwingmann/wiringpi:arm-radio
+}
+
+function main {
+#	createImages
+#	createConteneurDHT11
+	createConteneurRadio
+#	createConteneurDomoticz
+}
+
+main
