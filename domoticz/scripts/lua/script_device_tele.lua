@@ -92,6 +92,21 @@ if ( devicechanged['Livebox Player'] == 'On' ) then
 		)
 		coroutine.resume(co)
 	end	
-	log("FIN")
+elseif ( devicechanged['Livebox Player'] == 'Off' ) then
+	log("Arrêt de la télévision")
+	-- Test de la variable
+	ip_livebox_tv = uservariables["ip_livebox_tv"]
+	channel_tv = uservariables["channel_tv"]
+	if( ip_livebox_tv == nil ) then
+		error("[ERREUR] La variable {ip_livebox_tv} n'est pas définie dans Domoticz")
+		return 512
+	else
+		-- Lancement de la commande télé dans une coroutine
+		co = coroutine.create(function ()
+			callUrlLivebox(ip_livebox_tv, "116", false)
+			end
+		)
+		coroutine.resume(co)
+	end		
 end 
 return commandArray
