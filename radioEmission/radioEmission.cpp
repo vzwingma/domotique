@@ -176,11 +176,7 @@ void transmit(int blnOn)
 int main (int argc, char** argv)
 {
 	// Vérification des permissions
-	if (setuid(0))
-	{
-		perror("setuid");
-		return 1;
-	}
+	
 
 	scheduler_realtime();
 
@@ -190,38 +186,51 @@ int main (int argc, char** argv)
 	interruptor = atoi(argv[3]);
 	onoff = argv[4];
 		
-	string logcmd = "   Commande " + onoff + " sur telecommande " + argv[2] + " / bouton : " + argv[3] + " (pin #" + argv[1] + ")";
-	log(logcmd);
-
+	printf("{");
+	printf("\"commande\":{");
+	printf("   \"commande\":\"%s\",", argv[4]);
+	// printf("   \"telecommande\":%s,", argv[2]);
+	printf("   \"bouton\":\"%s\",", argv[3]);
+	printf("   \"pin\":\"#%s\"", argv[3]);
+	printf("},");
+	
 	//Si on ne trouve pas la librairie wiringPI, on arrête l'execution
     if(wiringPiSetup() == -1)
     {
-        log("ERREUR : Librairie Wiring PI introuvable, veuillez lier cette librairie...");
+        printf("\"erreur\":\"Librairie Wiring PI introuvable, veuillez lier cette librairie...\"");
+		//printf("}");
         return -1;
 
     }
     pinMode(pin, OUTPUT);
-//	log("   Pin GPIO correctement configure en sortie");
-
-	itob(sender,26);            // conversion du code de l'emetteur (ici 8217034) en code binaire
-	itobInterruptor(interruptor,4);
 	
-	
-	if(onoff=="on"){
-	 log("> Envoi du signal ON");
-	 for(int i=0;i<5;i++){
-		 transmit(true);            // envoyer ON
-		 delay(10);                 // attendre 10 ms (sinon le socket nous ignore)
-	 }
+	printf("\"resultat\":{");
+	printf("   \"gpio\":\"ok\",");
+	// 5 fois la commande
+	for(int exec = 0; exec < 5 ; exec ++){
 
-	}else{
-	 log("< Envoi du signal OFF");
-	 for(int i=0;i<5;i++){
-		 transmit(false);           // envoyer OFF
-		 delay(10);                // attendre 10 ms (sinon le socket nous ignore)
-	 }
+		itob(sender,26);            // conversion du code de l'emetteur (ici 8217034) en code binaire
+		itobInterruptor(interruptor,4);
+		
+		
+		if(onoff=="on"){
+			printf("   \"radio_%d\":\"on\",", exec);
+			for(int i=0;i<5;i++){
+				transmit(true);            // envoyer ON
+				delay(10);                 // attendre 10 ms (sinon le socket nous ignore)
+			}
+		}
+		else{
+			printf("   \"radio_%d\":\"off\",", exec);
+			for(int i=0;i<5;i++){
+				transmit(false);           // envoyer OFF
+				delay(10);                // attendre 10 ms (sinon le socket nous ignore)
+			}
+		}
+		scheduler_standard();
 	}
-//      log("<<<*>>>");    // execution terminée.
-	scheduler_standard();
+	printf("   \"scheduler\":\"standard\"");
+	printf("}");
+	printf("}");
 }
 
