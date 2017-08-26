@@ -2,7 +2,7 @@ commandArray = {}
 
 heure_reveil = uservariables["reveil_heure"]
 
-api_holidays = "https://holidayapi.com/v1/holidays?key=cae6007e-78f0-4ae1-8354-9b8b3db124e1&country=FR&year"
+api_holidays = "https://api.tuxx.co.uk/2.0/holidays/holidays.php"
 local TMPDIR_HOLIDAYS = "/tmp/holidays.tmp"
 	
 -- LOG
@@ -35,7 +35,7 @@ function update_holidays_data()
 	log("Année courante [".. annee_courante .. "] vs année chargée : [".. holidays_update.."]")
 	if( annee_courante ~= holidays_update) then 
 		log("Mise à jour de la liste des jours fériés")
-		local commande = "curl -v  -X GET 'https://api.tuxx.co.uk/2.0/holidays/holidays.php?date_start="..annee_courante.."-01-01&date_end="..annee_courante.."-12-31&regions=France&lang=fr' > " .. TMPDIR_HOLIDAYS
+		local commande = "curl -v  -X GET '".. api_holidays .."?date_start="..annee_courante.."-01-01&date_end="..annee_courante.."-12-31&regions=France&lang=fr' > " .. TMPDIR_HOLIDAYS
 		-- log("Execution de la commande de mise à jour : " .. commande)
 		os.execute(commande)
 		os.execute("printf " .. annee_courante .. " > " .. TMPDIR_HOLIDAYS_DATE)
