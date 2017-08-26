@@ -16,12 +16,12 @@ function envoiSMS (message)
 		error("[ALARME] ERREUR les variables [free_sms_user] [free_sms_pass] ne sont pas toutes définies dans Domoticz. Impossible d'envoyer de SMS")
 		return 512
 	else
-		log("Envoi du sms '" .. message .. "' avec le user " .. freeboxSMSUser)
+		-- log("Envoi du sms '" .. message .. "' avec le user " .. freeboxSMSUser)
 		datelog=os.date("%a")
 		
 		freeboxSMS_API_URL = "https://smsapi.free-mobile.fr/sendmsg?"
 		local commandeSMS = "curl '".. freeboxSMS_API_URL .. "user=" .. freeboxSMSUser .. "&pass=" .. freeboxSMSPass .. "&msg=" .. message .. "'"
-		log(""..commandeSMS)
+		-- log(""..commandeSMS)
 		os.execute(commandeSMS)
 	end
 end
