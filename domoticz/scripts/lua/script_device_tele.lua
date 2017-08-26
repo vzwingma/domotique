@@ -11,7 +11,7 @@ end
 -- @param ip_livebox_tv : code de la télécommande
 -- @param channel_tv : Chaine à lancer
 function commandeTeleCanalSat(ip_livebox_tv, channel_tv)
-	datelog=os.date("%a")
+
 	log("Démarrage de la Livebox TV [" .. ip_livebox_tv .. "] sur la chaine " .. channel_tv)
 	-- Démarrage / ON
 	callUrlLivebox(ip_livebox_tv, "116", false)
@@ -46,7 +46,7 @@ end
 -- @param appuilong : appui long ? 
 
 function callUrlLivebox(ip_livebox_tv, key, appuilong)
-	baseurl="http://" .. ip_livebox_tv .. ":8080/remoteControl/cmd?operation=01&key=" .. key .. "&mode="
+	local baseurl="http://" .. ip_livebox_tv .. ":8080/remoteControl/cmd?operation=01&key=" .. key .. "&mode="
 	if( appuilong == true ) then
 		url=baseurl .. "1"
 	else
