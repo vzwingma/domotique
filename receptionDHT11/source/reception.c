@@ -85,23 +85,24 @@ int main( void )
 		exit( 1 );
 	}
 	counterread = 0;
-	while ( counterread < 5 )
+	
+	
+	while ( counterread < 20 )
 	{
 		counterread ++;
 		read_dht11_dat();
 		
+		int i;
+		char buf[100];
 		// Création de JSON à la main
-		printf("{");
-		printf("   \"humidite\":%d.%d,", dht11_dat[0], dht11_dat[1]);
-		printf("   \"temperature\":%d.%d,", dht11_dat[2], dht11_dat[3]);
-		printf("    \"log\":\"Humidite = %d.%d %%, Temperature = %d.%d *C \"", dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
-		printf("}");
+		sprintf(buf, "{ \"humidite\":%d.%d, \"temperature\":%d.%d, \"log\":\"Humidite = %d.%d%, Temperature = %d.%d°C \"}", dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3], dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
 		
 		// Fin si les données sont correctees
-		if(dht11_dat[0] > 0 && dht11_dat[2] > 0){
+		if(dht11_dat[0] > 0 && dht11_dat[0] < 100 && dht11_dat[2] > 0 && dht11_dat[2] < 40){
+			printf("%s\n", buf);
 			exit(0);
 		}
-		delay( 1000 ); /* wait 1sec to refresh */
+		delay( 500 ); /* wait 1sec to refresh */
 	}
  	return(0);
 }
