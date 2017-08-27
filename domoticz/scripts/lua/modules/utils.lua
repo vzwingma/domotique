@@ -77,7 +77,7 @@ end
 function apiCallPOSTReadJSON(url, json_body)
 	local TMP_CALL = "/tmp/api_call.tmp"
 	local fullcmd = "curl -H \"Content-Type: application/json\" -H 'Cache-Control: no-cache' -X POST -d '".. json_body .."' '".. url .."'";
-	log("API", "Appel de [".. fullcmd .. "]")
+	-- log("API", "Appel de [".. fullcmd .. "]")
 	os.execute(fullcmd .. " > " .. TMP_CALL)
 	local resultat = readAll(TMP_CALL)
 	-- log("API", "> [".. resultat .. "]")
@@ -90,7 +90,7 @@ end
 function apiCallGetReadRaw(url)
 	local TMP_CALL = "/tmp/api_get.tmp"
 	local fullcmd = "curl -H \"Content-Type: application/json\" -X GET '".. url .."'";
-	log("API", "Appel de [".. fullcmd .. "]")
+	-- log("API", "Appel de [".. fullcmd .. "]")
 	os.execute(fullcmd .. " > " .. TMP_CALL)
 	local resultat = readAll(TMP_CALL)
 	-- log("API", "> [".. resultat .. "]")
