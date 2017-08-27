@@ -25,7 +25,7 @@ function logStatut(message)
 end
 
 -- Variable
-DEVICE_BOX=DEVICE_BOX
+DEVICE_BOX='Livebox Player'
 DEVICE_LAMPE1='Lampe 1'
 DEVICE_LAMPE2='Lampe 2'
 DEVICE_TELE='Interrupteur Salon'
