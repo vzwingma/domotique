@@ -15,8 +15,12 @@ function commandeTeleCanalSat(channel_tv)
 
 	logTV("Démarrage de la Livebox TV sur la chaine " .. channel_tv)
 	-- Démarrage / ON
-	callCommandeTV("116", false)
-	pause(2)
+	if getStatutTV() then
+		callCommandeTV("116", false)
+		pause(2)
+	else
+		logTV("La télévision est déjà allumée")
+	end
 	-- Son à 0
 	callCommandeTV("114", true)
 	callCommandeTV("114", true)
@@ -42,7 +46,7 @@ end
 -- Fonction principale
 --   Action ssi l'état de Livebox Player est à On
 --
-if ( devicechanged['Livebox Player'] == 'On' ) then
+if ( devicechanged[DEVICE_BOX] == 'On' ) then
 	logTV("Démarrage de la télévision")
 	-- Test de la variable
 	channel_tv = uservariables["channel_tv"]
@@ -57,13 +61,18 @@ if ( devicechanged['Livebox Player'] == 'On' ) then
 		)
 		coroutine.resume(co)
 	end	
-elseif ( devicechanged['Livebox Player'] == 'Off' ) then
-	logTV("Arrêt de la télévision")
-	-- Lancement de la commande télé dans une coroutine
-	co = coroutine.create(function ()
-		callCommandeTV("116", false)
-		end
-	)
-	coroutine.resume(co)
+elseif ( devicechanged[DEVICE_BOX] == 'Off' ) then
+	
+	if getStatutTV() then
+		logTV("Arrêt de la télévision")
+		-- Lancement de la commande télé dans une coroutine
+		co = coroutine.create(function ()
+			callCommandeTV("116", false)
+			end
+		)
+		coroutine.resume(co)
+	else
+		logTV("La télévision est déjà éteinte")
+	end
 end 
 return commandArray

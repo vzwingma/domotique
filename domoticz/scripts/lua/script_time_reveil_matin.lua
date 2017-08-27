@@ -39,9 +39,9 @@ function lancementReveil()
 	
 	if( jour_courant == 'Sun' or jour_courant == 'Sat') then
 		logReveil("Annulation du réveil : C'est le week-end")
-	elseif(otherdevices['Alarme'] == 'On') then
+	elseif(otherdevices[DEVICE_ALARME] == 'On') then
 		logReveil("Annulation du réveil : Personne n'est à la maison")
-	elseif(otherdevices['Alarme'] == 'Off') then
+	elseif(otherdevices[DEVICE_ALARME] == 'Off') then
 		-- Vérification des jours fériés	
 		local json_holidays = JSON:decode(readAll(TMPDIR_HOLIDAYS))
 		for index, holiday_data in pairs(json_holidays) do
@@ -53,7 +53,7 @@ function lancementReveil()
 		end
 	
 		logReveil("Déclenchement du réveil")
-		commandArray['Scene:Bon matin'] = 'On'
+		commandArray[SCENE_MATIN] = 'On'
 	end
 end
 

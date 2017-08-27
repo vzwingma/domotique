@@ -30,3 +30,17 @@ function callCommandeTV(key, appuilong)
 		apiCallGetReadRaw(url)
 	end
 end
+
+-- Fonction de statut de la Télé
+-- @return booléen du statut
+function getStatutTV()
+	local baseurl="http://"..ip_livebox_tv..":8080/remoteControl/cmd?operation=10"
+	local resultatStatutTV = apiCallGetReadJSON(baseurl)
+	local statutTV = resultatStatutTV.result.data.activeStandbyState == "0"
+	if(statutTV) then
+		logOrange("Télévision active sur " .. resultatStatutTV.result.data.osdContext) 
+	else
+		logOrange("Télévision éteinte") 
+	end
+	return statutTV
+end

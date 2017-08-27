@@ -50,7 +50,7 @@ end
 -- Mise à jour de l'alarme suivant le statut des périphériques
 -- @param : état des périphériques
 function updateAlarmeStatus(etat_peripheriques)
-	local etatActuelAlarme=otherdevices['Alarme']
+	local etatActuelAlarme=otherdevices[DEVICE_ALARME]
 	local SEUIL_ALARME = 3
 	local TMPDIR_COMPTEUR_OUT = "/tmp/compteur_smartphone_out.tmp"
 	-- Activation de l'alarme au bout de SEUIL_ALARME min
@@ -64,14 +64,14 @@ function updateAlarmeStatus(etat_peripheriques)
 		logAlarme("  > Compteur de mise en alarme = " .. compteurOff .. " / " .. SEUIL_ALARME)
 		if(compteurOff >= SEUIL_ALARME) then
 			logAlarme("Activation de l'alarme")
-			commandArray['Alarme']="On"
+			commandArray[DEVICE_ALARME]="On"
 			compteurOff = 0
 		end
 		os.execute("echo " .. compteurOff .. " > " .. TMPDIR_COMPTEUR_OUT)
 	elseif(etat_peripheriques and etatActuelAlarme == "On") then
 		-- Désactivation immédiate
 		logAlarme("Désactivation de l'alarme")
-		commandArray['Alarme']="Off"
+		commandArray[DEVICE_ALARME]="Off"
 		os.execute("echo 0 > " .. TMPDIR_COMPTEUR_OUT)
 	end
 	

@@ -1,23 +1,50 @@
+#!/usr/bin/lua
 commandArray = {}
 
 -- Package complémentaires
 package.path = package.path..";/src/domoticz/scripts/lua/modules/?.lua"
 require 'utils'
+require 'livebox_tele'
 -- logStatut dans utils
 -- envoiSMS dans utils
+-- getStatutTV dans utils
 
--- Script permettant de remettre à zéro les statuts des interrupteurs
+-- Mise à jour du statut de la TV
+function updateStatutTV()
+	-- Calcul Statut
+	local statutTV = getStatutTV()
+	if(statutTV and otherdevices[DEVICE_BOX] == 'Off') then
+		logStatut("Mise à jour du statut de la TV à " .. statutTV)
+		-- commandArray[DEVICE_BOX] = 'On'
+	elseif(!statutTV and otherdevices[DEVICE_BOX] == 'On') then
+		logStatut("Mise à jour du statut de la TV à " .. statutTV)
+		-- commandArray[DEVICE_BOX] = 'Off'
+	end
+end
+
+-- Rmettre à zéro les statuts des interrupteurs
 -- ou de forcer l'activation de scénarios afin de revenir dans un statut normal
+function updateStatutAlarme()
+	-- En soirée et alarme activée => Arrêt de tous les interrupteurs ssi c'est nécessaire
+	if( otherdevices[DEVICE_ALARME] == 'On' and now == '00:00' and 
+		(commandArray[DEVICE_LAMPE1] == 'On' or commandArray[DEVICE_LAMPE1] == 'On' or commandArray[DEVICE_TELE] == 'On' or commandArray[DEVICE_BOX] == 'On')) then
+		logStatut("Alarme activée - Arrêt global")
+		envoiSMS("Alarme activée - Arrêt global")
+		commandArray[DEVICE_LAMPE1] = 'Off'
+		commandArray[DEVICE_LAMPE2] = 'Off'
+		commandArray[DEVICE_TELE] = 'Off'
+		commandArray[DEVICE_BOX] = 'Off'
+	end
+end 
+
+
+
+-- Boucle principale
 now=os.date("%H:%M")
 logStatut("Mise à zéro des statuts à " .. now)
-	-- En soirée et alarme activée => Arrêt de tous les interrupteurs ssi c'est nécessaire
-if( otherdevices['Alarme'] == 'On' and now == '00:00' and 
-	(commandArray['Lampe 1'] == 'On' or commandArray['Lampe 1'] == 'On' or commandArray['Interrupteur Salon'] == 'On' or commandArray['Livebox Player'] == 'On')) then
-	logStatut("Alarme activée - Arrêt global")
-	envoiSMS("Alarme activée - Arrêt global")
-	commandArray['Lampe 1'] = 'Off'
-	commandArray['Lampe 2'] = 'Off'
-	commandArray['Interrupteur Salon'] = 'Off'
-	commandArray['Livebox Player'] = 'Off'
-end
+-- Statut TV
+updateStatutTV
+-- Statut Alarme
+updateStatutAlarme
+
 return commandArray
