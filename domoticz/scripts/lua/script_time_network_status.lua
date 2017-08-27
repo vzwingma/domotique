@@ -46,7 +46,7 @@ function getPeripheriquesConnectes()
 	local TMP_PERIPHERIQUES = "/tmp/peripheriques.tmp"
 
 	--  Appel sur la liste des périphériques
-	log("Recherche des périphériques connus de la LiveBox Orange")
+	log("Recherche des connexions des périphériques sur la LiveBox Orange")
 	local commandeurl="curl -X POST -H 'Cache-Control: no-cache' -d '' " .. apiLiveBox .. "/sysbus/Devices:get"
 	os.execute(commandeurl .. " > " .. TMP_PERIPHERIQUES)
 	-- log(">>" .. commandeurl.. "<<")
@@ -58,8 +58,8 @@ function getPeripheriquesConnectes()
 		for mac in string.gmatch(mac_adress_smartphones, patternMacAdresses) do
 			if(mac == peripherique.Key)
 			then
-				log("Statut du périphérique [" .. peripherique.Name .. "] [" .. mac .. "]  :  actif:" .. tostring((peripherique.Active)))
 				if(peripherique.Active) then
+					log("- [" .. peripherique.Name .. "] [" .. mac .. "] actif")
 					etatSmartphone = true
 				end
 			end
@@ -74,9 +74,9 @@ end
 -- @param : état des périphériques
 function updateAlarmeStatus(etat_peripheriques)
 	local etatActuelAlarme=otherdevices['Alarme']
-	local SEUIL_ALARME = 5
+	local SEUIL_ALARME = 3
 	local TMPDIR_COMPTEUR_OUT = "/tmp/compteur_smartphone_out.tmp"
-	-- Activation de l'alarme au bout de 5 min
+	-- Activation de l'alarme au bout de SEUIL_ALARME min
 
 	if(not etat_peripheriques and etatActuelAlarme == "Off") then
 		compteurOff=readAll(TMPDIR_COMPTEUR_OUT)
