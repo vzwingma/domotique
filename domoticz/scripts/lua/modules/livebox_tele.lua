@@ -20,13 +20,12 @@ function callCommandeLivebox(ip_livebox_tv, key, appuilong)
 		url=baseurl .. "0"
 	end
 	
-	logTV("Appel de l'URL : [" .. url .. "]")
-	os.execute("curl '".. url .. "'")
+	apiCallGetReadRaw(url)
 	-- Relachement de l'appui long	
 	if( appuilong == true ) then
-		os.execute("sleep 0.5")
+		pause(0.5)
 		url=baseurl .. "2"
-		logTV("Appel de l'URL : [" .. url .. "]")
-		os.execute("curl '".. url .. "'")
+		-- logTV("Appel de l'URL : [" .. url .. "]")
+		apiCallGetReadRaw(url)
 	end
 end

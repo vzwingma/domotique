@@ -2,6 +2,10 @@ commandArray = {}
 -- Liste des adresse MAC des smartphones sur la Freebox
 mac_adress_smartphones=uservariables["mac_adress_smartphones"]
 
+-- Package complémentaires
+package.path = package.path..";/src/domoticz/scripts/lua/modules/?.lua"
+require 'utils'
+-- logOrange dans utils
 -- URL des API
 apiLiveBox="http://livebox.home"
 apiDomoticz="http://localhost:8080/json.htm?"
@@ -10,54 +14,29 @@ apiDomoticz="http://localhost:8080/json.htm?"
 local patternMacAdresses = string.format("([^%s]+)", ";")
 
 
-
--- LOG
-function log(message)
-	print("[ORANGE] " .. message)
-end
-
-function logAlarme(message)
-	print("[ALARME] " .. message)
-end
-
--- Fonction de lecture du contenu d'un fichier
--- @param : chemin vers le fichier
--- @return le contenu du fichier
-function readAll(file)
-    local f = io.open(file, "rb")
-	if(f == nil) then
-		return ""
-	else
-		local content = f:read("*all")
-		f:close()
-		return content
-	end
-end
-
 -- Fonction de recherche des périphériques connectés
 -- Connexion à la Livebox pour lister les périphériques
 -- @param apiLiveBox : URL de l'API Livebox
 -- @param mac_adress_smartphones: variable domoticz de la liste des adresses MAC à vérifier
 -- @return périphériques connectés ?
 function getPeripheriquesConnectes() 
-
 	local TMP_PERIPHERIQUES = "/tmp/peripheriques.tmp"
 
 	--  Appel sur la liste des périphériques
-	log("Recherche des connexions des périphériques sur la LiveBox Orange")
+	logOrange("Recherche des connexions des périphériques sur la LiveBox Orange")
 	local commandeurl="curl -X POST -H 'Cache-Control: no-cache' -d '' " .. apiLiveBox .. "/sysbus/Devices:get"
 	os.execute(commandeurl .. " > " .. TMP_PERIPHERIQUES)
-	-- log(">>" .. commandeurl.. "<<")
+	-- logOrange(">>" .. commandeurl.. "<<")
 	local json_peripheriques = JSON:decode(readAll(TMP_PERIPHERIQUES))
 	local etatSmartphone = false
 	-- Liste des périphériques
 	for index, peripherique in pairs(json_peripheriques.status) do
---		log("Statut du périphérique " .. index .. " :: " .. peripherique.Key)
+--		logOrange("Statut du périphérique " .. index .. " :: " .. peripherique.Key)
 		for mac in string.gmatch(mac_adress_smartphones, patternMacAdresses) do
 			if(mac == peripherique.Key)
 			then
 				if(peripherique.Active) then
-					log("- [" .. peripherique.Name .. "] [" .. mac .. "] actif")
+					logOrange("- [" .. peripherique.Name .. "] [" .. mac .. "] actif")
 					etatSmartphone = true
 				end
 			end
@@ -109,10 +88,7 @@ if( mac_adress_smartphones == nil ) then
 	error("[ORANGE] La variable {mac_adress_smartphones} ne sont pas définies dans Domoticz")
 	return 512
 else
-	log("Test de présence des appareils d'adresses MAC (" .. mac_adress_smartphones .. ")")
-	-- log("Chargement de la librairie JSON")
-	JSON = (loadfile "/src/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
-
+	logOrange("Test de présence des appareils d'adresses MAC (" .. mac_adress_smartphones .. ")")
 	-- Recherche des périphériques connectés
 	peripheriques_up = getPeripheriquesConnectes()
 	-- Mise à jour de l'alarme
