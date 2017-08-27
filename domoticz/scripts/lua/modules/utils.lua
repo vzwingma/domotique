@@ -24,6 +24,18 @@ function logStatut(message)
 	log("STATUT", message)
 end
 
+-- Variable
+DEVICE_BOX=DEVICE_BOX
+DEVICE_LAMPE1='Lampe 1'
+DEVICE_LAMPE2='Lampe 2'
+DEVICE_TELE='Interrupteur Salon'
+DEVICE_ALARME='Alarme'
+DEVICE_PIR='Capteur PIR'
+
+SCENE_MATIN='Scene:Bon matin'
+SCENE_NUIT='Scene:Bonne nuit'
+SCENE_ALARME='Scene:Alarme On'
+SCENE_TV='Scene:Télévision'
 
 -- Pause
 -- @param tempo : tempo d'après la commande en seconde
