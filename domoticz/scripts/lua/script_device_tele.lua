@@ -13,25 +13,25 @@ require 'utils'
 -- @param channel_tv : Chaine à lancer
 function commandeTeleCanalSat(channel_tv)
 
-	logTV("Démarrage de la Livebox TV sur la chaine " .. channel_tv)
 	-- Démarrage / ON
-	if getStatutTV() then
+	if not getStatutTV() then
+		logTV("Démarrage de la Livebox TV sur la chaine " .. channel_tv)
 		callCommandeTV("116", false)
-		pause(2)
+		pause(5)
+		-- (Son -) callCommandeTV("114", true)
+		-- CanalSat	normalement déjà configurée
+		-- TODO : A tester à partir du statut
+		-- Découpage de la chaine en chiffre
+		size=string.len(channel_tv)
+		for i=1,size,1 
+		do
+			touche=string.sub(channel_tv, i, i)
+			callCommandeTV(512 + touche, false)
+		end
+		-- Son à +1 callCommandeTV("115", true)
 	else
 		logTV("La télévision est déjà allumée")
 	end
-	-- (Son -) callCommandeTV("114", true)
-	-- CanalSat	normalement déjà configurée
-	-- TODO : A tester à partir du statut
-	-- Découpage de la chaine en chiffre
-	size=string.len(channel_tv)
-	for i=1,size,1 
-	do
-		touche=string.sub(channel_tv, i, i)
-	 	callCommandeTV(512 + touche, false)
-	end
-	-- Son à +1 callCommandeTV("115", true)
 end
 
 

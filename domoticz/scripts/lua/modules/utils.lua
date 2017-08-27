@@ -93,7 +93,7 @@ function apiCallGetReadRaw(url)
 	log("API", "Appel de [".. fullcmd .. "]")
 	os.execute(fullcmd .. " > " .. TMP_CALL)
 	local resultat = readAll(TMP_CALL)
-	log("API", "> [".. resultat .. "]")
+	-- log("API", "> [".. resultat .. "]")
 	return resultat
 end
 -- Appel d'API GET et Retour JSON
@@ -126,16 +126,16 @@ end
 -- @param inputstr : chaine à splitter
 -- @param sep : séparateur
 function splitString(inputstr, sep)
-        if sep == nil then
-                sep = "%s"
-        end
-        local t={} ; i=1
-        for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-                t[i] = str
-                -- logDHT11(" Split [" .. i .. "] " .. str)
-                i = i + 1
-        end
-        return t
+	if sep == nil then
+		sep = "%s"
+	end
+	local t={} ; i=1
+	for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+		t[i] = str
+		-- logDHT11(" Split [" .. i .. "] " .. str)
+		i = i + 1
+	end
+	return t
 end
 
 
