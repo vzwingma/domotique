@@ -1,44 +1,22 @@
 #!/usr/bin/lua
 commandArray = {}
 
--- LOG
-function log(message)
-	print("[ALARME] " .. message)
-end
+-- Package complémentaires
+package.path = package.path..";/src/domoticz/scripts/lua/modules/?.lua"
+require 'utils'
+-- LOG dans utils
+-- envoiSMS dans utils
 
--- Fonction d'envoi de SMS via l'API Freebox mobile
-function envoiSMS (message)
-
-	local freeboxSMSUser = uservariables["free_sms_user"]
-	local freeboxSMSPass = uservariables["free_sms_pass"]
-
-	if( freeboxSMSUser == nil or freeboxSMSPass == nil) then
-		error("[ALARME] ERREUR les variables [free_sms_user] [free_sms_pass] ne sont pas toutes définies dans Domoticz. Impossible d'envoyer de SMS")
-		return 512
-	else
-		-- log("Envoi du sms '" .. message .. "' avec le user " .. freeboxSMSUser)
-		datelog=os.date("%a")
-		
-		freeboxSMS_API_URL = "https://smsapi.free-mobile.fr/sendmsg?"
-		local commandeSMS = "curl '".. freeboxSMS_API_URL .. "user=" .. freeboxSMSUser .. "&pass=" .. freeboxSMSPass .. "&msg=" .. message .. "'"
-		-- log(""..commandeSMS)
-		os.execute(commandeSMS)
-	end
-end
-
-
-
--- print("[ALARME] Vérification du statut de l'alarme")
 now=os.date("%H%M")
 if ( devicechanged['Alarme'] == 'On' ) then
 
-	log("Activation de l'alarme")
+	logAlarme("Activation de l'alarme")
 	envoiSMS("Alarme activée")
 	commandArray['Scene:Alarme On'] = 'On'
 
 	-- Désactivation de l'alarme 
 elseif ( devicechanged['Alarme'] == 'Off' ) then
-	log("Désactivation de l'alarme")
+	logAlarme("Désactivation de l'alarme")
 	-- En journée : Allumage de la télévision et la lampe 1
 	if( now <= "2230" and now >= "0700" ) then
 		envoiSMS("Alarme désactivée - Bonjour")
@@ -52,11 +30,11 @@ elseif ( devicechanged['Alarme'] == 'Off' ) then
 end
 
 if ( devicechanged['Alarme'] or devicechanged['Capteur PIR'] ) then
-	log("Statut de l'alarme		" .. otherdevices['Alarme'])
-	log("Statut du détecteur de présence	" .. otherdevices['Capteur PIR'])
+	logAlarme("Statut de l'alarme		" .. otherdevices['Alarme'])
+	logAlarme("Statut du détecteur de présence	" .. otherdevices['Capteur PIR'])
 	
 	if( otherdevices['Alarme'] == 'On' and otherdevices['Capteur PIR'] == 'On' ) then
-		log("[ALERTE] Présence de quelqu'un alors que l'alarme est activée")
+		logAlarme("[ALERTE] Présence de quelqu'un alors que l'alarme est activée")
 		envoiSMS("ALERTE INTRUSION")
 	end
 end

@@ -5,8 +5,7 @@ mac_adress_smartphones=uservariables["mac_adress_smartphones"]
 -- URL des API
 apiLiveBox="http://livebox.home"
 apiDomoticz="http://localhost:8080/json.htm?"
--- Session Token
-session_token=""
+
 -- 
 local patternMacAdresses = string.format("([^%s]+)", ";")
 
@@ -36,10 +35,9 @@ function readAll(file)
 end
 
 -- Fonction de recherche des périphériques connectés
--- Connexion à lan/browser/pub/ pour lister les périphériques
--- @param session_token : token de session Freebox
--- @param apiFreeboxv3 : URL de l'API Freebox
--- @param freebox_mac_adress_smartphones: variable domoticz de la liste des adresses MAC à vérifier
+-- Connexion à la Livebox pour lister les périphériques
+-- @param apiLiveBox : URL de l'API Livebox
+-- @param mac_adress_smartphones: variable domoticz de la liste des adresses MAC à vérifier
 -- @return périphériques connectés ?
 function getPeripheriquesConnectes() 
 

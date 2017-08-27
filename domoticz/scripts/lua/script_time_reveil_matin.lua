@@ -32,7 +32,7 @@ function update_holidays_data()
 	-- Vérification de la date du fichier. Si l'année change : Appel de l'API pour mise à jour
 	local TMPDIR_HOLIDAYS_DATE = "/tmp/holidays.date.tmp"
 	local holidays_update = readAll(TMPDIR_HOLIDAYS_DATE)
-	log("Année courante [".. annee_courante .. "] vs année chargée : [".. holidays_update.."]")
+	-- log("Année courante [".. annee_courante .. "] vs année chargée : [".. holidays_update.."]")
 	if( annee_courante ~= holidays_update) then 
 		log("Mise à jour de la liste des jours fériés")
 		local commande = "curl -v  -X GET '".. api_holidays .."?date_start="..annee_courante.."-01-01&date_end="..annee_courante.."-12-31&regions=France&lang=fr' > " .. TMPDIR_HOLIDAYS
