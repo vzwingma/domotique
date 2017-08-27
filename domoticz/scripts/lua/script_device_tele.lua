@@ -21,13 +21,9 @@ function commandeTeleCanalSat(channel_tv)
 	else
 		logTV("La télévision est déjà allumée")
 	end
-	-- Son à 0
-	callCommandeTV("114", true)
-	callCommandeTV("114", true)
-	callCommandeTV("114", true)
-	callCommandeTV("114", true)
+	-- (Son -) callCommandeTV("114", true)
 	-- CanalSat	normalement déjà configurée
-
+	-- TODO : A tester à partir du statut
 	-- Découpage de la chaine en chiffre
 	size=string.len(channel_tv)
 	for i=1,size,1 
@@ -35,10 +31,7 @@ function commandeTeleCanalSat(channel_tv)
 		touche=string.sub(channel_tv, i, i)
 	 	callCommandeTV(512 + touche, false)
 	end
-	-- Son à +3
-	callCommandeTV("115", true)
-	callCommandeTV("115", false)
-	callCommandeTV("115", false)
+	-- Son à +1 callCommandeTV("115", true)
 end
 
 
