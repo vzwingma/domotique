@@ -21,7 +21,7 @@ function callApiDockerRadio(parametre)
 	json_body = json_body .. '\"commande\" : \"radioEmission\",'
 	json_body = json_body .. '\"params\" : [ "'.. gpio_pin ..'\", '.. parametre .. ']'
 	json_body = json_body .. "}"
-	logRadio("Appel de la commande : ".. json_body)
+	-- logRadio("Appel de la commande : ".. json_body)
 	local resultat = apiCallPOSTReadJSON(url, json_body)
 	if(resultat.erreur ~= nil) then
 		error("[RADIO] Erreur lors de la commande : " .. resultat.erreur)

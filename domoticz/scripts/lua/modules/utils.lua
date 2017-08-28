@@ -23,6 +23,9 @@ end
 function logStatut(message)
 	log("STATUT", message)
 end
+function logReveil(message)
+	log("REVEIL", message)
+end
 
 -- Variable
 DEVICE_BOX='Livebox Player'

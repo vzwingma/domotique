@@ -1,3 +1,4 @@
+#!/usr/bin/lua
 commandArray = {}
 
 -- Package complémentaires
@@ -15,10 +16,10 @@ logStatut("Mise à zéro des statuts à " .. now)
 	-- Calcul Statut
 	local statutTV = getStatutTV()
 	if(statutTV and otherdevices[DEVICE_BOX] == 'Off') then
-		logStatut("Mise à jour du statut de la TV à " .. statutTV)
+		logStatut("Mise à jour du statut de la TV à On")
 		commandArray[DEVICE_BOX] = 'On'
 	elseif(not statutTV and otherdevices[DEVICE_BOX] == 'On') then
-		logStatut("Mise à jour du statut de la TV à " .. statutTV)
+		logStatut("Mise à jour du statut de la TV à Off")
 		commandArray[DEVICE_BOX] = 'Off'
 	end
 -- Statut Alarme
