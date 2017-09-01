@@ -88,7 +88,7 @@ if( mac_adress_smartphones == nil ) then
 	error("[ORANGE] La variable {mac_adress_smartphones} ne sont pas définies dans Domoticz")
 	return 512
 else
-	logOrange("Test de présence des appareils d'adresses MAC (" .. mac_adress_smartphones .. ")")
+	-- logOrange("Test de présence des appareils d'adresses MAC (" .. mac_adress_smartphones .. ")")
 	-- Recherche des périphériques connectés
 	peripheriques_up = getPeripheriquesConnectes()
 	-- Mise à jour de l'alarme
