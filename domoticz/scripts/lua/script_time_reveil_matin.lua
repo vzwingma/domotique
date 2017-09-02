@@ -66,6 +66,7 @@ else
 	-- Mise à jour du fichier de la liste des jours fériés
 	update_holidays_data()
 	heure_courante=os.date("%H:%M")
+	--logReveil(heure_courante..":"..heure_reveil)
 	if(heure_courante == heure_reveil) then
 		-- Lancement des actions seulement la semaine et seulement si quelqu'un est là :
 		lancementReveil()

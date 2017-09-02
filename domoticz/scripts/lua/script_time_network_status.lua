@@ -36,8 +36,14 @@ function getPeripheriquesConnectes()
 			if(mac == peripherique.Key)
 			then
 				if(peripherique.Active) then
-					logOrange("- [" .. peripherique.Name .. "] [" .. mac .. "] actif")
-					etatSmartphone = true
+					logOrange("- [" .. peripherique.Name .. "] actif")
+					local lastChanged = os.time() - convertStringUTCTimeToSeconds(peripherique.LastChanged)
+					logOrange(" Dernière activité = " .. peripherique.LastChanged .. " :: " .. lastChanged .. "s");
+					if(lastChanged > 600) then
+						logOrange(" Dernière activité date d'il y a plus de 10 minutes. Le périphérique est considéré inactif")
+					else
+						etatSmartphone = true
+					end
 				end
 			end
 		end

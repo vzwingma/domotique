@@ -111,6 +111,24 @@ end
 -- ## UTILITAIRES FICHIER / STRING
 -- #################################################
 
+function convertStringUTCTimeToSeconds(dateString)
+	local pattern = "(%d+)%-(%d+)%-(%d+)T(%d+):(%d+):(%d+)Z"
+	local xyear, xmonth, xday, xhour, xminute, xseconds = dateString:match(pattern)
+	-- Le parsing est en heure locale. AJout de la différence avec UTC
+	local convertedTimestamp = os.time({year = xyear, month = xmonth, day = xday, hour = xhour, min = xminute, sec = xseconds})
+	local tzInSec = get_timezone()
+	-- log("DATE", "".. dateString.."->" ..convertedTimestamp.."s + " .. tzInSec .. "s")
+	return convertedTimestamp + tzInSec
+end
+
+function get_timezone()
+	local now = os.time()
+	local utcdate   = os.date("!*t", now)
+	local localdate = os.date("*t", now)
+	localdate.isdst = false -- this is the trick
+	return os.difftime(os.time(localdate), os.time(utcdate))
+end
+
 -- Fonction de lecture du contenu d'un fichier
 -- @param : chemin vers le fichier
 -- @return le contenu du fichier
