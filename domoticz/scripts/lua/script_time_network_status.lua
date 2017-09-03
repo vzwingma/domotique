@@ -25,7 +25,7 @@ function getPeripheriquesConnectes()
 
 	--  Appel sur la liste des périphériques
 	logOrange("Recherche des connexions des périphériques sur la LiveBox Orange")
-	local commandeurl="curl -X POST -H 'Cache-Control: no-cache' -d '' " .. apiLiveBox .. "/sysbus/Devices:get"
+	local commandeurl="curl -s -X POST -H 'Cache-Control: no-cache' -d '' " .. apiLiveBox .. "/sysbus/Devices:get"
 	os.execute(commandeurl .. " > " .. TMP_PERIPHERIQUES)
 	-- logOrange(">>" .. commandeurl.. "<<")
 	local json_peripheriques = JSON:decode(readAll(TMP_PERIPHERIQUES))
