@@ -30,6 +30,8 @@ function createConteneurDomoticz {
 		-p 8080:8080 \
 		-p 443:443 \
 		-e TZ=Europe/Paris \
+		-e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/vc/lib/ \
+		-v /opt/vc/:/opt/vc/ \
 		-v /etc/timezone:/etc/timezone:ro \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $DOMOTICZ_PATH/database:/config \
