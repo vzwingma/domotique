@@ -1,6 +1,7 @@
 commandArray = {}
--- Liste des adresse MAC des smartphones sur la Freebox
-mac_adress_smartphones=uservariables["mac_adress_smartphones"]
+-- Liste des adresse MAC des smartphones sur le Wifi
+mac_adress_smartphones=uservariables["at_home_mac_adresses"]
+at_home_invite=uservariables["at_home_invite"]
 
 -- Package complémentaires
 package.path = package.path..";/src/domoticz/scripts/lua/modules/?.lua"
@@ -97,6 +98,12 @@ else
 	-- logOrange("Test de présence des appareils d'adresses MAC (" .. mac_adress_smartphones .. ")")
 	-- Recherche des périphériques connectés
 	peripheriques_up = getPeripheriquesConnectes()
+	
+	-- Forcage si invité
+	if(peripheriques_up == false and at_home_invite == "true") then
+		logOrange("Invités à la maison. Présence forcée à active")
+		peripheriques_up = true
+	end
 	-- Mise à jour de l'alarme
 	updateAlarmeStatus(peripheriques_up)
 end
