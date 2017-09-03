@@ -22,9 +22,11 @@ function createConteneurDomoticz {
 	echo "Création du conteneur Domoticz"
 	docker rm --force domoticz
 	docker run --name=domoticz -d \
+		--restart always \
 		--privileged \
 		--restart=always \
 		--link dht11 \
+		--link radio \
 		-p 8080:8080 \
 		-p 443:443 \
 		-e TZ=Europe/Paris \
@@ -41,8 +43,8 @@ function createConteneurDHT11 {
 	docker rm --force dht11
 	docker run --name=dht11 -d \
 		--privileged \
+		--restart always \
 		-e "APP_NAME=DHT11" \
-		-p 9000:9000 \
 		-p 9100:9100 \
 		--device /dev/ttyAMA0:/dev/ttyAMA0 \
 		--device /dev/mem:/dev/mem \
@@ -54,19 +56,40 @@ function createConteneurRadio {
 	docker rm --force radio
 	docker run --name=radio -d \
 		--privileged \
+		--restart always \
 		-e "APP_NAME=Radio" \
-		-p 9001:9000 \
 		-p 9101:9100 \
 		--device /dev/ttyAMA0:/dev/ttyAMA0 \
 		--device /dev/mem:/dev/mem \
 		-it vzwingmann/wiringpi:arm-radio
 }
 
+function createConteneurDHT11TEST {
+	echo "Création du conteneur DHT11"
+	docker rm --force dht11-test
+	docker run --name=dht11-test -d \
+		--privileged \
+		--restart always \
+		-e "APP_NAME=DHT11-TEST" \
+		-v ~/appli/receptionDHT11:/appli/receptionDHT11 \
+		-p 9500:9100 \
+		-p 9501:9000 \
+		--device /dev/ttyAMA0:/dev/ttyAMA0 \
+		--device /dev/mem:/dev/mem \
+		-it vzwingmann/wiringpi:arm-dht11
+}
+
+function main-test {
+	createConteneurDHT11TEST
+}
+
+
 function main {
-#	createImages
-#	createConteneurDHT11
+	createImages
+	createConteneurDHT11
 	createConteneurRadio
-#	createConteneurDomoticz
+	createConteneurDomoticz
 }
 
 main
+# main-test
