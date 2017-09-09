@@ -29,6 +29,7 @@ function callCommandeTV(key, appuilong)
 		url=baseurl .. "2"
 		apiCallGetReadRaw(url)
 	end
+	pause(0.5)
 end
 
 -- Fonction de statut de la Télé

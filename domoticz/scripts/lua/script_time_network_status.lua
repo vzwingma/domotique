@@ -8,12 +8,12 @@ package.path = package.path..";/src/domoticz/scripts/lua/modules/?.lua"
 require 'utils'
 -- logOrange dans utils
 -- URL des API
-apiLiveBox="http://livebox.home"
-apiDomoticz="http://localhost:8080/json.htm?"
+local apiLiveBox="http://livebox.home"
+local apiDomoticz="http://localhost:8080/json.htm?"
 
 -- 
 local patternMacAdresses = string.format("([^%s]+)", ";")
-
+local dureeInactive = 15
 
 -- Fonction de recherche des périphériques connectés
 -- Connexion à la Livebox pour lister les périphériques
@@ -37,11 +37,17 @@ function getPeripheriquesConnectes()
 			if(mac == peripherique.Key)
 			then
 				if(peripherique.Active) then
-					logOrange("- [" .. peripherique.Name .. "] actif")
 					local lastChanged = os.time() - convertStringUTCTimeToSeconds(peripherique.LastChanged)
-					logOrange(" Dernière activité = " .. peripherique.LastChanged .. " :: " .. lastChanged .. "s");
-					if(lastChanged > 600) then
-						logOrange(" Dernière activité date d'il y a plus de 10 minutes. Le périphérique est considéré inactif")
+					local lastConnect = os.time() - convertStringUTCTimeToSeconds(peripherique.LastConnection)
+					if(lastChanged < 0) then
+						lastChanged = 0
+					end
+					if(lastConnect < 0) then
+						lastConnect = 0
+					end
+					logOrange("- [" .. peripherique.Name .. "] actif; Dernière activité = " .. peripherique.LastChanged .. " :: " .. lastChanged .. "s / Dernière connexion " .. peripherique.LastConnection .. " :: " .. lastConnect .. "s");
+					if(lastChanged > dureeInactive * 60 or lastConnect > dureeInactive * 60 ) then
+						logOrange(" Dernière activité, il y a plus de " .. dureeInactive .. " minutes. Le périphérique est considéré inactif")
 					else
 						etatSmartphone = true
 					end
