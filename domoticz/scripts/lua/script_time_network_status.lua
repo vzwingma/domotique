@@ -45,7 +45,7 @@ function getPeripheriquesConnectes()
 					if(lastConnect < 0) then
 						lastConnect = 0
 					end
-					logOrange("- [" .. peripherique.Name .. "] actif; Dernière activité = " .. peripherique.LastChanged .. " :: " .. lastChanged .. "s / Dernière connexion " .. peripherique.LastConnection .. " :: " .. lastConnect .. "s");
+					logOrange("- [" .. peripherique.Name .. "] actif; Dernière activité = " .. peripherique.LastChanged .. " :: " .. lastChanged .. "s / Dernière connexion = " .. peripherique.LastConnection .. " :: " .. lastConnect .. "s");
 					if(lastChanged > dureeInactive * 60 or lastConnect > dureeInactive * 60 ) then
 						logOrange(" Dernière activité, il y a plus de " .. dureeInactive .. " minutes. Le périphérique est considéré inactif")
 					else
