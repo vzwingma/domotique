@@ -32,13 +32,13 @@ services:
     restart: always
 # DOMOTICZ
   domoticz:
-    image: vzwingmann/domoticz:arm
+    image: vzwingmann/domoticz-v2:arm
     environment:
       - TZ=Europe/Paris
       - LD_LIBRARY_PATH=/opt/vc/lib/
     ports:
       - 8080:8080
-      - 443:443
+      - 443:8443
     volumes:
       - /opt/vc/:/opt/vc/
       - /etc/timezone:/etc/timezone:ro
