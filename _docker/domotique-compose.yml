@@ -1,0 +1,52 @@
+version: "3.2"
+services:
+# CAPTEUR DHT11
+  dht11:
+    image: vzwingmann/wiringpi:arm-dht11
+    environment:
+      - APP_NAME=DHT11
+    ports:
+      - 9100:9100
+    devices:
+      - /dev/ttyAMA0:/dev/ttyAMA0
+      - /dev/mem:/dev/mem
+    privileged: true
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+# CAPTEUR RADIO
+  radio:
+    image: vzwingmann/wiringpi:arm-radio
+    environment:
+      - APP_NAME=Radio
+    ports:
+      - 9101:9100
+    devices:
+      - /dev/ttyAMA0:/dev/ttyAMA0
+      - /dev/mem:/dev/mem
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    privileged: true
+    restart: always
+# DOMOTICZ
+  domoticz:
+    image: vzwingmann/domoticz:arm
+    environment:
+      - TZ=Europe/Paris
+      - LD_LIBRARY_PATH=/opt/vc/lib/
+    ports:
+      - 8080:8080
+      - 443:443
+    volumes:
+      - /opt/vc/:/opt/vc/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /home/pi/appli/domoticz/database:/config
+      - /home/pi/appli/domoticz/www/images/floorplans:/src/domoticz/www/images/floorplans
+      - /home/pi/appli/domoticz/scripts/lua:/src/domoticz/scripts/lua
+    depends_on:
+      - dht11
+      - radio
+    restart: always
