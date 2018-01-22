@@ -5,7 +5,7 @@ commandArray = {}
 package.path = package.path..";/src/domoticz/scripts/lua/modules/?.lua"
 require 'utils'
 
-local ip_livebox_tv="192.168.1.10"
+local ip_livebox_tv="192.168.1.13"
 
 -- Fonction d'appel à l'API du Orange Livebox Player
 -- Pour lancer une commande : Curl
@@ -36,14 +36,15 @@ end
 -- @return booléen du statut
 function getStatutTV()
 	local baseurl="http://"..ip_livebox_tv..":8080/remoteControl/cmd?operation=10"
+	-- logOrange("Statut : " .. baseurl) 
 	local resultatStatutTV = apiCallGetReadJSON(baseurl)
 	if( resultatStatutTV ~= nil ) then 
 		local statutTV = resultatStatutTV.result.data.activeStandbyState == "0"
-		-- if(statutTV) then
-		--	logOrange("Télévision active sur " .. resultatStatutTV.result.data.osdContext) 
-		-- else
-		--	logOrange("Télévision éteinte") 
-		-- end
+		 if(statutTV) then
+			logOrange("Télévision active sur " .. resultatStatutTV.result.data.osdContext) 
+		 else
+			logOrange("Télévision éteinte") 
+		 end
 		return statutTV
 	else
 		return false
