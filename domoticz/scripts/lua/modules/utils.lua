@@ -49,11 +49,34 @@ function pause(tempo)
 	end
 end
 
+
+#####################################
+-- ## ENVOI DE NOTIFICATIONS SLACK
+-- #################################################
+-- Fonction d'envoi de notifications via l'API SLACK
+function envoiNotifSlack (message)
+
+	local slack_API_URL = "https://hooks.slack.com/services/"
+	
+	local slack_key = "T969Q3153/B9QJVE8RE/BZQPbFvxRn3eMaiv3bnsDoki"
+	-- uservariables["slack_key"]
+	
+	if( slack_key == nil ) then
+		error("[ALARME] ERREUR la variable [slack_key] n'est pas définie dans Domoticz. Impossible d'envoyer de notification")
+		return 512
+	else
+		local messageSlack = '{"text":"' .. message .. '"}'
+		log("SLACK", "Envoi de la notification [" .. messageSlack .. "]")
+		return apiCallPOSTReadJSON(slack_API_URL, messageSlack)
+	end
+end
 -- #################################################
 -- ## ENVOI DE SMS
 -- #################################################
 -- Fonction d'envoi de SMS via l'API Freebox mobile
 function envoiSMS (message)
+
+	local freeboxSMS_API_URL = "https://smsapi.free-mobile.fr/sendmsg?"
 
 	local freeboxSMSUser = uservariables["free_sms_user"]
 	local freeboxSMSPass = uservariables["free_sms_pass"]
@@ -63,7 +86,6 @@ function envoiSMS (message)
 		return 512
 	else
 		log("SMS", "Envoi du sms '" .. message .. "' avec le user " .. freeboxSMSUser)
-		freeboxSMS_API_URL = "https://smsapi.free-mobile.fr/sendmsg?"
 		local commandeSMS = freeboxSMS_API_URL .. "user=" .. freeboxSMSUser .. "&pass=" .. freeboxSMSPass .. "&msg=" .. message
 		return apiCallGetReadRaw(commandeSMS)
 	end
@@ -79,7 +101,7 @@ end
 -- @return : Json
 function apiCallPOSTReadJSON(url, json_body)
 	local TMP_CALL = "/tmp/api_call.tmp"
-	local fullcmd = "curl -s -H \"Content-Type: application/json\" -H 'Cache-Control: no-cache' -X POST -d '".. json_body .."' '".. url .."'";
+	local fullcmd = "curl -s -H 'Content-Type: application/json' -H 'Cache-Control: no-cache' -X POST -d '".. json_body .."' '".. url .."'";
 	-- log("API", "Appel de [".. fullcmd .. "]")
 	os.execute(fullcmd .. " > " .. TMP_CALL)
 	local resultat = readAll(TMP_CALL)
@@ -92,7 +114,7 @@ end
 -- @return : réponse raw
 function apiCallGetReadRaw(url)
 	local TMP_CALL = "/tmp/api_get.tmp"
-	local fullcmd = "curl -s -H \"Content-Type: application/json\" -X GET '".. url .."'";
+	local fullcmd = "curl -s -H 'Content-Type: application/json' -X GET '".. url .."'";
 	-- log("API", "Appel de [".. fullcmd .. "]")
 	os.execute(fullcmd .. " > " .. TMP_CALL)
 	local resultat = readAll(TMP_CALL)
