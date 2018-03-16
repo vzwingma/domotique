@@ -28,6 +28,7 @@ elseif ( devicechanged[DEVICE_ALARME] == 'Off' ) then
 	end
 end
 
+
 if ( devicechanged[DEVICE_ALARME] or devicechanged[DEVICE_PIR] ) then
 	logAlarme("Statut de l'alarme		" .. otherdevices[DEVICE_ALARME])
 	logAlarme("Statut du détecteur de présence	" .. otherdevices[DEVICE_PIR])
