@@ -50,16 +50,15 @@ function pause(tempo)
 end
 
 
-#####################################
+-- #####################################
 -- ## ENVOI DE NOTIFICATIONS SLACK
--- #################################################
+-- #####################################
 -- Fonction d'envoi de notifications via l'API SLACK
 function envoiNotifSlack (message)
 
 	local slack_API_URL = "https://hooks.slack.com/services/"
 	
-	local slack_key = "T969Q3153/B9QJVE8RE/BZQPbFvxRn3eMaiv3bnsDoki"
-	-- uservariables["slack_key"]
+	local slack_key = uservariables["slack_key"]
 	
 	if( slack_key == nil ) then
 		error("[ALARME] ERREUR la variable [slack_key] n'est pas définie dans Domoticz. Impossible d'envoyer de notification")
