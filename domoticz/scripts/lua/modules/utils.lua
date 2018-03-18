@@ -56,17 +56,18 @@ end
 -- Fonction d'envoi de notifications via l'API SLACK
 function envoiNotifSlack (message)
 
-	local slack_API_URL = "https://hooks.slack.com/services/"
-	
 	local slack_key = uservariables["slack_key"]
-	
+	local slack_API_URL = "https://hooks.slack.com/services/" .. slack_key
+
 	if( slack_key == nil ) then
 		error("[ALARME] ERREUR la variable [slack_key] n'est pas définie dans Domoticz. Impossible d'envoyer de notification")
 		return 512
 	else
 		local messageSlack = '{"text":"' .. message .. '"}'
 		log("SLACK", "Envoi de la notification [" .. messageSlack .. "]")
-		return apiCallPOSTReadJSON(slack_API_URL, messageSlack)
+		local resultat = apiCallPOSTReadRaw(slack_API_URL, messageSlack)
+		log("SLACK", "> [".. resultat .. "]")
+		return resultat
 	end
 end
 -- #################################################
@@ -94,18 +95,26 @@ end
 -- #################################################
 -- ## COMMANDES d'API
 -- #################################################
--- Appel d'API POST et Retour JSON
+-- Appel d'API POST et Retour Brut
 -- @url : URL d'appel
 -- @json_body : Body en JSON
--- @return : Json
-function apiCallPOSTReadJSON(url, json_body)
+-- @return : résultat brut
+function apiCallPOSTReadRaw(url, json_body)
 	local TMP_CALL = "/tmp/api_call.tmp"
 	local fullcmd = "curl -s -H 'Content-Type: application/json' -H 'Cache-Control: no-cache' -X POST -d '".. json_body .."' '".. url .."'";
 	-- log("API", "Appel de [".. fullcmd .. "]")
 	os.execute(fullcmd .. " > " .. TMP_CALL)
 	local resultat = readAll(TMP_CALL)
 	-- log("API", "> [".. resultat .. "]")
-	return JSON:decode(resultat)
+	return resultat
+end
+
+-- Appel d'API POST et Retour JSON
+-- @url : URL d'appel
+-- @json_body : Body en JSON
+-- @return : Json
+function apiCallPOSTReadJSON(url, json_body)
+	return JSON:decode(apiCallPOSTReadRaw(url, json_body))
 end
 
 -- Appel d'API GET et Retour RAW
