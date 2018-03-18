@@ -6,7 +6,7 @@ package.path = package.path..";/src/domoticz/scripts/lua/modules/?.lua"
 require 'utils'
 require 'livebox_tele'
 -- logStatut dans utils
--- envoiSMS dans utils
+-- envoiNotifSlack dans utils
 -- getStatutTV dans utils
 local now=os.date("%H:%M")
 
@@ -27,7 +27,7 @@ logStatut("Mise à zéro des statuts à " .. now)
 	if( otherdevices[DEVICE_ALARME] == 'On' and now == '00:00' and 
 		(commandArray[DEVICE_LAMPE1] == 'On' or commandArray[DEVICE_LAMPE2] == 'On' or commandArray[DEVICE_TELE] == 'On' or commandArray[DEVICE_BOX] == 'On')) then
 		logStatut("Alarme activée - Arrêt global")
-		envoiSMS("Alarme activée - Arrêt global")
+		envoiNotifSlack("Alarme activée - Arrêt global")
 		commandArray[DEVICE_LAMPE1] = 'Off'
 		commandArray[DEVICE_LAMPE2] = 'Off'
 		commandArray[DEVICE_TELE] = 'Off'
