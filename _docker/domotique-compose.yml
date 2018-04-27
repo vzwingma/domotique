@@ -32,7 +32,7 @@ services:
     restart: always
 # DOMOTICZ
   domoticz:
-    image: vzwingmann/domoticz-v2:arm
+    image: vzwingmann/domoticz-arm:3.9208
     environment:
       - TZ=Europe/Paris
       - LD_LIBRARY_PATH=/opt/vc/lib/
