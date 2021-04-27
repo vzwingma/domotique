@@ -15,7 +15,7 @@ on:
 
 
 env:
-  IMAGE_NAME: vzwingmann/domoticz-arm
+  IMAGE_NAME: vzwingmadomatic/domoticz-arm
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
