@@ -38,7 +38,7 @@ services:
       - LD_LIBRARY_PATH=/opt/vc/lib/
     ports:
       - 8080:8080
-      - 443:8443
+      - 8443:443
     volumes:
       - /opt/vc/:/opt/vc/
       - /etc/timezone:/etc/timezone:ro
