@@ -31,12 +31,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      -
-        name: Changement de répertoire
-        run: cd _docker/build_domoticz
-        
+
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+        run: 
+          cd _docker/build_domoticz
+          docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
