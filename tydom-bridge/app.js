@@ -6,7 +6,7 @@ const {createClient} = require('tydom-client');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const port = process.env.PORT || '9090';
+const port = process.env.PORT || 9090;
 const host = process.env.HOST || 'localhost';
 const username = process.env.MAC;
 const password = process.env.PWD;
@@ -21,7 +21,7 @@ let webServer;
         hostname = 'mediation.tydom.com';
     }
     const client = createClient({username, password, hostname});
-    console.log(`Connecting to "${hostname}"...`);
+    console.log(`Connecting to "${username}"@"${hostname}"...`);
     const socket = await client.connect();
 
     const app = express();
@@ -107,7 +107,7 @@ process.on("SIGINT", async () => {
         
         webServer.close(() => {
             
-            console.log('Http server closed.');
+            console.log('Arrêt du bridge Tydom.');
         });
     }
     process.removeAllListeners("SIGINT");
