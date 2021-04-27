@@ -1,9 +1,7 @@
-domoticz/logs/baretail.exe
 *.udm
-domoticz/logs/domoticz.log
 *.bat
-domoticz/logs/plink.exe
 *.log
 *.1
 domoticz/scripts/bash/script_initd_detecteur_presence.sh
 domoticz/database/domocookie.txt
+tydom-bridge/node_modules
