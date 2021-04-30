@@ -6,7 +6,9 @@ const {createClient} = require('tydom-client');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+// Port exposé
 const port = process.env.PORT || 9090;
+// Connexion à Tydom
 const host = process.env.HOST || 'mediation.tydom.com'; // '192.168.1.13';
 const username = process.env.MAC;
 const password = process.env.PWD;
@@ -17,7 +19,7 @@ let webServer;
     
     let hostname = host;
     const client = createClient({username, password, hostname});
-    console.log(`Connecting to "${username}"@"${hostname}"...`);
+    console.log("Connection à la box Tydom : ${username}@${hostname}...");
     const socket = await client.connect();
 
     const app = express();
@@ -93,7 +95,7 @@ let webServer;
 
     webServer = app.listen(port, function () {
         
-        console.log("Bridge Tydom démarré sur " + host + ":" + port );
+        console.log("Bridge Tydom démarré sur " + port );
     });
 })();
 
