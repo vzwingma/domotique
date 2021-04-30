@@ -7,19 +7,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const port = process.env.PORT || 9090;
-const host = process.env.HOST || 'localhost';
+const host = process.env.HOST || 'mediation.tydom.com'; // '192.168.1.13';
 const username = process.env.MAC;
 const password = process.env.PWD;
-const isremote = process.env.REMOTE || 1;
 
 let webServer;
 
 (async () => {
     
     let hostname = host;
-    if (isremote == 1) {
-        hostname = 'mediation.tydom.com';
-    }
     const client = createClient({username, password, hostname});
     console.log(`Connecting to "${username}"@"${hostname}"...`);
     const socket = await client.connect();
@@ -97,7 +93,7 @@ let webServer;
 
     webServer = app.listen(port, function () {
         
-        console.log("Bridge Tydom démarré sur " + port + " en mode remote " + isremote );
+        console.log("Bridge Tydom démarré sur " + host + ":" + port );
     });
 })();
 
