@@ -22,7 +22,7 @@ jobs:
   # Push image to DockerHub
   build-push:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:      
       DOCKER_REGISTRY: kemansel.azurecr.io      
       DOCKER_IMAGE: kmansel/express-me      
