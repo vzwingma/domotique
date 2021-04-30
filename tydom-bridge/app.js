@@ -17,9 +17,12 @@ let webServer;
 
 (async () => {
     
+
+    console.log(process.env);
+
     let hostname = host;
     const client = createClient({username, password, hostname});
-    console.log("Connection à la box Tydom : ${username}@${hostname}...");
+    console.log("Connexion à la box Tydom : " + username +"@" + hostname + "...");
     const socket = await client.connect();
 
     const app = express();
