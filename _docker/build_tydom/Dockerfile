@@ -1,13 +1,14 @@
-FROM arm32v7/node:16-alpine
+#FROM arm32v7/node:16-alpine
+FROM node:16-alpine
 # Construit à partir de Node
 LABEL MAINTAINER="vincent.zwingmann@github.com"
 
 WORKDIR /usr/app
 
 COPY package*.json ./
-RUN npm install
-
 COPY ./ ./
+
+RUN npm install --save --verbose
 
 EXPOSE 9001
 
