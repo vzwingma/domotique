@@ -22,7 +22,14 @@ jobs:
   # Push image to DockerHub
   build-push:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
+    env:      
+      DOCKER_REGISTRY: kemansel.azurecr.io      
+      DOCKER_IMAGE: kmansel/express-me      
+      DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}  
+      DOCKER_TARGET_PLATFORM: linux/arm/v7                 
+
     if: github.event_name == 'push'
 
     permissions:
