@@ -7,7 +7,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // Port exposé
-const port = process.env.PORT || 9090;
+const port = process.env.PORT || 9001;
 // Connexion à Tydom
 const host = process.env.HOST || 'mediation.tydom.com'; // '192.168.1.13';
 const username = process.env.MAC;
@@ -16,9 +16,6 @@ const password = process.env.PWD;
 let webServer;
 
 (async () => {
-    
-
-    console.log(process.env);
 
     let hostname = host;
     const client = createClient({username, password, hostname});

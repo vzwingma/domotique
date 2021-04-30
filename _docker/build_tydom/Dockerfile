@@ -1,15 +1,14 @@
-FROM node:slim
+FROM node:16-alpine
 # Construit à partir de Node
 LABEL MAINTAINER="vincent.zwingmann@github.com"
 
 WORKDIR /usr/app
 
-RUN npm install -g npm@7.11.1
-
-RUN ls
-COPY ./node_modules ./
-COPY ./apps.js ./
-RUN ls
+COPY package*.json ./
 RUN npm install
-RUN ls
+
+COPY ./ ./
+
+EXPOSE 9001
+
 CMD ["node", "app.js"]
