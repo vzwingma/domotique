@@ -30,6 +30,18 @@ services:
       - /etc/localtime:/etc/localtime:ro
     privileged: true
     restart: always
+# TYDOM
+  tydom-bridge:
+    image: vzwingmadomatic/domoticz-tydom:tydom
+    environment:
+      - PORT=9001
+      - HOST=192.168.1.13
+      - MAC= #Set Tydom MAC Adress
+      - PASSWD= #Set Tydom Password
+    ports:
+      - 9101:9100
+    privileged: true
+    restart: always
 # DOMOTICZ
   domoticz:
     image: vzwingmann/domoticz-arm:latest
@@ -49,4 +61,5 @@ services:
     depends_on:
       - dht11
       - radio
+      - tydom-bridge
     restart: always
