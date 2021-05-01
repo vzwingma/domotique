@@ -1,5 +1,5 @@
-#FROM arm32v7/node:16-alpine
-FROM node:16-alpine
+FROM arm32v7/node:16-alpine
+#FROM node:16-alpine
 # Construit à partir de Node
 LABEL MAINTAINER="vincent.zwingmann@github.com"
 
