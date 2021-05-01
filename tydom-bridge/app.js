@@ -12,15 +12,15 @@ const port = process.env.PORT || 9001;
 // Connexion à Tydom
 const host = process.env.HOST || 'mediation.tydom.com'; // '192.168.1.13';
 const username = process.env.MAC;
-const password = process.env.PWD;
+const password = process.env.PASSWD;
 
 let webServer;
 
 (async () => {
 
     let hostname = host;
+    console.log("Connexion à la box Tydom [" + username + "] @ [" + hostname + "]");
     const client = createClient({username, password, hostname});
-    console.log("Connexion à la box Tydom... " + username + "@" + hostname);
     const socket = await client.connect();
 
     const app = express();
