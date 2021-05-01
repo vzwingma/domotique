@@ -66,5 +66,3 @@ jobs:
           cp tydom-bridge/* _docker/build_tydom
           cd _docker/build_tydom
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
- #         docker tag $IMAGE_NAME $IMAGE_NAME:$VERSION
- #         docker push $IMAGE_NAME:$VERSION
