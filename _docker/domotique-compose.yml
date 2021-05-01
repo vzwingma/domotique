@@ -32,7 +32,7 @@ services:
     restart: always
 # TYDOM
   tydom-bridge:
-    image: vzwingmadomatic/domoticz-tydom:tydom
+    image: vzwingmadomatic/domoticz-tydom:latest
     environment:
       - PORT=9001
       - HOST=192.168.1.13
