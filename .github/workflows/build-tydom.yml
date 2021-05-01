@@ -26,7 +26,7 @@ jobs:
       DOCKER_IMAGE: vzwingmadomatic/domoticz-tydom
       DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}  
-      DOCKER_TARGET_PLATFORM: linux/arm/v6
+      DOCKER_TARGET_PLATFORM: linux/arm/v7
 
     if: github.event_name == 'push'
 
