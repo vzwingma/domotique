@@ -1,6 +1,7 @@
 // Required when testing against a local Tydom hardware
 // to fix "self signed certificate" errors
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+//process.env.DEBUG= 'tydom-client';
 
 const {createClient} = require('tydom-client');
 const express = require('express');
@@ -19,7 +20,7 @@ let webServer;
 
     let hostname = host;
     const client = createClient({username, password, hostname});
-    console.log("Connexion à la box Tydom : " + username +"@" + hostname + "...");
+    console.log("Connexion à la box Tydom... " + username + "@" + hostname);
     const socket = await client.connect();
 
     const app = express();
@@ -27,6 +28,7 @@ let webServer;
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
+    // Info
 	app.get('/_info', function (req, res) {
 	   res.send('Le bridge Tydom [ ' + username + ' ] est opérationnel');
 	})
@@ -78,13 +80,13 @@ let webServer;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(protocols));
     })
-    .get('/device/:decivenum/endpoints', async function(req, res) {
-        const info = await client.get('/devices/' + req.params.decivenum + '/endpoints/' + req.params.decivenum + '/data');
+    .get('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
+        const info = await client.get('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data');
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(info));
     })
-    .patch('/device/:decivenum/endpoints', async function(req, res) {
-        const info = await client.put('/devices/' + req.params.decivenum + '/endpoints/' + req.params.decivenum + '/data', [req.body]);
+    .patch('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
+        const info = await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(info));
     })
