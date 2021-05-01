@@ -6,7 +6,6 @@ domoticz/scripts/bash/script_initd_detecteur_presence.sh
 domoticz/database/domocookie.txt
 tydom-bridge/node_modules
 _docker/build_tydom/app.js
-
 _docker/build_tydom/package-lock.json
-
 _docker/build_tydom/package.json
+_docker/build_tydom/node_modules

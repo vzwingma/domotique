@@ -8,8 +8,8 @@ WORKDIR /usr/app
 COPY package*.json ./
 COPY ./ ./
 
-RUN npm install --save --verbose
+RUN npm install --save
 
 EXPOSE 9001
 
-CMD ["node", "app.js"]
+CMD ["node" , "app.js"]
