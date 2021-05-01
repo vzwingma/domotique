@@ -61,4 +61,5 @@ services:
     depends_on:
       - dht11
       - radio
+      - tydom-bridge
     restart: always
