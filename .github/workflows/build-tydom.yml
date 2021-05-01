@@ -27,7 +27,7 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}  
       DOCKER_TARGET_PLATFORM: linux/arm/v6
-      DOCKER_IMAGE_TAG: $DOCKER_IMAGE:snapshot
+      DOCKER_IMAGE_TAG: ${{ DOCKER_IMAGE }}:snapshot
 
     if: github.event_name == 'push'
 
