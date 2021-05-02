@@ -32,7 +32,7 @@ services:
 #    restart: always
 # TYDOM
   tydom-bridge:
-    image: vzwingmadomatic/domoticz-tydom:tydom
+    image: vzwingmadomatic/domoticz-tydom:latest
     environment:
       - PORT=9001
       - HOST=192.168.1.13
@@ -56,6 +56,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/domoticz/database:/opt/domoticz/userdata
+      - /home/pi/appli/domoticz/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts
     depends_on:
       - dht11
 #      - radio
