@@ -16,20 +16,20 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: always
 # CAPTEUR RADIO
-  radio:
-    image: vzwingmann/wiringpi:arm-radio
-    environment:
-      - APP_NAME=Radio
-    ports:
-      - 9101:9100
-    devices:
-      - /dev/ttyAMA0:/dev/ttyAMA0
-      - /dev/mem:/dev/mem
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    privileged: true
-    restart: always
+#  radio:
+#    image: vzwingmann/wiringpi:arm-radio
+#    environment:
+#      - APP_NAME=Radio
+#    ports:
+#      - 9101:9100
+#    devices:
+#      - /dev/ttyAMA0:/dev/ttyAMA0
+#      - /dev/mem:/dev/mem
+#    volumes:
+#      - /etc/timezone:/etc/timezone:ro
+#      - /etc/localtime:/etc/localtime:ro
+#    privileged: true
+#    restart: always
 # TYDOM
   tydom-bridge:
     image: vzwingmadomatic/domoticz-tydom:tydom
@@ -56,10 +56,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/domoticz/database:/opt/domoticz/userdata
-      - /home/pi/appli/domoticz/www/images/floorplans:/opt/domoticz/www/images/floorplans
-      - /home/pi/appli/domoticz/scripts/lua:/opt/domoticz/scripts/lua
     depends_on:
       - dht11
-      - radio
+#      - radio
       - tydom-bridge
     restart: always
