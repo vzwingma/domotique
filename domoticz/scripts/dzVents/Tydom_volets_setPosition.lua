@@ -3,6 +3,7 @@ return
     on =
     {
         devices = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' },
+        scenes = { 'Reveil' },
         httpResponses = { 'Tydom_volets_setPosition' }
     },
     logging = {
@@ -10,12 +11,18 @@ return
         marker = "[TYDOM Volets] "
     },
     execute = function(domoticz, item)
-        -- Commande de thermostat
+        
+        local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
+
+        local deviceId = nil
+        local endpointId = nil
+        local pOuverture = 100
+        local voletName = 'UKN'
+        
+        -- Commande de volets
         if (item.isDevice) then
-            
             -- Recherche du bon volet
-            local deviceId = nil
-            local endpointId = nil
+            voletName = item.name
             if(item.name == domoticz.helpers.DEVICE_VOLET_SALON_G) then
                 deviceId=1612171343
                 endpointId=1612171343
@@ -30,41 +37,30 @@ return
                 endpointId=1612171343
             end
             
-            
             -- Pourcentage de Commande
-            local pOuverture = 100
-            local level = 100
             if(item.state == 'Open') then
                 pOuverture = 100
-                level = 100
             elseif(item.state == 'Closed') then
-                pOuverture = 80
-                level = 0
-            else
-                pOuverture = item.state
+                pOuverture = 0
             end
+        
+        -- Scene Reveil : ouverture de 5%
+        elseif(item.isScene) then
+            deviceId=1612171344
+            endpointId=1612171343
+            pOuverture=5
+            voletName=domoticz.helpers.DEVICE_VOLET_NOUS
+        end
             
-            local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
+        domoticz.log("[".. voletName .."] set Position=" .. pOuverture .. "%")
             
-            domoticz.log("[".. item.name .."] set Position=" .. pOuverture .. "%  (".. item.level .." -> " .. level .. ")")
-            
-            domoticz.openURL({
-                    url = 'http://'..host_tydom_bridge..'/device/'..deviceId..'/endpoints/'..endpointId,
-                    method = 'PUT',
-                    header = { ['Content-Type'] = 'application/json' },
-                    postData = { ['name'] = 'position', ['value'] = pOuverture },
-                    callback = 'Tydom_volets_setPosition'
-                })
-
-        -- Callback
-        elseif (item.isHTTPResponse) then
-            local response = item
-        --    domoticz.log(response, domoticz.LOG_DEBUG)
-            domoticz.log('Response HTTP : ' .. response.statusCode .. " - " .. response.statusText)
-            
-        -- Catch exception
-        else
-            domoticz.log('There was an error', domoticz.LOG_ERROR)
-        end        
+        domoticz.openURL({
+            url = 'http://'..host_tydom_bridge..'/device/'..deviceId..'/endpoints/'..endpointId,
+            method = 'PUT',
+           header = { ['Content-Type'] = 'application/json' },
+            postData = { ['name'] = 'position', ['value'] = pOuverture },
+            callback = 'Tydom_volets_setPosition'
+        })
+    
     end       
 }
