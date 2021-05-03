@@ -35,7 +35,7 @@ return {
                         domoticz.log('Température [Commande Tydom =' .. commandeTyd .. '] [Commande Dz = '.. commandeDz ..']')
                         if(commandeDz ~= commandeTyd) then
                             domoticz.log("Réalignement du Tydom Thermostat sur Domoticz par rapport à la commande réelle [" .. commandeTyd .. "]", domoticz.LOG_INFO)
-                            domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(commandeTyd)  
+                            domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(commandeTyd)
                         end
                     end                    
                 end
