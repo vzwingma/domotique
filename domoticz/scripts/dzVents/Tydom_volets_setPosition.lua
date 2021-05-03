@@ -51,16 +51,24 @@ return
             pOuverture=5
             voletName=domoticz.helpers.DEVICE_VOLET_NOUS
         end
+
+        -- Callback
+        if (item.isHTTPResponse) then
+            local response = item
+            domoticz.log('Response HTTP : ' .. response.statusCode .. " - " .. response.statusText)
+
+        -- Execute Operation
+        else
+            domoticz.log("[".. voletName .."] set Position=" .. pOuverture .. "%")
             
-        domoticz.log("[".. voletName .."] set Position=" .. pOuverture .. "%")
-            
-        domoticz.openURL({
-            url = 'http://'..host_tydom_bridge..'/device/'..deviceId..'/endpoints/'..endpointId,
-            method = 'PUT',
-           header = { ['Content-Type'] = 'application/json' },
-            postData = { ['name'] = 'position', ['value'] = pOuverture },
-            callback = 'Tydom_volets_setPosition'
-        })
-    
+            domoticz.openURL({
+                url = 'http://'..host_tydom_bridge..'/device/'..deviceId..'/endpoints/'..endpointId,
+                method = 'PUT',
+               header = { ['Content-Type'] = 'application/json' },
+                postData = { ['name'] = 'position', ['value'] = pOuverture },
+                callback = 'Tydom_volets_setPosition'
+            })
+        end   
+
     end       
 }
