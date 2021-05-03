@@ -26,7 +26,7 @@ return
         -- Callback
         elseif (item.isHTTPResponse) then
             local response = item
-            domoticz.log(response, domoticz.LOG_DEBUG)
+        --    domoticz.log(response, domoticz.LOG_DEBUG)
             domoticz.log('Response HTTP : ' .. response.statusCode .. " - " .. response.statusText)
         -- Catch exception
         else

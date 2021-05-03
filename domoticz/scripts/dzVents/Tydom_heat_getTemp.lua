@@ -21,17 +21,24 @@ return {
         -- Callback
         elseif (item.isHTTPResponse) then
             if (item.ok) then -- statusCode == 2xx
-                domoticz.log(item.json, domoticz.LOG_DEBUG)
+             --   domoticz.log(item.json, domoticz.LOG_DEBUG)
                 
                 local currentTempData = item.json.data
                 for i, node in pairs(item.json.data) do
                     if(node.name == 'temperature') then
-                        domoticz.log('Température Tydom =' .. node.value)
+                        domoticz.log('Température Mesure =' .. node.value)
                         domoticz.devices('Tydom Chauffage').updateTemperature(node.value)
-                    end
+                    -- Réalignement du Thermostat par rapport à Tydom
+                    elseif(node.name == 'setpoint') then
+                        local commandeTyd = node.value
+                        local commandeDz = domoticz.devices('Tydom Thermostat').setPoint
+                        domoticz.log('Température [Commande Tydom =' .. commandeTyd .. '] [Commande Dz = '.. commandeDz ..']')
+                        if(commandeDz ~= commandeTyd) then
+                            domoticz.log("Réalignement du Tydom Thermostat sur Domoticz par rapport à la commande réelle [" .. commandeTyd .. "]", domoticz.LOG_INFO)
+                            domoticz.devices('Tydom Thermostat').updateSetPoint(commandeTyd)  
+                        end
+                    end                    
                 end
-
-                
             end
         end
     end

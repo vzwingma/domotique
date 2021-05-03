@@ -15,3 +15,5 @@ _docker/domotique-compose-local.yml
 domoticz/database/backups/hourly/
 
 domoticz/database/scripts/dzVents/domoticzData.lua
+
+domoticz/database/backups/daily/
