@@ -1,6 +1,7 @@
 return {
     on = {
         timer = { 'every hour' },
+        devices = { 'MaJ Tydom Temperature' },
         httpResponses = { 'Tydom_heat_getTemp' }
     },
     logging = {
@@ -9,7 +10,7 @@ return {
     },
     execute = function(domoticz, item)
         -- Appel de Tydom bridge pour récupérer la température mesurée
-        if (item.isTimer) then
+        if (item.isTimer or item.isDevice) then
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
 
             domoticz.openURL({
