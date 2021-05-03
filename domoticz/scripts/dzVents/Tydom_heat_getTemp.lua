@@ -10,7 +10,7 @@ return {
     execute = function(domoticz, item)
         -- Appel de Tydom bridge pour récupérer la température mesurée
         if (item.isTimer) then
-            local host_tydom_bridge = domoticz.variables('tydom_bridge_host').value
+            local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
 
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'/device/1612171197/endpoints/1612171197',
@@ -27,15 +27,15 @@ return {
                 for i, node in pairs(item.json.data) do
                     if(node.name == 'temperature') then
                         domoticz.log('Température Mesure =' .. node.value)
-                        domoticz.devices('Tydom Chauffage').updateTemperature(node.value)
+                        domoticz.devices(domoticz.helpers.DEVICE_TYDOM_TEMPERATURE).updateTemperature(node.value)
                     -- Réalignement du Thermostat par rapport à Tydom
                     elseif(node.name == 'setpoint') then
                         local commandeTyd = node.value
-                        local commandeDz = domoticz.devices('Tydom Thermostat').setPoint
+                        local commandeDz = domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).setPoint
                         domoticz.log('Température [Commande Tydom =' .. commandeTyd .. '] [Commande Dz = '.. commandeDz ..']')
                         if(commandeDz ~= commandeTyd) then
                             domoticz.log("Réalignement du Tydom Thermostat sur Domoticz par rapport à la commande réelle [" .. commandeTyd .. "]", domoticz.LOG_INFO)
-                            domoticz.devices('Tydom Thermostat').updateSetPoint(commandeTyd)  
+                            domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(commandeTyd)  
                         end
                     end                    
                 end

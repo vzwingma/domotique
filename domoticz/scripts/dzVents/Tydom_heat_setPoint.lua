@@ -13,7 +13,7 @@ return
         -- Commande de thermostat
         if (item.isDevice) then        
             domoticz.log("set T=" .. item.state .. "°C")
-            local host_tydom_bridge = domoticz.variables('tydom_bridge_host').value
+            local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
 
             domoticz.openURL({
                     url = 'http://'..host_tydom_bridge..'/device/1612171197/endpoints/1612171197',
