@@ -48,12 +48,8 @@ services:
       - TZ=Europe/Paris
       - LD_LIBRARY_PATH=/opt/vc/lib/
     ports:
-      - 8080:8080
       - 8443:443
     volumes:
-      - /opt/vc/:/opt/vc/
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/domoticz/database:/opt/domoticz/userdata
       - /home/pi/appli/domoticz/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts
     depends_on:
