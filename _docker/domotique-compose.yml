@@ -1,20 +1,20 @@
 version: "3.2"
 services:
 # CAPTEUR DHT11
-  dht11:
-    image: vzwingmann/wiringpi:arm-dht11
-    environment:
-      - APP_NAME=DHT11
-    ports:
-      - 9100:9100
-    devices:
-      - /dev/ttyAMA0:/dev/ttyAMA0
-      - /dev/mem:/dev/mem
-    privileged: true
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    restart: always
+#  dht11:
+#    image: vzwingmann/wiringpi:arm-dht11
+#    environment:
+#      - APP_NAME=DHT11
+#    ports:
+#      - 9100:9100
+#    devices:
+#      - /dev/ttyAMA0:/dev/ttyAMA0
+#      - /dev/mem:/dev/mem
+#    privileged: true
+#    volumes:
+#      - /etc/timezone:/etc/timezone:ro
+#      - /etc/localtime:/etc/localtime:ro
+#    restart: always
 # CAPTEUR RADIO
 #  radio:
 #    image: vzwingmann/wiringpi:arm-radio
@@ -34,13 +34,12 @@ services:
   tydom-bridge:
     image: vzwingmadomatic/domoticz-tydom:latest
     environment:
-      - PORT=9001
+      - PORT=9101
       - HOST=192.168.1.13
       - MAC= #Set Tydom MAC Adress
       - PASSWD= #Set Tydom Password
     ports:
-      - 9101:9100
-    privileged: true
+      - 9101:9101
     restart: always
 # DOMOTICZ
   domoticz:
@@ -58,7 +57,7 @@ services:
       - /home/pi/appli/domoticz/database:/opt/domoticz/userdata
       - /home/pi/appli/domoticz/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts
     depends_on:
-      - dht11
+#      - dht11
 #      - radio
       - tydom-bridge
     restart: always
