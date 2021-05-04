@@ -15,3 +15,5 @@ _docker/domotique-compose-local.yml
 domoticz/database/backups/
 
 domoticz/database/scripts/dzVents/domoticzData.lua
+
+_docker/build_domoticz/plugin.py
