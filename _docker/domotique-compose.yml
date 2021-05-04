@@ -41,19 +41,37 @@ services:
     ports:
       - 9101:9101
     restart: always
+# deCONZ
+  deconz:
+    image: marthoc/deconz:latest
+    ports:
+      - 9102:80
+      - 9143:443      
+    devices:
+      - /dev/ttyAMA0:/dev/ttyAMA0      
+    volumes:
+#      - /opt/vc/:/opt/vc/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro    
+      - /home/pi/appli/deCONZ:/root/.local/share/dresden-elektronik/deCONZ
+    privileged: true
+    restart: always
 # DOMOTICZ
   domoticz:
     image: vzwingmadomatic/domoticz:latest
     environment:
       - TZ=Europe/Paris
-      - LD_LIBRARY_PATH=/opt/vc/lib/
+#      - LD_LIBRARY_PATH=/opt/vc/lib/
     ports:
+      - 8080:8080
       - 8443:443
     volumes:
+#      - /opt/vc/:/opt/vc/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/domoticz/database:/opt/domoticz/userdata
       - /home/pi/appli/domoticz/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts
     depends_on:
-#      - dht11
-#      - radio
+      - deconz
       - tydom-bridge
     restart: always
