@@ -85,7 +85,7 @@ let webServer;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(info));
     })
-    .patch('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
+    .put('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
         const info = await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(info));
