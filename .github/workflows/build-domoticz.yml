@@ -63,5 +63,6 @@ jobs:
 
       - name: Build ARM image
         run: |
+          cp domoticz/scripts/dzVents/*.lua _docker/build_domoticz
           cd _docker/build_domoticz
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
