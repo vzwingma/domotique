@@ -28,14 +28,14 @@ jobs:
         name: Checkout the code  Linky
         uses: actions/checkout@v2
         with:
-            name: guillaumezin/DomoticzLinky
+            repository: guillaumezin/DomoticzLinky
             ref: refs/heads/master
       # Upload plugin.py
       - uses: actions/upload-artifact@v2
         name: Upload Python script
         with:
-          name: plugin.py
-          path: /home/runner/work/plugin.py
+            name: plugin.py
+            path: /home/runner/work/domotique/domotique/plugin.py
           
   # Push image to DockerHub
   build-push:
