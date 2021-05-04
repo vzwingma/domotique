@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v2
         with:
             name: guillaumezin/DomoticzLinky
-            ref: refs/heads/release
+            ref: refs/heads/master
       # Upload plugin.py
       - uses: actions/upload-artifact@v2
         name: Upload Python script
