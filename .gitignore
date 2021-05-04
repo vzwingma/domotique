@@ -12,8 +12,6 @@ _docker/build_tydom/package.json
 _docker/build_tydom/node_modules
 _docker/domotique-compose-local.yml
 
-domoticz/database/backups/hourly/
+domoticz/database/backups/
 
 domoticz/database/scripts/dzVents/domoticzData.lua
-
-domoticz/database/backups/daily/
