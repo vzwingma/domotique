@@ -12,6 +12,7 @@ return {
         DEVICE_TYDOM_TEMPERATURE='Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT='Tydom Thermostat',
         -- Groupe
-        GROUPE_TOUS_VOLETS='[Grp] Fermeture Tous Volets'
+        GROUPE_TOUS_VOLETS='[Grp] Tous Volets',
+        GROUPE_VOLETS_SALON='[Grp] Volets Salon'
     }
 }
