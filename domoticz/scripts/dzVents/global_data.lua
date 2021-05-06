@@ -29,6 +29,10 @@ return {
         callTydomBridgeGET = function (uriToCall, callbackName, domoticz)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
 
+            if(callbackName == nil) then
+               callbackName = 'global_HTTP_response' 
+            end
+            
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
                 method = 'GET',
@@ -37,9 +41,16 @@ return {
             })
             return
         end,
+        
+        
         -- # Fonction d'appel PUT de la passerelle Tydom
         callTydomBridgePUT = function (uriToCall, putData, callbackName, domoticz)
+            
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
+            
+            if(callbackName == nil) then
+               callbackName = 'global_HTTP_response' 
+            end
 
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
