@@ -40,7 +40,7 @@ return
         
         for i, voletName in ipairs(voletsName) do 
             domoticz.log("Ouverture du volet "..voletName .. " : " .. level .. "%")
-            -- domoticz.devices(voletName).setLevel(level)
+            domoticz.devices(voletName).setLevel(level)
         end
     
     end       

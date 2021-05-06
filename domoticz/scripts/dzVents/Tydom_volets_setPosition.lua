@@ -45,7 +45,7 @@ return
 
         -- Appel du bridge Tydom
         local postData = { ['name'] = 'position', ['value'] = pOuverture }
-        domoticz.helpers.callTydomBridgePUT('/device/'..deviceId..'/endpoints/'..endpointId,postData, nil, domoticz)
+        domoticz.helpers.callTydomBridgePUT('/device/'..deviceId..'/endpoints/'..endpointId , postData, nil, domoticz)
 
     end       
 }
