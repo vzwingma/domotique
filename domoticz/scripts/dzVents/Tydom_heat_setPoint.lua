@@ -2,8 +2,7 @@ return
 {
     on =
     {
-        devices = { 'Tydom Thermostat' },
-        httpResponses = { 'Tydom_heat_setPoint' }
+        devices = { 'Tydom Thermostat' }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -11,15 +10,9 @@ return
     },
     execute = function(domoticz, item)
         -- Commande de thermostat
-        if (item.isDevice) then        
-            domoticz.log("set T=" .. item.state .. "°C")
+        domoticz.log("Réglage du thermostat à T=" .. item.state .. "°C")
             
-            local putData = { ['name'] = 'setpoint', ['value'] = item.state }
-            domoticz.helpers.callTydomBridgePUT('/device/1612171197/endpoints/1612171197',putData, 'Tydom_heat_setPoint', domoticz)
-            
-        -- Callback
-        elseif (item.isHTTPResponse and item.ok) then
-            domoticz.log('La commande de thermostat a bien été exécutée')
-        end        
+        local putData = { ['name'] = 'setpoint', ['value'] = item.state }
+        domoticz.helpers.callTydomBridgePUT('/device/1612171197/endpoints/1612171197',putData, nil, domoticz)
     end       
 }
