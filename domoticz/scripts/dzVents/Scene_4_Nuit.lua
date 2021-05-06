@@ -13,7 +13,7 @@ return
         local tempNuit = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_SOIR).value
         domoticz.log("Activation pour la nuit. Temp=[" .. tempNuit .. "]")
         -- Fermeture du groupe de volets
-        domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOn()
+        domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
         -- Thermostat
         domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempNuit)
     end       

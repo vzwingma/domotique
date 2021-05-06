@@ -11,6 +11,6 @@ return
     execute = function(domoticz, scene)
         
         -- Ouverture du groupe de volets
-        domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
+        domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOn()
     end       
 }

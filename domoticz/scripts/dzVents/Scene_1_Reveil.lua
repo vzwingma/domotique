@@ -10,7 +10,9 @@ return
     },
     execute = function(domoticz, scene)
         -- PréOuverture du volet de la chambre
-        -- directement intégrée dans Tydom_volets_setPosition
-
+        local voletName = domoticz.helpers.DEVICE_VOLET_NOUS
+        local level = 5
+        domoticz.log("Ouverture du volet "..voletName .. " : " .. level .. "%")
+        domoticz.devices(voletName).setLevel(level)
     end       
 }
