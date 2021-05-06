@@ -1,9 +1,16 @@
 return {
     helpers = {
         -- Variables d'environnements
+        -- Tydom
         VAR_TYDOM_BRIDGE = 'tydom_bridge_host',
+        -- Livebox
+        VAR_LIVEBOX_HOST = 'livebox_host',
+        VAR_LIVEBOX_LOGIN = 'livebox_login',
+        VAR_LIVEBOX_PWD = 'livebox_pwd',
+        -- Configuration d'usage
         VAR_TEMPERATURE_MATIN = 'param_temp_matin',
         VAR_TEMPERATURE_SOIR = 'param_temp_soir',
+        
         -- Devices
         DEVICE_VOLET_SALON_G = 'Volet Salon G',
         DEVICE_VOLET_SALON_D = 'Volet Salon D',
@@ -60,6 +67,26 @@ return {
                 callback = callbackName
             })
             return
-        end        
+        end,
+        
+        -- ### FONCTIONS HTTP VERS LA LIVEBOX
+        callLiveboxPOST = function (contextId, putData, callbackName, domoticz)
+            
+            local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
+            
+            if(callbackName == nil) then
+               callbackName = 'global_HTTP_response' 
+            end
+            domoticz.log("contextId=["..contextId.."]")
+            
+            domoticz.openURL({
+                url = 'http://'..host_livebox..'/ws',
+                method = 'POST',
+                headers = { ['Content-type'] = 'application/x-sah-ws-4-call+json', ['X-Context'] = contextId },
+                postData = putData,
+                callback = callbackName
+            })
+            return
+        end
     }
 }
