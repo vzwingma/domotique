@@ -6,31 +6,20 @@ return
         httpResponses = { 'Tydom_heat_setPoint' }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[TYDOM Thermostat] "
     },
     execute = function(domoticz, item)
         -- Commande de thermostat
         if (item.isDevice) then        
             domoticz.log("set T=" .. item.state .. "°C")
-            local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
-
-            domoticz.openURL({
-                    url = 'http://'..host_tydom_bridge..'/device/1612171197/endpoints/1612171197',
-                    method = 'PUT',
-                    header = { ['Content-Type'] = 'application/json' },
-                    postData = { ['name'] = 'setpoint', ['value'] = item.state },
-                    callback = 'Tydom_heat_setPoint'
-                })
+            
+            local putData = { ['name'] = 'setpoint', ['value'] = item.state }
+            domoticz.helpers.callTydomBridgePUT('/device/1612171197/endpoints/1612171197',putData, 'Tydom_heat_setPoint', domoticz)
             
         -- Callback
-        elseif (item.isHTTPResponse) then
-            local response = item
-        --    domoticz.log(response, domoticz.LOG_DEBUG)
-            domoticz.log('Response HTTP : ' .. response.statusCode .. " - " .. response.statusText)
-        -- Catch exception
-        else
-            domoticz.log('There was an error', domoticz.LOG_ERROR)
+        elseif (item.isHTTPResponse and item.ok) then
+            domoticz.log('La commande de thermostat a bien été exécutée')
         end        
     end       
 }

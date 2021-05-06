@@ -9,38 +9,45 @@ return {
         marker = "[TYDOM Temperature] "
     },
     execute = function(domoticz, item)
-        -- Appel de Tydom bridge pour récupérer la température mesurée
-        if (item.isTimer or item.isDevice) then
-            local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
 
-            domoticz.openURL({
-                url = 'http://'..host_tydom_bridge..'/device/1612171197/endpoints/1612171197',
-                method = 'GET',
-                header = { ['Content-Type'] = 'application/json' },
-                callback = 'Tydom_heat_getTemp'
-            })
-        -- Callback
-        elseif (item.isHTTPResponse) then
-            if (item.ok) then -- statusCode == 2xx
-             --   domoticz.log(item.json, domoticz.LOG_DEBUG)
+    -- ### Fonctions internes
+
+        -- # Mise à jour de la temperature mesurée (issue de Tydom)
+        function updateTemperatureMesuree(node)
+            domoticz.log('Température Mesure =' .. node.value)
+            domoticz.devices(domoticz.helpers.DEVICE_TYDOM_TEMPERATURE).updateTemperature(node.value)
+        end
+        
+        
+        -- # Réalignement du Thermostat par rapport à Tydom
+        function updateThermostat(node)
+            local commandeTyd = node.value
+            local commandeDz = domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).setPoint
+            domoticz.log('Température [Commande Tydom =' .. commandeTyd .. '] [Commande Dz = '.. commandeDz ..']')
                 
-                local currentTempData = item.json.data
-                for i, node in pairs(item.json.data) do
-                    if(node.name == 'temperature') then
-                        domoticz.log('Température Mesure =' .. node.value)
-                        domoticz.devices(domoticz.helpers.DEVICE_TYDOM_TEMPERATURE).updateTemperature(node.value)
-                    -- Réalignement du Thermostat par rapport à Tydom
-                    elseif(node.name == 'setpoint') then
-                        local commandeTyd = node.value
-                        local commandeDz = domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).setPoint
-                        domoticz.log('Température [Commande Tydom =' .. commandeTyd .. '] [Commande Dz = '.. commandeDz ..']')
-                        if(commandeDz ~= commandeTyd) then
-                            domoticz.log("Réalignement du Tydom Thermostat sur Domoticz par rapport à la commande réelle [" .. commandeTyd .. "]", domoticz.LOG_INFO)
-                            domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(commandeTyd)
-                        end
-                    end                    
-                end
+            if(commandeDz ~= commandeTyd) then
+                domoticz.log("Réalignement du Tydom Thermostat sur Domoticz par rapport à la commande réelle [" .. commandeTyd .. "]", domoticz.LOG_INFO)
+                domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(commandeTyd)
             end
+        end
+        
+    -- ### Commandes
+        
+        -- ### Appel de Tydom bridge pour récupérer la température mesurée
+        if (item.isTimer or item.isDevice) then
+            domoticz.helpers.callTydomBridgeGET('/device/1612171197/endpoints/1612171197', 'Tydom_heat_getTemp', domoticz)
+            
+        -- ### Callback
+        elseif (item.isHTTPResponse and item.ok) then
+
+            -- Update Mesure temperature
+            local tempMesureeNode = domoticz.helpers.getNodeFromJSonTreeByName(item.json.data, 'temperature')
+            updateTemperatureMesuree(tempMesureeNode)
+            
+            -- Update SetPoint Temperature
+            local tempSetNode = domoticz.helpers.getNodeFromJSonTreeByName(item.json.data, 'setpoint')
+            updateThermostat(tempSetNode)
+            
         end
     end
 }
