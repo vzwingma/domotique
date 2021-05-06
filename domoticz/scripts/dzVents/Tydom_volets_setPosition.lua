@@ -3,7 +3,6 @@ return
     on =
     {
         devices = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' },
-        scenes = { 'Reveil' },
         httpResponses = { 'Tydom_volets_setPosition' }
     },
     logging = {
@@ -44,21 +43,8 @@ return
             else
                 pOuverture = item.level
             end
-        -- Scene Reveil : ouverture de 5%
-        elseif(item.isScene) then
-            deviceId=1612171344
-            endpointId=1612171343
-            pOuverture=5
-            voletName=domoticz.helpers.DEVICE_VOLET_NOUS
-        end
-        
-        
-        -- Callback
-        if (item.isHTTPResponse) then
-            local response = item
-            domoticz.log('Response HTTP : ' .. response.statusCode .. " - " .. response.statusText)
-        -- Commande
-        else
+            
+            -- Appel du bridge Tydom
             domoticz.log("[".. voletName .."] set Position=" .. pOuverture .. "%")
                 
             domoticz.openURL({
@@ -68,6 +54,11 @@ return
                     postData = { ['name'] = 'position', ['value'] = pOuverture },
                     callback = 'Tydom_volets_setPosition'
                 })
+            
+        -- Callback
+        elseif (item.isHTTPResponse) then
+            local response = item
+            domoticz.log('Response HTTP : ' .. response.statusCode .. " - " .. response.statusText)
         end   
 
     end       
