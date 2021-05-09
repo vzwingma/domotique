@@ -1,45 +1,17 @@
 version: "3.2"
 services:
-# CAPTEUR DHT11
-#  dht11:
-#    image: vzwingmann/wiringpi:arm-dht11
-#    environment:
-#      - APP_NAME=DHT11
-#    ports:
-#      - 9100:9100
-#    devices:
-#      - /dev/ttyAMA0:/dev/ttyAMA0
-#      - /dev/mem:/dev/mem
-#    privileged: true
-#    volumes:
-#      - /etc/timezone:/etc/timezone:ro
-#      - /etc/localtime:/etc/localtime:ro
-#    restart: always
-# CAPTEUR RADIO
-#  radio:
-#    image: vzwingmann/wiringpi:arm-radio
-#    environment:
-#      - APP_NAME=Radio
-#    ports:
-#      - 9101:9100
-#    devices:
-#      - /dev/ttyAMA0:/dev/ttyAMA0
-#      - /dev/mem:/dev/mem
-#    volumes:
-#      - /etc/timezone:/etc/timezone:ro
-#      - /etc/localtime:/etc/localtime:ro
-#    privileged: true
-#    restart: always
 # TYDOM
   tydom-bridge:
     image: vzwingmadomatic/domoticz-tydom:latest
     environment:
-      - PORT=9101
-      - HOST=192.168.1.13
-      - MAC= #Set Tydom MAC Adress
-      - PASSWD= #Set Tydom Password
+      # Configuration Box Tydom
+      # - HOST=192.168.1.13
+      # Configuration passerelle Tydom
+      - PORT=9001
+      - MAC=#Set Tydom MAC Adresse
+      - PASSWD=#Set Tydom Password
     ports:
-      - 9101:9101
+      - 9101:9001
     restart: always
 # deCONZ
   deconz:
@@ -48,25 +20,21 @@ services:
       - 9102:80
       - 9143:443      
     devices:
-      - /dev/ttyAMA0:/dev/ttyAMA0      
+      - /dev/ttyAMA0:/dev/ttyAMA0
     volumes:
-#      - /opt/vc/:/opt/vc/
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro    
-      - /home/pi/appli/deCONZ:/root/.local/share/dresden-elektronik/deCONZ
-    privileged: true
+      - /home/pi/appli/deCONZ:/root/.local/share/dresden-elektronik/deCONZ/
     restart: always
 # DOMOTICZ
   domoticz:
     image: vzwingmadomatic/domoticz:latest
     environment:
       - TZ=Europe/Paris
-#      - LD_LIBRARY_PATH=/opt/vc/lib/
     ports:
       - 8080:8080
       - 8443:443
     volumes:
-#      - /opt/vc/:/opt/vc/
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/domoticz/database:/opt/domoticz/userdata
