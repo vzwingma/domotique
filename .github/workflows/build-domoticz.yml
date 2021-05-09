@@ -36,7 +36,7 @@ jobs:
             path: /home/runner/work/domotique/domotique/plugin.py
           
   # Push image to DockerHub
-  build-push:
+  build-push-domoticz:
 
     runs-on: ubuntu-latest
     needs: download-linky

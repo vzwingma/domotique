@@ -17,7 +17,7 @@ on:
 jobs:
 
   # Push image to DockerHub
-  build-push:
+  build-push-tydom:
 
     runs-on: ubuntu-latest
 
