@@ -10,7 +10,7 @@ return {
         -- Configuration d'usage
         VAR_TEMPERATURE_MATIN = 'param_temp_matin',
         VAR_TEMPERATURE_SOIR = 'param_temp_soir',
-        
+        VAR_PRCENT_VOLET_REVEIL = 'param_volet_reveil_pourcentage',
         -- Devices
         DEVICE_VOLET_SALON_G = 'Volet Salon G',
         DEVICE_VOLET_SALON_D = 'Volet Salon D',
