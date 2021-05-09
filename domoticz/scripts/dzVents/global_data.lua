@@ -7,10 +7,22 @@ return {
         VAR_LIVEBOX_HOST = 'livebox_host',
         VAR_LIVEBOX_LOGIN = 'livebox_login',
         VAR_LIVEBOX_PWD = 'livebox_pwd',
-        -- Configuration d'usage
+        
+        -- #### Configuration d'usage ####
+        -- Si Mode Domicile == Défaut
         VAR_TEMPERATURE_MATIN = 'param_temp_matin',
         VAR_TEMPERATURE_SOIR = 'param_temp_soir',
+        -- Niveau de volet au réveil
         VAR_PRCENT_VOLET_REVEIL = 'param_volet_reveil_pourcentage',
+        -- Niveau de volets le matin
+        VAR_PRCENT_VOLET_MATIN = 'param_volet_pourcentage',
+        -- Si Mode Domicile == Absent ou Vacances
+        VAR_TEMPERATURE_MATIN_ABS = 'param_temp_matin_abs',
+        VAR_TEMPERATURE_SOIR_ABS = 'param_temp_soir_abs',
+        VAR_PRCENT_VOLET_REVEIL_ABS = 'param_volet_reveil_pourcentage',
+        
+        
+        -- # Configuration des composants #
         -- Devices
         DEVICE_VOLET_SALON_G = 'Volet Salon G',
         DEVICE_VOLET_SALON_D = 'Volet Salon D',
@@ -19,9 +31,28 @@ return {
         DEVICE_TYDOM_TEMPERATURE='Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT='Tydom Thermostat',
         -- Groupe
-        GROUPE_TOUS_VOLETS='[Grp] Tous Volets',
-        GROUPE_VOLETS_SALON='[Grp] Volets Salon',
+        GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
+        GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
+        -- Mode
+        DEVICE_MODE_DOMICILE = 'Mode Domicile',
         
+        -- ### Fonctions utilitaires
+        -- # Fonction de recherche du suffixe suivant le mode du Domicile
+        getModeDomicile = function(domoticz)
+            local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
+            domoticz.log("Mode Domicile : [" .. domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName .. "]")
+            local suffixeMode = ''
+            if(modeDomicile == 'Défaut') then
+                suffixeMode = ''
+            elseif(modeDomicile == 'Absent') then
+                suffixeMode = '_abs'
+            elseif(modeDomicile == 'Vacances') then
+                suffixeMode = '_vacs'
+            elseif(modeDomicile == 'Eté') then
+                suffixeMode = '_ete'
+            end
+            return suffixeMode
+        end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
         getNodeFromJSonTreeByName = function(jsonData, nodeName)
             for i, node in pairs(jsonData) do

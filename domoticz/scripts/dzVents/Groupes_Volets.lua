@@ -25,10 +25,13 @@ return
                 return {}
             end
         end
-        -- Recheche du niveau de volets suivant l'état du groupe
+        -- Recheche du niveau de volets suivant l'état du groupe et du modeDomicile
         function getLevelFromGroupState(group)
             if(group.state == 'On') then
-               return 100 
+                -- Ouverture du groupe de volets
+                local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
+                -- Activation suivant le mode Domicile
+               return domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value
             else
                 return 0
             end
