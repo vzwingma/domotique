@@ -8,5 +8,5 @@ RUN apt-get update && \
 
 COPY *.lua /opt/domoticz/userdata/scripts/dzVents/generated_scripts
 
-RUN chmod ugo+x *.py
+RUN chmod +x *.py
 COPY *.py /opt/domoticz/userdata/plugins/DomoticzLinky
