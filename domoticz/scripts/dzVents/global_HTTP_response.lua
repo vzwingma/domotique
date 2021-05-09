@@ -11,7 +11,11 @@ return
     execute = function(domoticz, item)
         -- Callback
         if (item.isHTTPResponse) then
-            domoticz.log(item.statusCode .. " - " .. item.statusText)
+            if(item.isOk) then
+                domoticz.log(item.statusCode .. " - " .. item.statusText, domoticz.LOG_DEBUG)
+            else 
+                domoticz.log("Erreur lors de l'appel HTTP : " .. item.statusCode .. " - " .. item.statusText, domoticz.LOG_ERROR)
+            end
         end        
     end       
 }

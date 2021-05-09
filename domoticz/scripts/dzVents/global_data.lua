@@ -2,7 +2,7 @@ return {
     helpers = {
         -- Variables d'environnements
         -- Tydom
-        VAR_TYDOM_BRIDGE = 'tydom_bridge_host',
+        VAR_TYDOM_BRIDGE = 'host_tydom_bridge',
         -- Livebox
         VAR_LIVEBOX_HOST = 'livebox_host',
         VAR_LIVEBOX_LOGIN = 'livebox_login',
