@@ -6,11 +6,10 @@ return
     },
     logging = {
         level = domoticz.LOG_INFO,
-        marker = "[Scene PreReveil] "
+        marker = "[Scene Matin] "
     },
     execute = function(domoticz, scene)
-        
-        -- Ouverture du groupe de volets
+        -- Activation du groupe (le niveau est suivant le mode Domicile)
         domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOn()
     end       
 }

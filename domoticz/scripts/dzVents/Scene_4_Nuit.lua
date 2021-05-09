@@ -9,12 +9,14 @@ return
         marker = "[Scene Nuit] "
     },
     execute = function(domoticz, scene)
-        
-        local tempNuit = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_SOIR).value
-        domoticz.log("Activation pour la nuit. Temp=[" .. tempNuit .. "]")
-        -- Fermeture du groupe de volets
+
+        -- Fermeture du groupe de volets  (quel que soit le mode Domicile)
         domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
-        -- Thermostat
+        
+        -- Thermostat pour la nuit, suivant le mode Domicile
+        local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
+        local tempNuit = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_SOIR .. modeDomicile).value
+        domoticz.log("Activation pour la nuit. Temp=[" .. tempNuit .. "]")
         domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempNuit)
     end       
 }

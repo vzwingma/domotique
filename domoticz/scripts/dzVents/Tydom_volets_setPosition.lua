@@ -32,7 +32,7 @@ return
             deviceId=1612171344
             endpointId=1612171343
         end
-        domoticz.log(" State="..item.state..", level="..item.level)
+
         -- Pourcentage de Commande
         -- Réaligné par rapport à létat
         if(item.state == 'Off' and item.level ~= 0) then
@@ -45,7 +45,7 @@ return
 
         -- Appel du bridge Tydom
         local postData = { ['name'] = 'position', ['value'] = pOuverture }
-        domoticz.helpers.callTydomBridgePUT('/device/'..deviceId..'/endpoints/'..endpointId,postData, nil, domoticz)
+        domoticz.helpers.callTydomBridgePUT('/device/'..deviceId..'/endpoints/'..endpointId , postData, nil, domoticz)
 
     end       
 }

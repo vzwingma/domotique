@@ -9,8 +9,7 @@ return
         marker = "[Scene Soiree] "
     },
     execute = function(domoticz, scene)
-        
-        -- Fermeture du groupe de volets
+        -- Fermeture du groupe de volets (quel que soit le mode Domicile)
         domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
   
     end       
