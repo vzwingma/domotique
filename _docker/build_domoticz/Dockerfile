@@ -7,5 +7,6 @@ RUN apt-get update && \
 	apt-get install -y python3-dev
 
 COPY *.lua /opt/domoticz/userdata/scripts/dzVents/generated_scripts
+
+RUN chmod ugo+x *.py
 COPY *.py /opt/domoticz/userdata/plugins/DomoticzLinky
-RUN chmod ugo+x /opt/domoticz/userdata/plugins/DomoticzLinky/plugin.py
