@@ -17,3 +17,7 @@ domoticz/database/backups/
 domoticz/database/scripts/dzVents/domoticzData.lua
 
 _docker/build_domoticz/plugin.py
+
+domoticz/database_local/scripts/dzVents/domoticzData.lua
+
+domoticz/database_local/
