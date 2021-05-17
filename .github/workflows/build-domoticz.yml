@@ -6,7 +6,7 @@ name: Build Domoticz ARM Docker Image
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [ master, feat/deconzplugin ]
   pull_request:
     branches: [ master ]
 
@@ -23,23 +23,42 @@ jobs:
       contents: read
     steps:
       - 
-        name: Checkout the code  Linky
+        name: Checkout the code Linky
         uses: actions/checkout@v2
         with:
             repository: guillaumezin/DomoticzLinky
             ref: refs/heads/master
-      # Upload plugin.py
+      # Upload plugin Linky
       - uses: actions/upload-artifact@v2
         name: Upload Python script
         with:
-            name: plugin.py
-            path: /home/runner/work/domotique/domotique/plugin.py
-          
+            name: linky-plugin
+            path: /home/runner/work/domotique/domotique/*.py
+  # Download DeCONZ Script
+  download-deconz:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - 
+        name: Checkout the code DeCONZ
+        uses: actions/checkout@v2
+        with:
+            repository: Smanar/Domoticz-deCONZ
+            ref: refs/heads/master
+      # Upload plugin deCONZ
+      - uses: actions/upload-artifact@v2
+        name: Upload Python scripts
+        with:
+            name: deconz-plugin
+            path: /home/runner/work/domotique/domotique/*.py
   # Push image to DockerHub
   build-push-domoticz:
 
     runs-on: ubuntu-latest
-    needs: download-linky
+    needs: 
+      - download-linky
+      - download-deconz
     env:      
       DOCKER_REGISTRY: registry.hub.docker.com
       DOCKER_IMAGE: vzwingmadomatic/domoticz
@@ -80,11 +99,18 @@ jobs:
         uses: actions/download-artifact@v2
         name: Download Script Linky
         with:
-          name: plugin.py
+          name: linky-plugin
+          path: _docker/build_domoticz/linky
+      - 
+        uses: actions/download-artifact@v2
+        name: Download Script deCONZ
+        with:
+          name: deconz-plugin
+          path: _docker/build_domoticz/deconz          
       - name: Build ARM image
         run: |
           cp domoticz/scripts/dzVents/*.lua _docker/build_domoticz
-          cp plugin.py _docker/build_domoticz
           cd _docker/build_domoticz
-          ls -lh
+          ls -lh linky/
+          ls -lh deconz/
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
