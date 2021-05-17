@@ -42,9 +42,9 @@ return {
             local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
             domoticz.log("Mode Domicile : [" .. domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName .. "]")
             local suffixeMode = ''
-            if(modeDomicile == 'Défaut') then
+            if(modeDomicile == 'Présents') then
                 suffixeMode = ''
-            elseif(modeDomicile == 'Absent') then
+            elseif(modeDomicile == 'Absents') then
                 suffixeMode = '_abs'
             elseif(modeDomicile == 'Vacances') then
                 suffixeMode = '_vacs'
