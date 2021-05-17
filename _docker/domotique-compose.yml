@@ -5,11 +5,11 @@ services:
     image: vzwingmadomatic/domoticz-tydom:latest
     environment:
       # Configuration Box Tydom
-      # - HOST=192.168.1.13
+      - HOST=192.168.1.13
       # Configuration passerelle Tydom
       - PORT=9001
-      - MAC=#Set Tydom MAC Adresse
-      - PASSWD=#Set Tydom Password
+      - MAC=#Set TYDOM MAC adress
+      - PASSWD=#Set TYDOM password
     ports:
       - 9101:9001
     restart: always
@@ -17,8 +17,11 @@ services:
   deconz:
     image: marthoc/deconz:latest
     ports:
-      - 9102:80
-      - 9143:443      
+      - 9102:9102
+      - 9143:9143
+    environment:
+      - DECONZ_WS_PORT=9143
+      - DECONZ_WEB_PORT=9102
     devices:
       - /dev/ttyAMA0:/dev/ttyAMA0
     volumes:
@@ -37,8 +40,8 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - /home/pi/appli/domoticz/database:/opt/domoticz/userdata
-      - /home/pi/appli/domoticz/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts
+      - /home/pi/appli/domoticz/database/domoticz.db:/opt/domoticz/userdata/domoticz.db
+#      - /home/pi/appli/domoticz/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts
     depends_on:
       - deconz
       - tydom-bridge
