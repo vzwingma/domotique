@@ -14,7 +14,7 @@ return {
 
         -- # Mise à jour de la temperature mesurée (issue de Tydom)
         function updateTemperatureMesuree(node)
-            domoticz.log('Température Mesure =' .. node.value)
+            domoticz.log('Température mesurée =' .. node.value .. '°C')
             domoticz.devices(domoticz.helpers.DEVICE_TYDOM_TEMPERATURE).updateTemperature(node.value)
         end
         
@@ -23,7 +23,7 @@ return {
         function updateThermostat(node)
             local commandeTyd = node.value
             local commandeDz = domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).setPoint
-            domoticz.log('Température [Commande Tydom =' .. commandeTyd .. '] [Commande Dz = '.. commandeDz ..']')
+            domoticz.log('Température [Commande Tydom = ' .. commandeTyd .. '°C] [Commande Dz = '.. commandeDz ..'°C]')
                 
             if(commandeDz ~= commandeTyd) then
                 domoticz.log("Réalignement du Tydom Thermostat sur Domoticz par rapport à la commande réelle [" .. commandeTyd .. "]", domoticz.LOG_INFO)
