@@ -22,6 +22,9 @@ return {
         -- # Réalignement du Thermostat par rapport à Tydom
         function updateThermostat(node)
             local commandeTyd = node.value
+            if(commandeTyd == null) then
+                commandeTyd = 0
+            end
             local commandeDz = domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).setPoint
             domoticz.log('Température [Commande Tydom = ' .. commandeTyd .. '°C] [Commande Dz = '.. commandeDz ..'°C]')
                 
@@ -39,7 +42,6 @@ return {
             
         -- ### Callback
         elseif (item.isHTTPResponse and item.ok) then
-
             -- Update Mesure temperature
             local tempMesureeNode = domoticz.helpers.getNodeFromJSonTreeByName(item.json.data, 'temperature')
             updateTemperatureMesuree(tempMesureeNode)
