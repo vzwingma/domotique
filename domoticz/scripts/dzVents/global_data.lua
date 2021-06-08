@@ -30,6 +30,7 @@ return {
         DEVICE_VOLET_NOUS = 'Volet Nous',
         DEVICE_TYDOM_TEMPERATURE='Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT='Tydom Thermostat',
+        DEVICE_LAMPE_SALON='Lumière salon',
         -- Groupe
         GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
@@ -42,9 +43,9 @@ return {
             local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
             domoticz.log("Mode Domicile : [" .. domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName .. "]")
             local suffixeMode = ''
-            if(modeDomicile == 'Défaut') then
+            if(modeDomicile == 'Présents') then
                 suffixeMode = ''
-            elseif(modeDomicile == 'Absent') then
+            elseif(modeDomicile == 'Absents') then
                 suffixeMode = '_abs'
             elseif(modeDomicile == 'Vacances') then
                 suffixeMode = '_vacs'

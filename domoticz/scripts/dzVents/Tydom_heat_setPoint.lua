@@ -10,9 +10,16 @@ return
     },
     execute = function(domoticz, item)
         -- Commande de thermostat
-        domoticz.log("Réglage du thermostat à T=" .. item.state .. "°C")
+       
+        local putData
+        if(item.state == "0.00") then
+             domoticz.log("Réglage du thermostat à Hors Gel")
+            putData = {{ ['name'] = 'setpoint', ['value'] = null }, { ['name'] = 'antifrostOn', ['value'] = true }}
+        else
+            domoticz.log("Réglage du thermostat à T=" .. item.state .. "°C")
+            putData = { ['name'] = 'setpoint', ['value'] = item.state }
             
-        local putData = { ['name'] = 'setpoint', ['value'] = item.state }
+        end
         domoticz.helpers.callTydomBridgePUT('/device/1612171197/endpoints/1612171197',putData, nil, domoticz)
     end       
 }
