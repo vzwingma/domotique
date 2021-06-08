@@ -27,13 +27,12 @@ return
         end
         -- Recheche du niveau de volets suivant l'état du groupe et du modeDomicile
         function getLevelFromGroupState(group)
+            local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
             if(group.state == 'On') then
-                -- Ouverture du groupe de volets
-                local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-                -- Activation suivant le mode Domicile
+                -- Ouverture du groupe de volets suivant le mode Domicile
                return domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value
             else
-                return 0
+               return 0
             end
         end
     
@@ -42,7 +41,7 @@ return
         local level = getLevelFromGroupState(group)
         
         for i, voletName in ipairs(voletsName) do 
-            domoticz.log("Ouverture du volet "..voletName .. " : " .. level .. "%")
+            domoticz.log("Ouverture du volet " .. voletName .. " à " .. level .. "%")
             domoticz.devices(voletName).setLevel(level)
         end
     

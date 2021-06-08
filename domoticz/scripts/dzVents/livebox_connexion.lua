@@ -6,8 +6,9 @@
 --      livebox_pwd : mot de passe de connexion
 return {
     on = {
-     --   timer = { 'every minute' },
-        httpResponses = { 'livebox_connexion' }
+        devices = { 'TriggerTest' },
+        httpResponses = { 'livebox_connexion' },
+        shellCommandResponses = { 'livebox_connexion' }
     },
     logging = {
         level = domoticz.LOG_DEBUG,
@@ -18,7 +19,7 @@ return {
     -- #### Fonctions de communication avec la Livebox
     
         -- Authentification
-        function authenticateLivebox()
+        function authenticateToLivebox()
     
             domoticz.log("Authentification", domoticz.LOG_DEBUG) 
     
@@ -26,54 +27,52 @@ return {
             local login_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_LOGIN).value
             local pwd_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_PWD).value
             local authData = { ['service'] = 'sah.Device.Information', 
-                              ['method'] = 'createContext',
-                              ['parameters'] = { ['applicationName'] = 'so_sdkut', 
-                                                 ['username'] = login_livebox, 
-                                                 ['password'] = pwd_livebox }}
-    
-            -- Appel du service d'auth
-            domoticz.openURL({
-                url = 'http://'..host_livebox..'/ws',
-                method = 'POST',
-                headers = { ['Content-type'] = 'application/x-sah-ws-4-call+json', ['Authorization'] = 'X-Sah-Login' },
-                postData = authData,
-                callback = 'livebox_connexion'
-            })
+                               ['method'] = 'createContext',
+                               ['parameters'] = { ['applicationName'] = 'so_sdkut', 
+                                                  ['username'] = login_livebox, 
+                                                  ['password'] = pwd_livebox }}
+            -- Appel de l'authentification
+            local fullcmd = "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"Authorization:X-Sah-Login\" -d '" 
+                            .. domoticz.utils.toJSON(authData) .. "' -c /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie -X POST " ..
+                            "'http://" .. host_livebox .. "/ws'"
+
+        	domoticz.executeShellCommand({ 
+        	        command = fullcmd, 
+        	        callback = 'livebox_connexion' })
         end     
     
+        -- Recherche des équipements connectés
+        function getConnectedDevices(contextId, domoticz)
+            domoticz.log("Recherche des équipements connectés", domoticz.LOG_DEBUG)
+            local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
+            local postData = { ['service'] = 'Devices.Device.HGW' , ['method'] = 'topology', ['parameters'] = {} }
+            local fullcmd = "SESSID=`cat /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie  | awk 'END{print}' | awk '{new_var=$(NF-1)\"=\"$(NF); print new_var}'` ; " ..
+            "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"X-Context: " .. contextId .. "\" -d '" .. domoticz.utils.toJSON(postData) .. "' -b \"$SESSID\" -X POST 'http://" .. host_livebox .. "/ws'"
+
+        	domoticz.executeShellCommand({ 
+        	        command = fullcmd, 
+        	        callback = 'livebox_LAN_statuts' })            
+        end
+
     
         -- ##### Exécution des traitments sur les API Orange
-        function getStatutsFromLivebox(contextId, domoticz)
+        function sessionConnectedToLivebox(contextId, domoticz)
             getConnectedDevices(contextId, domoticz)
-            
-        end
-        
-        
-        -- Requete sur les équipements
-        function getConnectedDevices(contextId, domoticz)
-            
-            domoticz.log("Recherche des équipements connectés", domoticz.LOG_DEBUG)
-            
-            local postData = { ['service'] = 'Devices.Device.HGW' , ['method'] = 'topology', ['parameters'] = {} }
-            domoticz.helpers.callLiveboxPOST(contextId, postData, 'livebox_wan_statuts', domoticz)
-        end
+        end 
         
         
     -- ## Déclenchement de la fonction sur time
-        if(item.isTimer) then
+        if(item.isDevice) then
             -- Authentification
             domoticz.log("Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
-            authenticateLivebox()
+            authenticateToLivebox()
             
         -- ## Call back après AUth
-        elseif(item.isHTTPResponse) then
+        elseif(item.isShellCommandResponse) then 
             domoticz.log(item.statusCode .. " - " .. item.statusText)
-            
-            if (item.ok) then -- statusCode == 2xx
-                local contextId = item.json.data.contextID
-                domoticz.log("- contextID = ["..contextId.."]")
-                getStatutsFromLivebox(contextId, domoticz)
-            end
+            local contextId = item.json.data.contextID
+            domoticz.log("- contextID = ["..contextId.."]")
+            sessionConnectedToLivebox(contextId, domoticz)
         end
 
     end

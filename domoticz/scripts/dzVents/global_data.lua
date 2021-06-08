@@ -15,7 +15,8 @@ return {
         -- Niveau de volet au réveil
         VAR_PRCENT_VOLET_REVEIL = 'param_volet_reveil_pourcentage',
         -- Niveau de volets le matin
-        VAR_PRCENT_VOLET_MATIN = 'param_volet_pourcentage',
+        VAR_PRCENT_VOLET_MATIN = 'param_volet_matin',
+        VAR_PRCENT_VOLET_SOIR  = 'param_volet_soir',
         -- Si Mode Domicile == Absent ou Vacances
         VAR_TEMPERATURE_MATIN_ABS = 'param_temp_matin_abs',
         VAR_TEMPERATURE_SOIR_ABS = 'param_temp_soir_abs',
@@ -36,6 +37,8 @@ return {
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
         -- Mode
         DEVICE_MODE_DOMICILE = 'Mode Domicile',
+        -- livebox
+        DEVICE_LIVEBOX_WAN = 'Livebox WAN',
         
         -- ### Fonctions utilitaires
         -- # Fonction de recherche du suffixe suivant le mode du Domicile

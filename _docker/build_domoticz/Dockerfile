@@ -4,8 +4,11 @@ MAINTAINER vincent.zwingmann@github.com
 
 RUN apt-get update && \
 	apt-get upgrade -y && \
-	apt-get install -y python3-dev
+	apt-get install -y python3-dev && \
+	apt-get install -y curl
 
+# Intégration des scripts dzVents
+RUN mkdir -p /opt/domoticz/userdata/scripts/dzVents/data/
 RUN mkdir -p /opt/domoticz/userdata/scripts/dzVents/generated_scripts
 COPY *.lua /opt/domoticz/userdata/scripts/dzVents/generated_scripts
 
