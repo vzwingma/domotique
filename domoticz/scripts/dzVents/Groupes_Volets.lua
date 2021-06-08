@@ -32,8 +32,7 @@ return
                 -- Ouverture du groupe de volets suivant le mode Domicile
                return domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value
             else
-                -- Fermeture du groupe de volets suivant le mode Domicile
-               return domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR .. modeDomicile).value
+               return 0
             end
         end
     
