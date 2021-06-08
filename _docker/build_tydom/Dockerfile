@@ -1,5 +1,4 @@
-FROM arm32v7/node:16-alpine
-#FROM node:16-alpine
+FROM node:16.1.0-slim
 # Construit à partir de Node
 LABEL MAINTAINER="vincent.zwingmann@github.com"
 

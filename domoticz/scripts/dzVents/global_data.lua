@@ -30,6 +30,7 @@ return {
         DEVICE_VOLET_NOUS = 'Volet Nous',
         DEVICE_TYDOM_TEMPERATURE='Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT='Tydom Thermostat',
+        DEVICE_LAMPE_SALON='Lumière salon',
         -- Groupe
         GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
