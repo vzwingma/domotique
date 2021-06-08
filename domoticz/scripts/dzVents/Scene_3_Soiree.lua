@@ -9,7 +9,7 @@ return
         marker = "[Scene Soiree] "
     },
     execute = function(domoticz, scene)
-        -- Fermeture du groupe de volets (quel que soit le mode Domicile)
+        -- Fermeture du groupe de volets suivant le mode Domicile
         domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
         -- Activation de la lampe seulement si mode par défaut ou Eté
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
