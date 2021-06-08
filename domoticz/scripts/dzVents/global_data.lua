@@ -37,6 +37,8 @@ return {
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
         -- Mode
         DEVICE_MODE_DOMICILE = 'Mode Domicile',
+        -- livebox
+        DEVICE_LIVEBOX_WAN = 'Livebox WAN',
         
         -- ### Fonctions utilitaires
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
