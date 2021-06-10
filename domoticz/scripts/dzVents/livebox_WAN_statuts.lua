@@ -48,7 +48,7 @@ return {
                 alertLevel = domoticz.ALERTLEVEL_GREY
             end
             -- Mise à jour du statut WAN
-            domoticz.devices(domoticz.helpers.DEVICE_LIVEBOX_WAN).updateAlertSensor(alertLevel, "WAN=" .. WANStatutData.WanState .. ", Link=" .. WANStatutData.LinkState)
+            domoticz.devices(domoticz.helpers.DEVICE_STATUT_LIVEBOX).updateAlertSensor(alertLevel, "WAN=" .. WANStatutData.WanState .. ", Link=" .. WANStatutData.LinkState)
         end
 
         

@@ -7,6 +7,7 @@
 return {
     on = {
         devices = { 'TriggerTest' },
+        timer = { 'every 10 minutes' },
         shellCommandResponses = { 'livebox_getStatuts' }
     },
     logging = {
@@ -27,7 +28,7 @@ return {
     
         -- ##### Exécution des traitments sur les API Orange
         function sessionConnectedToLivebox(contextId, domoticz)
-            domoticz.log("Connecté à la Livebox - contextID = ["..contextId.."]")
+            domoticz.log("Connecté à la Livebox - contextID = ["..contextId.."]", domoticz.LOG_DEBUG)
             -- Une fois connecté, on appelle les différents services
             getConnectedDevices(contextId, domoticz)
         end 

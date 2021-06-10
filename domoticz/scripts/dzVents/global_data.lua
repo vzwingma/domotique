@@ -7,7 +7,8 @@ return {
         VAR_LIVEBOX_HOST = 'livebox_host',
         VAR_LIVEBOX_LOGIN = 'livebox_login',
         VAR_LIVEBOX_PWD = 'livebox_pwd',
-        
+        -- Connected Devices
+        VAR_LIVEBOX_DEVICES = 'livebox_devices',
         -- #### Configuration d'usage ####
         -- Si Mode Domicile == Défaut
         VAR_TEMPERATURE_MATIN = 'param_temp_matin',
@@ -39,7 +40,10 @@ return {
         -- Mode
         DEVICE_MODE_DOMICILE = 'Mode Domicile',
         -- livebox
-        DEVICE_LIVEBOX_WAN = 'Livebox WAN',
+        DEVICE_STATUT_LIVEBOX = 'Livebox',
+        DEVICE_STATUT_DOMOTIQUE = 'Domotique',
+        DEVICE_STATUT_TV = 'TV',
+        DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
         
         -- ### Fonctions utilitaires
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
