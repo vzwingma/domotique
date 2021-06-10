@@ -2,7 +2,7 @@ return
 {
     on =
     {
-        groups = { '[Grp] Volets Salon', '[Grp] Tous Volets' },
+        groups = { '[Grp] Volets Salon', '[Grp] Tous Volets', '[Grp] Volets Chambres' },
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -17,6 +17,10 @@ return
             if(group.name == domoticz.helpers.GROUPE_TOUS_VOLETS) then
                 domoticz.log("Ouverture tous volets : " .. group.state)
                 return { domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D, domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS }
+            
+            elseif(group.name == domoticz.helpers.GROUPE_VOLETS_CHAMBRES) then
+                domoticz.log("Ouverture Volets Chambres : " .. group.state)
+                return { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS }
                 
             elseif(group.name == domoticz.helpers.GROUPE_VOLETS_SALON) then
                 domoticz.log("Ouverture Volets Salon " .. group.state)
