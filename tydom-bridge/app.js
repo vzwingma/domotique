@@ -86,10 +86,15 @@ let webServer;
         res.end(JSON.stringify(info));
     })
     .put('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
-        const info = await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
+        const command = await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(info));
+        res.end(JSON.stringify(command));
     })
+    .post('/refresh/all', async function(req, res) {
+        const refresh = await client.post('/refresh/all');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(refresh));
+    })	
     .use(function(req, res, next){
         res.setHeader('Content-Type', 'text/plain');
         res.status(404).send('Page introuvable !');
