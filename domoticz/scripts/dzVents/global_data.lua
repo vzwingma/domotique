@@ -7,7 +7,8 @@ return {
         VAR_LIVEBOX_HOST = 'livebox_host',
         VAR_LIVEBOX_LOGIN = 'livebox_login',
         VAR_LIVEBOX_PWD = 'livebox_pwd',
-        
+        -- Connected Devices
+        VAR_LIVEBOX_DEVICES = 'livebox_devices',
         -- #### Configuration d'usage ####
         -- Si Mode Domicile == Défaut
         VAR_TEMPERATURE_MATIN = 'param_temp_matin',
@@ -39,7 +40,10 @@ return {
         -- Mode
         DEVICE_MODE_DOMICILE = 'Mode Domicile',
         -- livebox
-        DEVICE_LIVEBOX_WAN = 'Livebox WAN',
+        DEVICE_STATUT_LIVEBOX = 'Livebox',
+        DEVICE_STATUT_DOMOTIQUE = 'Domotique',
+        DEVICE_STATUT_TV = 'TV',
+        DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
         
         -- ### Fonctions utilitaires
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
@@ -119,7 +123,31 @@ return {
         end,
         
         -- ### FONCTIONS HTTP VERS LA LIVEBOX
-        callLiveboxPOST = function (contextId, putData, callbackName, domoticz)
+
+        -- Authentification
+        authenticateToLivebox = function(callbackName, domoticz)
+    
+            domoticz.log("Authentification à la Livebox ORANGE", domoticz.LOG_DEBUG) 
+    
+            local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
+            local login_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_LOGIN).value
+            local pwd_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_PWD).value
+            local authData = { ['service'] = 'sah.Device.Information', 
+                               ['method'] = 'createContext',
+                               ['parameters'] = { ['applicationName'] = 'so_sdkut', 
+                                                  ['username'] = login_livebox, 
+                                                  ['password'] = pwd_livebox }}
+            -- Appel de l'authentification
+            local fullcmd = "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"Authorization:X-Sah-Login\" -d '" 
+                            .. domoticz.utils.toJSON(authData) .. "' -c /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie -X POST " ..
+                            "'http://" .. host_livebox .. "/ws'"
+
+        	domoticz.executeShellCommand({ 
+        	            command = fullcmd, 
+        	            callback = callbackName })
+        end,  
+        
+        callLiveboxPOST = function (contextId, postData, callbackName, domoticz)
             
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
             
@@ -127,15 +155,12 @@ return {
                callbackName = 'global_HTTP_response' 
             end
             domoticz.log("contextId=["..contextId.."]")
-            
-            domoticz.openURL({
-                url = 'http://'..host_livebox..'/ws',
-                method = 'POST',
-                headers = { ['Content-type'] = 'application/x-sah-ws-4-call+json', ['X-Context'] = contextId },
-                postData = putData,
-                callback = callbackName
-            })
-            return
+            local fullcmd = "SESSID=`cat /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie  | awk 'END{print}' | awk '{new_var=$(NF-1)\"=\"$(NF); print new_var}'` ; " ..
+            "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"X-Context: " .. contextId .. "\" -d '" .. domoticz.utils.toJSON(postData) .. "' -b \"$SESSID\" -X POST 'http://" .. host_livebox .. "/ws'"
+
+        	domoticz.executeShellCommand({ 
+        	        command = fullcmd, 
+        	        callback = callbackName })            
         end
     }
 }
