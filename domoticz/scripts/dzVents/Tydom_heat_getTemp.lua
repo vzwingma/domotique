@@ -1,7 +1,7 @@
 return {
     on = {
         timer = { 'every hour' },
-        devices = { 'MaJ Tydom Temperatures' },
+        devices = { 'MaJ Tydom Temperature' },
         httpResponses = { 'Tydom_heat_getTemp' }
     },
     logging = {
