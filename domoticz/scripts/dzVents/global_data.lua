@@ -34,6 +34,7 @@ return {
         DEVICE_LAMPE_SALON='Lumière salon',
         -- Groupe
         GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
+        GROUPE_VOLETS_CHAMBRES = '[Grp] Volets Chambres',
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
         -- Mode
         DEVICE_MODE_DOMICILE = 'Mode Domicile',
@@ -84,6 +85,19 @@ return {
             return
         end,
         
+        -- # Fonction d'appel POST de la passerelle Tydom
+        callTydomBridgePOST = function (uriToCall, domoticz)
+            
+            local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
+
+            domoticz.openURL({
+                url = 'http://'..host_tydom_bridge..'' .. uriToCall,
+                method = 'POST',
+                header = { ['Content-Type'] = 'application/json' },
+                callback = 'global_HTTP_response'
+            })
+            return
+        end,
         
         -- # Fonction d'appel PUT de la passerelle Tydom
         callTydomBridgePUT = function (uriToCall, putData, callbackName, domoticz)
