@@ -12,12 +12,13 @@ return
         
         -- Met à jour le niveau du volet, ssi il est plus petit que la valeur existante
         function setVoletsLevelToMinValue(deviceName, levelVoletsSoir)
-            domoticz.devices(deviceName).setLevel(math.min(domoticz.devices(domoticz.helpers.deviceName).level, levelVoletsSoir))
+            local minLevelVoletsSoir = math.min(domoticz.devices(deviceName).level, levelVoletsSoir)
+            domoticz.log("Fermeture du volet " .. deviceName .. " : " .. minLevelVoletsSoir .. "%")
+            domoticz.devices(deviceName).setLevel(minLevelVoletsSoir)
         end
 
         -- Activation de la lampe seulement si mode par défaut ou Eté
-        function activationLampeSalon()
-            local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
+        function activationLampeSalon(modeDomicile)
             if(modeDomicile == '' or modeDomicile == '_ete') then
                 domoticz.log("Allumage de la lampe du salon")
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_SALON).setLevel(50)
@@ -27,7 +28,7 @@ return
         end
     
         -- Maj Level Salon & Chambre suivant le paramétrage         
-        function activationVolets()
+        function activationVolets(modeDomicile)
 
             local levelVoletsSoir = nil
             if( modeDomicile == '_ete') then
@@ -45,7 +46,8 @@ return
             setVoletsLevelToMinValue(domoticz.helpers.DEVICE_VOLET_BEBE, 0)
         end
         
-        activationLampeSalon()
-        activationVolets()
+        local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
+        activationLampeSalon(modeDomicile)
+        activationVolets(modeDomicile)
     end       
 }
