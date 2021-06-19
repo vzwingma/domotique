@@ -59,8 +59,14 @@ return {
         function updateDomoticzStatut(mapStatutsDevices, nbExpectedUp, domoticzDeviceToUpdate)
             local nbEquipementsUp = 0
             local domoticzStatutLabel = ""
-            for i, statutDevice in pairs(mapStatutsDevices) do 
-                domoticzStatutLabel = domoticzStatutLabel .. "" .. i .. "=" .. tostring(statutDevice) .. " "
+            -- Tri des noms des devices
+            local tkeys = {}
+            for k in pairs(mapStatutsDevices) do table.insert(tkeys, k) end
+            table.sort(tkeys)
+            
+            for _, kdevice in pairs(tkeys) do 
+                local statutDevice = mapStatutsDevices[kdevice]
+                domoticzStatutLabel = domoticzStatutLabel .. "" .. kdevice .. "=" .. tostring(statutDevice) .. " "
                 if(statutDevice) then
                     nbEquipementsUp = nbEquipementsUp + 1
                 end
@@ -75,7 +81,7 @@ return {
                 alertLevel = domoticz.ALERTLEVEL_ORANGE
             end
             -- Mise à jour du statut WAN
-            domoticz.log(" = " .. domoticzStatutLabel, domoticz.LOG_INFO)
+            domoticz.log(domoticzDeviceToUpdate .. " = " .. domoticzStatutLabel, domoticz.LOG_INFO)
             domoticz.devices(domoticzDeviceToUpdate).updateAlertSensor(alertLevel, domoticzStatutLabel)
         end
         

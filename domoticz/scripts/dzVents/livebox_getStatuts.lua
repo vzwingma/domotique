@@ -6,7 +6,6 @@
 --      livebox_pwd : mot de passe de connexion
 return {
     on = {
-        devices = { 'TriggerTest' },
         timer = { 'every 10 minutes' },
         shellCommandResponses = { 'livebox_getStatuts' }
     },
@@ -35,7 +34,7 @@ return {
         
         
     -- ## Déclenchement de la fonction /
-        if(item.isDevice) then
+        if(item.isTimer) then
             -- d'abord l'Authentification
             domoticz.log("Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
             domoticz.helpers.authenticateToLivebox('livebox_getStatuts', domoticz)

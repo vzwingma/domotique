@@ -10,6 +10,7 @@ return
     },
     execute = function(domoticz, scene)
         -- Activation du groupe (le niveau est suivant le mode Domicile)
-        domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOn()
+        local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
+        domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).setLevel(domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value)
     end       
 }

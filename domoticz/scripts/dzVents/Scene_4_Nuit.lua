@@ -11,7 +11,7 @@ return
     execute = function(domoticz, scene)
 
         -- Fermeture du groupe de volets  (quel que soit le mode Domicile)
-        domoticz.groups(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
+        domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
         -- Extinction de la lampe
         domoticz.devices(domoticz.helpers.DEVICE_LAMPE_SALON).switchOff()
         -- Thermostat pour la nuit, suivant le mode Domicile
