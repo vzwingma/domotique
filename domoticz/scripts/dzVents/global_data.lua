@@ -46,6 +46,11 @@ return {
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
         
         -- ### Fonctions utilitaires
+        isWeekEnd = function(domoticz)
+            local weekDay = domoticz.time.wday
+            domoticz.log("weekDay = " .. weekDay)
+            return (weekDay == 1 or weekDay == 7)
+        end,
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
         getModeDomicile = function(domoticz)
             local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
@@ -146,7 +151,7 @@ return {
         	            command = fullcmd, 
         	            callback = callbackName })
         end,  
-        
+        -- Appel POST
         callLiveboxPOST = function (contextId, postData, callbackName, domoticz)
             
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value

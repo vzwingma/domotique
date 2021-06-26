@@ -2,7 +2,7 @@ return
 {
     on =
     {
-        scenes = { 'PreReveil' },
+        scenes = { 'PreparationChauffage' },
     },
     logging = {
         level = domoticz.LOG_INFO,
