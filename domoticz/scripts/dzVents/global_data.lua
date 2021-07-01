@@ -7,22 +7,22 @@ return {
         VAR_LIVEBOX_HOST = 'livebox_host',
         VAR_LIVEBOX_LOGIN = 'livebox_login',
         VAR_LIVEBOX_PWD = 'livebox_pwd',
-        -- Connected Devices
+        -- Connected Devices sur Livebox
         VAR_LIVEBOX_DEVICES = 'livebox_devices',
         -- #### Configuration d'usage ####
-        -- Si Mode Domicile == Défaut
+        -- Config Température
         VAR_TEMPERATURE_MATIN = 'param_temp_matin',
         VAR_TEMPERATURE_SOIR = 'param_temp_soir',
-        -- Niveau de volet au réveil
-        VAR_PRCENT_VOLET_REVEIL = 'param_volet_reveil_pourcentage',
-        -- Niveau de volets le matin
+        -- Config Volets
+        VAR_PRCENT_VOLET_REVEIL = 'param_volet_reveil',
         VAR_PRCENT_VOLET_MATIN = 'param_volet_matin',
         VAR_PRCENT_VOLET_SOIR  = 'param_volet_soir',
         -- Si Mode Domicile == Absent ou Vacances
         VAR_TEMPERATURE_MATIN_ABS = 'param_temp_matin_abs',
         VAR_TEMPERATURE_SOIR_ABS = 'param_temp_soir_abs',
-        VAR_PRCENT_VOLET_REVEIL_ABS = 'param_volet_reveil_pourcentage',
-        
+        VAR_PRCENT_VOLET_REVEIL_ABS = 'param_volet_reveil',
+        -- Config Lumière Salon
+        VAR_PRCENT_LUMIERE_SALON_SOIR = 'param_lampe_salon_soir',
         
         -- # Configuration des composants #
         -- Devices
@@ -46,6 +46,11 @@ return {
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
         
         -- ### Fonctions utilitaires
+        isWeekEnd = function(domoticz)
+            local weekDay = domoticz.time.wday
+            domoticz.log("weekDay = " .. weekDay)
+            return (weekDay == 1 or weekDay == 7)
+        end,
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
         getModeDomicile = function(domoticz)
             local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
@@ -146,7 +151,7 @@ return {
         	            command = fullcmd, 
         	            callback = callbackName })
         end,  
-        
+        -- Appel POST
         callLiveboxPOST = function (contextId, postData, callbackName, domoticz)
             
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value

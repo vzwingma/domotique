@@ -29,11 +29,17 @@ return {
                     updateDomoticzStatut(mapStatutsDomotique, 2, domoticz.helpers.DEVICE_STATUT_DOMOTIQUE)
                     updateDomoticzStatut(mapStatutsTV, 2, domoticz.helpers.DEVICE_STATUT_TV)
                     updatePersonnalConnectedDevices(mapStatutsWifi, domoticz)
+                
+                elseif(child.Name == "DECT") then
+                    for i, device in ipairs(child.Children) do 
+                        liveboxSensor(device)
+                    end                
+                
                 end
             end
         end 
         
-        -- Interfaces (ethx)
+        -- #### Interfaces (ethx) ####
         function liveboxInterface(interface, mapStatutsTV, mapStatutsDomotique, mapStatutsWifi)
             domoticz.log(". Interface : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
 
@@ -53,7 +59,14 @@ return {
             end
             return mapStatut
         end
-
+        -- #### Sensors (DECT) ####
+        function liveboxSensor(device)
+           domoticz.log("... Sensor Device : " .. device.Name .. " active=" .. tostring(device.Active), domoticz.LOG_DEBUG) 
+           for i, alarm in ipairs(device.Alarm) do 
+                domoticz.log("......  Alarm : " .. alarm.Name .. " Value=".. alarm.Value .. " @ " .. alarm.Time, domoticz.LOG_DEBUG)
+            end
+            
+        end
         
         -- #### Fonctions de mise à jour des statuts dans DomoticZ en fonction des équipements UP
         function updateDomoticzStatut(mapStatutsDevices, nbExpectedUp, domoticzDeviceToUpdate)
