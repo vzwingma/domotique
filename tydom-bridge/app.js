@@ -30,7 +30,8 @@ let webServer;
 
     // Info
 	app.get('/_info', function (req, res) {
-	   res.send('Le bridge Tydom [ ' + username + ' ] est opérationnel');
+        res.setHeader('Content-Type', 'application/json');
+	    res.send('Le bridge Tydom [ ' + username + ' ] est opérationnel');
 	})
     app.get('/info', async function(req, res) {
 
@@ -83,11 +84,15 @@ let webServer;
     .get('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
         const info = await client.get('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data');
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Request-DeviceId', req.params.devicenum);
+        res.setHeader('X-Request-EndpointId', req.params.endpointnum);
         res.end(JSON.stringify(info));
     })
     .put('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
         const command = await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Request-DeviceId', req.params.devicenum);
+        res.setHeader('X-Request-EndpointId', req.params.endpointnum);
         res.end(JSON.stringify(command));
     })
     .post('/refresh/all', async function(req, res) {
@@ -97,7 +102,8 @@ let webServer;
     })	
     .use(function(req, res, next){
         res.setHeader('Content-Type', 'text/plain');
-        res.status(404).send('Page introuvable !');
+        const labelError = '{ "error": 1, "label_error": "Service introuvable" }'
+        res.status(404).send(JSON.stringify(labelError));
     });
 
     webServer = app.listen(port, function () {
