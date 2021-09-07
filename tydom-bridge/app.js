@@ -101,7 +101,7 @@ let webServer;
         res.end(JSON.stringify(refresh));
     })	
     .use(function(req, res, next){
-        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Type', 'application/json');
         const labelError = '{ "error": 1, "label_error": "Service introuvable" }'
         res.status(404).send(labelError);
     });
