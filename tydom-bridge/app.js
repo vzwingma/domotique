@@ -103,7 +103,7 @@ let webServer;
     .use(function(req, res, next){
         res.setHeader('Content-Type', 'text/plain');
         const labelError = '{ "error": 1, "label_error": "Service introuvable" }'
-        res.status(404).send(JSON.stringify(labelError));
+        res.status(404).send(labelError);
     });
 
     webServer = app.listen(port, function () {
