@@ -2,7 +2,7 @@ return
 {
     on =
     {
-        groups = { '[Grp] Volets Salon', '[Grp] Tous Volets', '[Grp] Volets Chambres' },
+        devices = { '[Grp] Volets Salon', '[Grp] Tous Volets', '[Grp] Volets Chambres' },
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -16,7 +16,7 @@ return
             
             if(group.name == domoticz.helpers.GROUPE_TOUS_VOLETS) then
                 domoticz.log("Ouverture tous volets : " .. group.state)
-                return { domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D, domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS }
+                return { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON }
             
             elseif(group.name == domoticz.helpers.GROUPE_VOLETS_CHAMBRES) then
                 domoticz.log("Ouverture Volets Chambres : " .. group.state)
@@ -29,12 +29,11 @@ return
                 return {}
             end
         end
-        -- Recheche du niveau de volets suivant l'état du groupe et du modeDomicile
+        -- Recheche du niveau de volets suivant l'état du groupe 
         function getLevelFromGroupState(group)
-            local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
             if(group.state == 'On') then
-                -- Ouverture du groupe de volets suivant le mode Domicile
-               return domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value
+                -- Ouverture du groupe de volets suivant la valeur du niveau
+               return group.level
             else
                return 0
             end
@@ -42,11 +41,10 @@ return
     
     -- ### Lancement du scénario du Groupe ###
         local voletsName = getVoletsNameFromGroup(group)
-        local level = getLevelFromGroupState(group)
-        
+        local levelSet = getLevelFromGroupState(group)
         for i, voletName in ipairs(voletsName) do 
-            domoticz.log("Ouverture du volet " .. voletName .. " à " .. level .. "%")
-            domoticz.devices(voletName).setLevel(level)
+            domoticz.log("Ouverture du volet " .. voletName .. " à " .. levelSet .. "%")
+            domoticz.devices(voletName).setLevel(levelSet)
         end
     
     end       
