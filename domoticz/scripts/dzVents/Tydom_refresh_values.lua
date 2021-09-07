@@ -1,6 +1,6 @@
 return {
     on = {
-        timer = { 'every 30 minutes' },
+        timer = { 'every 15 minutes' },
         devices = { 'MaJ Tydom Temperature' }
     },
     logging = {
