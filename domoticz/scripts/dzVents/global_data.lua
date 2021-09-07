@@ -43,24 +43,37 @@ return {
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
         -- # Tydom DATA #
         -- n° devices Tydom
-        getTydomDeviceNumberFromDzItem = function(item, domoticz)
+        getTydomDeviceNumberFromDzItem = function(itemName, domoticz)
             local tydomIds = {}   
 
-            if(item.name == domoticz.helpers.DEVICE_VOLET_SALON_G) then
+            if(itemName == domoticz.helpers.DEVICE_VOLET_SALON_G) then
                 tydomIds.deviceId=1612171343
                 tydomIds.endpointId=1612171343
-            elseif(item.name == domoticz.helpers.DEVICE_VOLET_SALON_D) then
+            elseif(itemName == domoticz.helpers.DEVICE_VOLET_SALON_D) then
                 tydomIds.deviceId=1612171455
                 tydomIds.endpointId=1612171455
-            elseif(item.name == domoticz.helpers.DEVICE_VOLET_BEBE) then
+            elseif(itemName == domoticz.helpers.DEVICE_VOLET_BEBE) then
                 tydomIds.deviceId=1612171345
                 tydomIds.endpointId=1612171343
-            elseif(item.name == domoticz.helpers.DEVICE_VOLET_NOUS) then
+            elseif(itemName == domoticz.helpers.DEVICE_VOLET_NOUS) then
                 tydomIds.deviceId=1612171344
                 tydomIds.endpointId=1612171343
             end
             return tydomIds
         end,
+        getDzItemFromTydomDeviceId = function(deviceId, endpointId, domoticz)
+            local dzItemId = nil
+            if(deviceId == '1612171343' and endpointId == '1612171343') then
+                dzItemId = domoticz.helpers.DEVICE_VOLET_SALON_G
+            elseif(deviceId == '1612171455' and endpointId == '1612171455') then
+                dzItemId = domoticz.helpers.DEVICE_VOLET_SALON_D
+            elseif(deviceId == '1612171345' and endpointId == '1612171343') then
+                dzItemId = domoticz.helpers.DEVICE_VOLET_BEBE
+            elseif(deviceId == '1612171344' and endpointId == '1612171343') then
+                dzItemId = domoticz.helpers.DEVICE_VOLET_NOUS
+            end
+            return dzItemId
+        end,        
         -- ### Fonctions utilitaires
         isWeekEnd = function(domoticz)
             local weekDay = domoticz.time.wday
