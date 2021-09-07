@@ -10,6 +10,7 @@ return {
         -- Connected Devices sur Livebox
         VAR_LIVEBOX_DEVICES = 'livebox_devices',
         -- #### Configuration d'usage ####
+        -- ces variables sont ensuite suffixées par le mode Domicile
         -- Config Température
         VAR_TEMPERATURE_MATIN = 'param_temp_matin',
         VAR_TEMPERATURE_SOIR = 'param_temp_soir',
@@ -17,10 +18,6 @@ return {
         VAR_PRCENT_VOLET_REVEIL = 'param_volet_reveil',
         VAR_PRCENT_VOLET_MATIN = 'param_volet_matin',
         VAR_PRCENT_VOLET_SOIR  = 'param_volet_soir',
-        -- Si Mode Domicile == Absent ou Vacances
-        VAR_TEMPERATURE_MATIN_ABS = 'param_temp_matin_abs',
-        VAR_TEMPERATURE_SOIR_ABS = 'param_temp_soir_abs',
-        VAR_PRCENT_VOLET_REVEIL_ABS = 'param_volet_reveil',
         -- Config Lumière Salon
         VAR_PRCENT_LUMIERE_SALON_SOIR = 'param_lampe_salon_soir',
         
@@ -44,7 +41,26 @@ return {
         DEVICE_STATUT_DOMOTIQUE = 'Domotique',
         DEVICE_STATUT_TV = 'TV',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
-        
+        -- # Tydom DATA #
+        -- n° devices Tydom
+        getTydomDeviceNumberFromDzItem = function(item, domoticz)
+            local tydomIds = {}   
+
+            if(item.name == domoticz.helpers.DEVICE_VOLET_SALON_G) then
+                tydomIds.deviceId=1612171343
+                tydomIds.endpointId=1612171343
+            elseif(item.name == domoticz.helpers.DEVICE_VOLET_SALON_D) then
+                tydomIds.deviceId=1612171455
+                tydomIds.endpointId=1612171455
+            elseif(item.name == domoticz.helpers.DEVICE_VOLET_BEBE) then
+                tydomIds.deviceId=1612171345
+                tydomIds.endpointId=1612171343
+            elseif(item.name == domoticz.helpers.DEVICE_VOLET_NOUS) then
+                tydomIds.deviceId=1612171344
+                tydomIds.endpointId=1612171343
+            end
+            return tydomIds
+        end,
         -- ### Fonctions utilitaires
         isWeekEnd = function(domoticz)
             local weekDay = domoticz.time.wday
@@ -54,7 +70,7 @@ return {
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
         getModeDomicile = function(domoticz)
             local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
-            domoticz.log("Mode Domicile : [" .. domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName .. "]")
+            domoticz.log("Mode Domicile : [" .. modeDomicile .. "]")
             local suffixeMode = ''
             if(modeDomicile == 'Présents') then
                 suffixeMode = ''
@@ -65,6 +81,7 @@ return {
             elseif(modeDomicile == 'Eté') then
                 suffixeMode = '_ete'
             end
+            domoticz.log("  suffixeMode Domicile : [" .. suffixeMode .. "]",  domoticz.LOG_DEBUG)
             return suffixeMode
         end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
