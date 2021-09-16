@@ -15,7 +15,7 @@ return {
             
             for _, kdeviceName in pairs(devices) do 
                 local tydomIds = domoticz.helpers.getTydomDeviceNumberFromDzItem(kdeviceName, domoticz)
-                domoticz.log("Refresh position du volet " .. kdeviceName .. " (" .. tydomIds.deviceId .. "/" .. tydomIds.endpointId .. ")")
+                domoticz.log("Refresh position du volet " .. kdeviceName ) --.. " (" .. tydomIds.deviceId .. "/" .. tydomIds.endpointId .. ")")
                 domoticz.helpers.callTydomBridgeGET('/device/' .. tydomIds.deviceId .. '/endpoints/' .. tydomIds.endpointId, 'Tydom_volets_getPosition', domoticz)
             end
 
@@ -27,7 +27,7 @@ return {
             local positionDz = domoticz.devices(voletName).level
             domoticz.log('Volet ' .. voletName .. ' [Commande Tydom = ' .. positionTydom .. '%] [Commande Dz = '.. positionDz ..'%]')
                 
-            if(positionDz ~= positionTydom) then
+            if(positionDz > positionTydom + 1 or positionDz < positionTydom - 1 ) then
                 domoticz.log("Réalignement du niveau de Volet sur Domoticz par rapport à la commande réelle [" .. positionTydom .. "]", domoticz.LOG_INFO)
                 domoticz.devices(voletName).setLevel(positionTydom)
             end
