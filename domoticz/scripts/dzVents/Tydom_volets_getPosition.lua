@@ -22,11 +22,13 @@ return {
         -- ### Callback
         elseif (item.isHTTPResponse and item.ok) then
             local positionTydom = domoticz.helpers.getNodeFromJSonTreeByName(item.json.data, 'position').value
+            local validityPositionTydom = domoticz.helpers.getNodeFromJSonTreeByName(item.json.data, 'position').validity
+            
             local voletName = domoticz.helpers.getDzItemFromTydomDeviceId(item.headers["X-Request-DeviceId"], item.headers["X-Request-EndpointId"], domoticz)
 
             local positionDz = domoticz.devices(voletName).level
-            domoticz.log('Volet ' .. voletName .. ' [Commande Tydom = ' .. positionTydom .. '%] [Commande Dz = '.. positionDz ..'%]')
-                
+            domoticz.log('Volet ' .. voletName .. ' [Commande Tydom = ' .. positionTydom .. '%, (validite='.. validityPositionTydom ..')] [Commande Dz = '.. positionDz ..'%]')
+            
             if(positionDz > positionTydom + 1 or positionDz < positionTydom - 1 ) then
                 domoticz.log("Réalignement du niveau de Volet sur Domoticz par rapport à la commande réelle [" .. positionTydom .. "]", domoticz.LOG_INFO)
                 domoticz.devices(voletName).setLevel(positionTydom)
