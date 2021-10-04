@@ -13,7 +13,7 @@ return {
             -- Alerte si < 20%
             if(device.batteryLevel ~= nil and device.batteryLevel < 20) then
                 domoticz.log('Device [' .. device.name .. '] - Niveau de batterie : ' .. device.batteryLevel .. '%', domoticz.LOG_ERROR)
-                domoticz.notify('Domoticz', 'Capteur [' .. device.name .. '] - Batterie : ' .. device.batteryLevel .. '%', domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_CLICKATELL)
+                domoticz.helpers.notify('Capteur [' .. device.name .. '] - Batterie : ' .. device.batteryLevel .. '%', domoticz)
             end
 
         end
