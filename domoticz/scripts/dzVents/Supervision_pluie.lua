@@ -1,7 +1,6 @@
 return {
     on = {
-        timer = { 'every 30 minutes' },
-        devices = { 'TriggerTest' }
+        timer = { 'every 30 minutes' }
     },
     data = {
         previousRainRate = { initial = 0 }
@@ -25,6 +24,6 @@ return {
         end
 
         -- Supervision de la pluie        
-        supervisionPluie(domoticz.devices('Pluie'))
+        supervisionPluie(domoticz.devices('Precipitation'))
     end
 }
