@@ -35,7 +35,7 @@ return {
         
         -- #### Interfaces (ethx) ####
         function liveboxInterface(interface, mapStatutsTV, mapStatutsDomotique, mapStatutsWifi)
-            domoticz.log(". Interface : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
+            -- domoticz.log(". Interface : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
 
             if(interface.Name == "eth0" or interface.Name == "eth1") then
                 mapStatutsDomotique = getLiveboxDevicesStatut(interface.Children, mapStatutsDomotique, "Domotique")
@@ -48,7 +48,7 @@ return {
         
         function getLiveboxDevicesStatut(devices, mapStatut, categorie)
             for i, device in ipairs(devices) do 
-                domoticz.log("... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
+                -- domoticz.log("... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
                 mapStatut[device.Name]= device.Active
             end
             return mapStatut
