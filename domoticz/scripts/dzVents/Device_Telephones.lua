@@ -35,7 +35,7 @@ return {
         
         local nbTels = domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).sensorValue
         local presenceTels = nbTels > 0
-        domoticz.log("Nombre de téléphones connectés : " .. nbTels .. " - Présence : " .. tostring(presenceTels), domoticz.LOG_DEBUG)
+        -- domoticz.log("Nombre de téléphones connectés : " .. nbTels .. " - Présence : " .. tostring(presenceTels), domoticz.LOG_DEBUG)
         notifyConnectedDevices(presenceTels, domoticz)        
         updateDomicileMode(presenceTels, domoticz)
         
