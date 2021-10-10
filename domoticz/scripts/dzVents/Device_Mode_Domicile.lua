@@ -10,7 +10,7 @@ return {
         marker = "[Mode domicile] "
     },
     execute = function(domoticz, item)
-        -- Notification par SMS lors du changement de mode
+        -- Notification par SMS lors du changement de mode, si changement
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
         if(modeDomicile ~= domoticz.data.previousMode) then
             domoticz.helpers.notify('Changement du mode Domicile : ' .. item.levelName, domoticz)
