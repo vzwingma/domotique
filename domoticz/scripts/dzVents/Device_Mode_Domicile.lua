@@ -2,14 +2,20 @@ return {
     on = {
         devices = { 'Mode Domicile' }
     },
+    data = {
+        previousMode = { initial = '' }
+    },
     logging = {
         level = domoticz.LOG_DEBUG,
         marker = "[Mode domicile] "
     },
     execute = function(domoticz, item)
-        -- Notification par SMS lors du changement de mode
+        -- Notification par SMS lors du changement de mode, si changement
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-        domoticz.notify('Domoticz', 'Changement du mode Domicile : ' .. item.levelName, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_CLICKATELL)
+        if(modeDomicile ~= domoticz.data.previousMode) then
+            domoticz.helpers.notify('Changement du mode Domicile : ' .. item.levelName, domoticz)
+        end
+        domoticz.data.previousMode = modeDomicile
     end
 }
 

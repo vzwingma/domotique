@@ -41,7 +41,10 @@ return {
         DEVICE_STATUT_DOMOTIQUE = 'Domotique',
         DEVICE_STATUT_TV = 'TV',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
-        -- # Tydom DATA #
+        
+        -- ###############################################
+        -- #                Tydom DATA                   #
+        -- ###############################################
         -- n° devices Tydom
         getTydomDeviceNumberFromDzItem = function(itemName, domoticz)
             local tydomIds = {}   
@@ -74,7 +77,9 @@ return {
             end
             return dzItemId
         end,        
-        -- ### Fonctions utilitaires
+        -- ###############################################
+        -- ###           Fonctions utilitaires         ###
+        -- ###############################################
         isWeekEnd = function(domoticz)
             local weekDay = domoticz.time.wday
             domoticz.log("weekDay = " .. weekDay)
@@ -97,6 +102,10 @@ return {
             domoticz.log("  suffixeMode Domicile : [" .. suffixeMode .. "]",  domoticz.LOG_DEBUG)
             return suffixeMode
         end,
+        -- # Fonction d'envoi de notification
+        notify = function(messageToSent, domoticz)
+            domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_CLICKATELL)
+        end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
         getNodeFromJSonTreeByName = function(jsonData, nodeName)
             for i, node in pairs(jsonData) do
@@ -106,7 +115,11 @@ return {
             end
             return nil
         end,
-        -- ### FONCTIONS HTTP VERS LE BRIDGE TYDOM
+        
+        -- ###############################################
+        -- ###  FONCTIONS HTTP VERS LE BRIDGE TYDOM    ###
+        -- ###############################################        
+        
         -- # Fonction d'appel GET de la passerelle Tydom
         callTydomBridgeGET = function (uriToCall, callbackName, domoticz)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
@@ -156,9 +169,10 @@ return {
             })
             return
         end,
-        
-        -- ### FONCTIONS HTTP VERS LA LIVEBOX
 
+        -- ###############################################
+        -- ###     FONCTIONS HTTP VERS LA LIVEBOX      ###
+        -- ###############################################
         -- Authentification
         authenticateToLivebox = function(callbackName, domoticz)
     
