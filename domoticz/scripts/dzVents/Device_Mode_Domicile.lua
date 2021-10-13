@@ -1,11 +1,8 @@
 return {
     on = {
         devices = { 'Mode Domicile' },
-        customEvents =
-        {
-            -- Evénement poussé par le nombre de tels connectés
-            'Presence Domicile',
-        }
+        -- Evénement poussé par le nombre de tels connectés
+        customEvents = { 'Presence Domicile' },
     },
     data = {
         previousMode = { initial = '' }
@@ -22,10 +19,10 @@ return {
             local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
             local modeDomDevice = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE)
             -- mode domicile = absent
-            if((modeDomicile == '' or modeDomicile == '_ete' ) and presenceTels == false) then
+            if((modeDomicile == '' or modeDomicile == '_ete' ) and presenceTels == "false") then
                 domoticz.log("0 présent -> Passage en mode Absent")
                 modeDomDevice.setLevel('Absents')
-            elseif(modeDomicile == '_abs' and presenceTels == true) then
+            elseif(modeDomicile == '_abs' and presenceTels == "true") then
                 domoticz.log("Au moins un présent -> Retour au mode précédent (Présent/Eté) " .. modeDomDevice.lastLevel)
                 modeDomDevice.setLevel(modeDomDevice.lastLevel)
             end
@@ -33,6 +30,7 @@ return {
         
         -- Notification depuis ailleurs dans le système (nb de tels connectés)
         if(item.isCustomEvent) then
+            domoticz.log("Réception de l'événement [" .. item.customEvent .. "] : " .. item.data)
             updateDomicileMode(item.data, domoticz)
         elseif(item.isdevice) then        
             -- Notification par SMS lors du changement de mode, si changement
