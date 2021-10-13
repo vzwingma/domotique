@@ -12,7 +12,7 @@ return {
         
         -- #### Fonctions de lecture des statuts
         function liveboxStatut(statut)
-            domoticz.log("Livebox " .. statut.Name .. " active=".. tostring(statut.Active))
+            domoticz.log("Livebox " .. statut.HardwareVersion .. " active=".. tostring(statut.Active))
             
             for i, child in ipairs(statut.Children) do 
                 if(child.Name == "lan") then
