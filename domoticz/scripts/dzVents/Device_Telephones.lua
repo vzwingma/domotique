@@ -13,9 +13,9 @@ return {
         
         -- Notification par SMS lors du changement de nombre de connexions
         function notifyConnectedDevices(presenceTels, domoticz)
-            -- if(presenceTels ~= domoticz.data.previousPresenceTels) then
+            if(presenceTels ~= domoticz.data.previousPresenceTels) then
                 domoticz.emitEvent('Presence Domicile', presenceTels )
-            -- end
+            end
         end
 
         local nbTels = domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).sensorValue
