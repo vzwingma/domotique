@@ -19,7 +19,7 @@ return {
     
         -- Recherche des équipements connectés
         function getConnectedDevices(contextId, domoticz)
-            domoticz.log("Recherche des équipements connectés", domoticz.LOG_DEBUG)
+            -- domoticz.log("Recherche des équipements connectés", domoticz.LOG_DEBUG)
             local postData = { ['service'] = 'Devices.Device.HGW' , ['method'] = 'topology', ['parameters'] = {} }
             domoticz.helpers.callLiveboxPOST(contextId, postData, 'livebox_LAN_statuts', domoticz)
         end
@@ -36,7 +36,7 @@ return {
     -- ## Déclenchement de la fonction /
         if(item.isTimer) then
             -- d'abord l'Authentification
-            domoticz.log("Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
+            -- domoticz.log("Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
             domoticz.helpers.authenticateToLivebox('livebox_getStatuts', domoticz)
             
         -- ## Call back après AUth
