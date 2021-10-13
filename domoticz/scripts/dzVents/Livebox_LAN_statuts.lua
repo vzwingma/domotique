@@ -96,7 +96,7 @@ return {
                     nbPersonnalDevicesUp = nbPersonnalDevicesUp + 1
                 end
             end
-            domoticz.log(" = " .. nbPersonnalDevicesUp .. " devices connectés", domoticz.LOG_INFO)
+            domoticz.log("Wifi = " .. nbPersonnalDevicesUp .. " tels connectés", domoticz.LOG_INFO)
             domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).updateCustomSensor(nbPersonnalDevicesUp)
         end
         
