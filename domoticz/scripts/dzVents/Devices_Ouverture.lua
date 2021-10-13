@@ -1,6 +1,6 @@
 return {
     on = {
-        devices = { 'Ouverture porte', 'TriggerTest' },
+        devices = { 'Porte', 'TriggerTest' },
         customEvents =
         {
             'Supervision Ouverture',
