@@ -9,6 +9,10 @@ return
         marker = "[Scene Matin] "
     },
     execute = function(domoticz, scene)
+        
+        -- Suivi de la phase du jour
+        domoticz.globalData.scenePhase = scene.name
+        
         -- Activation du groupe (le niveau est suivant le mode Domicile) - spécifique pour le mode Ete : on rebaisse le niveau
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
         if(modeDomicile == '_ete') then

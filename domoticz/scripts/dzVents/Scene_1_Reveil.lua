@@ -10,6 +10,9 @@ return
     },
     execute = function(domoticz, scene)
         
+        -- Suivi de la phase du jour
+        domoticz.globalData.scenePhase = scene.name
+        
         -- Récupération des paramètres et activation suivant le mode de domicile
         local voletName = domoticz.helpers.DEVICE_VOLET_NOUS
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
