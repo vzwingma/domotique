@@ -115,6 +115,15 @@ return {
             end
             return nil
         end,
+        -- # Fonction pour vérifier si un item est dans le tableau
+        tabContainsItem = function(table, item, domoticz)
+            for _, value in pairs(table) do
+                if value == item then
+                    return true
+                end
+            end
+            return false
+        end,
         
         -- ###############################################
         -- ###  FONCTIONS HTTP VERS LE BRIDGE TYDOM    ###
@@ -211,5 +220,8 @@ return {
         	        command = fullcmd, 
         	        callback = callbackName })            
         end
+    },
+    data = {
+            scenePhase = { initial = nil }
     }
 }

@@ -1,10 +1,7 @@
 return {
     on = {
-        devices = { 'Porte', 'TriggerTest' },
-        customEvents =
-        {
-            'Supervision Ouverture',
-        },
+        devices = { 'Porte' },
+        customEvents = { 'Supervision Ouverture' }
     },
     data = {
         -- Délai en seconde avant alarme
