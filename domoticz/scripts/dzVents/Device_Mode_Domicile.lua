@@ -32,12 +32,12 @@ return {
         if(item.isCustomEvent) then
             domoticz.log("Réception de l'événement [" .. item.customEvent .. "] : " .. item.data)
             updateDomicileMode(item.data, domoticz)
-        elseif(item.isdevice) then        
+        elseif(item.isDevice) then        
             -- Notification par SMS lors du changement de mode, si changement
             local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-            if(modeDomicile ~= domoticz.data.previousMode) then
+            -- if(modeDomicile ~= domoticz.data.previousMode) then
                 domoticz.helpers.notify('Changement du mode Domicile : ' .. item.levelName, domoticz)
-            end
+            -- end
             domoticz.data.previousMode = modeDomicile
         end
     end

@@ -33,7 +33,7 @@ return {
             end
             
         end
-        
+        -- Itération sur tous les devices
         domoticz.devices().forEach(function(device)
 
             if(device.lastUpdate ~= nil) then
