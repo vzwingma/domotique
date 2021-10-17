@@ -45,7 +45,6 @@ function apiBasicAuthorizer(username, password) {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     // Basic Auth
-    console.log("Activation de la BasicAuth [" + usernameAPI + ":" + passwordAPI + "]");
     app.use(basicAuth( { authorizer: apiBasicAuthorizer } ))
     // hook morganBody to express app
     morganbody(app);
