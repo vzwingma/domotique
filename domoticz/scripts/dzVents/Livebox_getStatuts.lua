@@ -6,7 +6,7 @@
 --      livebox_pwd : mot de passe de connexion
 return {
     on = {
-        timer = { '30 seconds' },
+        timer = { 'every minute' },
         shellCommandResponses = { 'livebox_getStatuts' }
     },
     logging = {
