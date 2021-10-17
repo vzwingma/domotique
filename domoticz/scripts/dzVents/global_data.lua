@@ -2,7 +2,8 @@ return {
     helpers = {
         -- Variables d'environnements
         -- Tydom
-        VAR_TYDOM_BRIDGE = 'host_tydom_bridge',
+        VAR_TYDOM_BRIDGE = 'tydom_bridge_host',
+        VAR_TYDOM_BRIDGE_AUTH = 'tydom_bridge_auth',
         -- Livebox
         VAR_LIVEBOX_HOST = 'livebox_host',
         VAR_LIVEBOX_LOGIN = 'livebox_login',
@@ -132,7 +133,8 @@ return {
         -- # Fonction d'appel GET de la passerelle Tydom
         callTydomBridgeGET = function (uriToCall, callbackName, domoticz)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
-
+            local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
+            domoticz.log("Auth : " .. auth_tydom_bridge)
             if(callbackName == nil) then
                callbackName = 'global_HTTP_response' 
             end
@@ -140,7 +142,7 @@ return {
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
                 method = 'GET',
-                header = { ['Content-Type'] = 'application/json' },
+                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge },
                 callback = callbackName
             })
             return
@@ -150,11 +152,11 @@ return {
         callTydomBridgePOST = function (uriToCall, domoticz)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
-
+            local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
                 method = 'POST',
-                header = { ['Content-Type'] = 'application/json' },
+                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge },
                 callback = 'global_HTTP_response'
             })
             return
@@ -164,6 +166,7 @@ return {
         callTydomBridgePUT = function (uriToCall, putData, callbackName, domoticz)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
+            local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
             
             if(callbackName == nil) then
                callbackName = 'global_HTTP_response' 
@@ -172,7 +175,7 @@ return {
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
                 method = 'PUT',
-                header = { ['Content-Type'] = 'application/json' },
+                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge },
                 postData = putData,
                 callback = callbackName
             })
