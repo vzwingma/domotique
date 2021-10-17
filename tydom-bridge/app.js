@@ -20,10 +20,17 @@ const resultatOK = { resultat : true }
 const express = require('express');
 const basicAuth = require('express-basic-auth');
 const morganbody = require('morgan-body');
-const usernameAPI = process.env.AUTHAPI;
-const passwordAPI = process.env.PASSWDAPI;
 
 let webServer;
+
+// Fonction de validation de la Basic Auth
+function apiBasicAuthorizer(username, password) {
+    console.log("apiBasicAuthorizer : " + username + ":" + password + "::" + process.env.AUTHAPI + ":" + process.env.PASSWDAPI);
+
+    const userMatches = basicAuth.safeCompare(username, process.env.AUTHAPI);
+    const passwordMatches = basicAuth.safeCompare(password, process.env.PASSWDAPI);
+    return userMatches & passwordMatches;
+}
 
 (async () => {
     // Lancement de la connexion à la box Tydom
@@ -38,9 +45,8 @@ let webServer;
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     // Basic Auth
-    app.use(basicAuth({
-        users: { usernameAPI: passwordAPI }
-    }))    
+    console.log("Activation de la BasicAuth [" + usernameAPI + ":" + passwordAPI + "]");
+    app.use(basicAuth( { authorizer: apiBasicAuthorizer } ))
     // hook morganBody to express app
     morganbody(app);
     
