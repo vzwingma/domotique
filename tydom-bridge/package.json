@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.17.1",
+    "express-basic-auth": "^1.2.0",
     "morgan": "^1.10.0",
     "morgan-body": "^2.6.6",
     "tydom-client": "^0.13.0"

@@ -6,10 +6,13 @@ services:
     environment:
       # Configuration Box Tydom
       - HOST=tydom.local
+      - MAC=#Set TYDOM MAC adress
+      - PASSWD=#Set TYDOM password      
       # Configuration passerelle Tydom
       - PORT=9001
-      - MAC=#Set TYDOM MAC adress
-      - PASSWD=#Set TYDOM password
+      # Configuration pour les api
+      - AUTHAPI=#Set Auth login for API
+      - PASSWDAPI=#Set Auth password for API
     ports:
       - 9101:9001
     restart: always

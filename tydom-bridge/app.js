@@ -3,32 +3,44 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 //process.env.DEBUG= 'tydom-client';
 
+// *****************************
+//       Connexion à Tydom
+// *****************************
 const {createClient} = require('tydom-client');
-const express = require('express');
-const morganbody = require('morgan-body');
-
 // Port exposé
 const port = process.env.PORT || 9001;
-// Connexion à Tydom
 const host = process.env.HOST || 'mediation.tydom.com'; // '192.168.1.13';
 const username = process.env.MAC;
 const password = process.env.PASSWD;
+const resultatOK = { resultat : true }
+
+// *****************************
+//       API du bridge
+// *****************************
+const express = require('express');
+const basicAuth = require('express-basic-auth');
+const morganbody = require('morgan-body');
+const usernameAPI = process.env.AUTHAPI;
+const passwordAPI = process.env.PASSWDAPI;
 
 let webServer;
 
 (async () => {
-
+    // Lancement de la connexion à la box Tydom
     let hostname = host;
     console.log("Connexion à la box Tydom [" + username + "] @ [" + hostname + "]");
     const client = createClient({username, password, hostname});
     const socket = await client.connect();
 
-    const resultatOK = { resultat : true }
-
+    // Si OK, on expose l'API express
     const app = express();
     // must parse body before morganBody as body will be logged
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    // Basic Auth
+    app.use(basicAuth({
+        users: { usernameAPI: passwordAPI }
+    }))    
     // hook morganBody to express app
     morganbody(app);
     
