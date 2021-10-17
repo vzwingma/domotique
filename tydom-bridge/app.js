@@ -35,8 +35,8 @@ let webServer;
     // Info
 	app.get('/_info', function (req, res) {
 	    res.setHeader('Content-Type', 'application/json');
-        const res = { resultat : 'Le bridge Tydom [ ' + username + ' ] est opérationnel' };
-        res.send(JSON.stringify(res));
+        const tydomOK = { resultat : 'Le bridge Tydom [ ' + username + ' ] est opérationnel' };
+        res.send(JSON.stringify(tydomOK));
 	})
     // INFO Tydom
     app.get('/info', async function(req, res) {
