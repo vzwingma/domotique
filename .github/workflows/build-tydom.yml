@@ -33,7 +33,7 @@ jobs:
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         with:
-        projectBaseDir: tydom-bridge
+          projectBaseDir: tydom-bridge
         args: >
           -Dsonar.organization=vzwingma-github
           -Dsonar.projectKey=domoticz-tydom     
