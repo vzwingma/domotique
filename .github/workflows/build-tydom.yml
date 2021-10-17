@@ -36,7 +36,7 @@ jobs:
           projectBaseDir: tydom-bridge
           args: >
             -Dsonar.organization=vzwingma-github
-            -Dsonar.projectKey=domoticz-tydom     
+            -Dsonar.projectKey=tydom_bridge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
