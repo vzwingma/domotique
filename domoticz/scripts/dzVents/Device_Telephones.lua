@@ -6,7 +6,7 @@ return {
         previousPresenceTels = { initial = true }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_ERROR,
         marker = "[Equipements Personnels] "
     },
     execute = function(domoticz, item)
@@ -20,7 +20,7 @@ return {
 
         local nbTels = domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).sensorValue
         local presenceTels = nbTels > 0
-        -- domoticz.log("Nombre de téléphones connectés : " .. nbTels .. " - Présence : " .. tostring(presenceTels), domoticz.LOG_DEBUG)
+        domoticz.log("Nombre de téléphones connectés : " .. nbTels .. " - Présence : " .. tostring(presenceTels), domoticz.LOG_DEBUG)
         notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domicile
         domoticz.data.previousPresenceTels = presenceTels
         

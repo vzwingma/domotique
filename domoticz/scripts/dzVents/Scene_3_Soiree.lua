@@ -14,7 +14,7 @@ return
         -- Met à jour le niveau du volet, ssi il est plus petit que la valeur existante
         function setVoletsLevelToMinValue(deviceName, levelVoletsSoir)
             local minLevelVoletsSoir = math.min(domoticz.devices(deviceName).level, levelVoletsSoir)
-            domoticz.log("Fermeture du volet " .. deviceName .. " : " .. minLevelVoletsSoir .. "%")
+            domoticz.log("Fermeture du volet " .. deviceName .. " : " .. minLevelVoletsSoir .. "%", domoticz.LOG_INFO)
             domoticz.devices(deviceName).setLevel(minLevelVoletsSoir)
         end
 
@@ -22,10 +22,10 @@ return
         function activationLampeSalon(modeDomicile)
             if(modeDomicile == '' or modeDomicile == '_ete') then
                 local prcent_lumiere = domoticz.variables(domoticz.helpers.VAR_PRCENT_LUMIERE_SALON_SOIR).value
-                domoticz.log("Allumage de la lampe du salon " .. prcent_lumiere .. "%")
+                domoticz.log("Allumage de la lampe du salon " .. prcent_lumiere .. "%", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_SALON).setLevel(prcent_lumiere)
             else
-                domoticz.log('Personne à la maison, pas d\'allumage des lampes')
+                domoticz.log('Personne à la maison, pas d\'allumage des lampes', domoticz.LOG_INFO)
             end
         end
     
@@ -40,11 +40,11 @@ return
             end
     
             -- Fermeture du groupe de volets Salon &  Chambres
-            domoticz.log("Fermeture des volets Salon et Chambre : " .. levelVoletsSoir .. "%")
+            domoticz.log("Fermeture des volets Salon et Chambre : " .. levelVoletsSoir .. "%", domoticz.LOG_INFO)
             setVoletsLevelToMinValue(domoticz.helpers.GROUPE_VOLETS_SALON, levelVoletsSoir)
             setVoletsLevelToMinValue(domoticz.helpers.DEVICE_VOLET_NOUS, levelVoletsSoir)
             
-            domoticz.log("Fermeture du volet "..domoticz.helpers.DEVICE_VOLET_BEBE .. " : 0 %")
+            domoticz.log("Fermeture du volet "..domoticz.helpers.DEVICE_VOLET_BEBE .. " : 0 %", domoticz.LOG_INFO)
             setVoletsLevelToMinValue(domoticz.helpers.DEVICE_VOLET_BEBE, 0)
         end
         
