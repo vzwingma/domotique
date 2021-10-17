@@ -34,7 +34,9 @@ let webServer;
     
     // Info
 	app.get('/_info', function (req, res) {
-	    res.send('Le bridge Tydom [ ' + username + ' ] est opérationnel');
+	    res.setHeader('Content-Type', 'application/json');
+        const res = { resultat : 'Le bridge Tydom [ ' + username + ' ] est opérationnel' };
+        res.send(JSON.stringify(res));
 	})
     // INFO Tydom
     app.get('/info', async function(req, res) {
@@ -47,42 +49,6 @@ let webServer;
         const devices = await client.get('/devices/data');
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(devices));
-    })
-    // Liste Meta des devices
-    .get('/devices/meta', async function(req, res) {
-        const devices = await client.get('/devices/meta');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(devices));
-    })
-    // Liste CMeta des devices
-    .get('/devices/cmeta', async function(req, res) {
-        const devices = await client.get('/devices/cmeta');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(devices));
-    })
-    // Configuration
-    .get('/configs/file', async function(req, res) {
-        const configs = await client.get('/configs/file');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(configs));
-    })
-    // Moments
-    .get('/moments/file', async function(req, res) {
-        const moments = await client.get('/moments/file');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(moments));
-    })
-    // Liste des scénarios
-    .get('/scenarios/file', async function(req, res) {
-        const scenarios = await client.get('/scenarios/file');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(scenarios));
-    })
-    // Protocoles disponibles
-    .get('/protocols', async function(req, res) {
-        const protocols = await client.get('/protocols');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(protocols));
     })
     // Etat d'un device
     .get('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
@@ -113,7 +79,6 @@ let webServer;
     });
 
     webServer = app.listen(port, function () {
-        
         console.log("Bridge Tydom démarré sur " + port );
     });
 })();
