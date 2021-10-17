@@ -35,6 +35,18 @@ jobs:
       - 
         name: Checkout the code  
         uses: actions/checkout@v2
+      # Setup Node.js (for Sonar)
+      - 
+        name: Setup Node.js
+        uses: actions/setup-node@v2    
+        with:
+          node-version: '12' 
+      # Run the Sonar scan
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}        
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
