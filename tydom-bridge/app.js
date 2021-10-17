@@ -25,8 +25,6 @@ let webServer;
 
 // Fonction de validation de la Basic Auth
 function apiBasicAuthorizer(username, password) {
-    console.log("apiBasicAuthorizer : " + username + ":" + password + "::" + process.env.AUTHAPI + ":" + process.env.PASSWDAPI);
-
     const userMatches = basicAuth.safeCompare(username, process.env.AUTHAPI);
     const passwordMatches = basicAuth.safeCompare(password, process.env.PASSWDAPI);
     return userMatches & passwordMatches;
@@ -45,6 +43,7 @@ function apiBasicAuthorizer(username, password) {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     // Basic Auth
+    console.log("Activation de l'authentification sur les API de la passerelle")
     app.use(basicAuth( { authorizer: apiBasicAuthorizer } ))
     // hook morganBody to express app
     morganbody(app);
