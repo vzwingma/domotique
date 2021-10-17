@@ -5,8 +5,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const {createClient} = require('tydom-client');
 const express = require('express');
-const morgan = require('morgan');
-const morganBody = require('morgan-body');
+const morganbody = require('morgan-body');
 
 // Port exposé
 const port = process.env.PORT || 9001;
@@ -24,14 +23,14 @@ let webServer;
     const client = createClient({username, password, hostname});
     const socket = await client.connect();
 
+    const resultatOK = { resultat : true }
+
     const app = express();
     // must parse body before morganBody as body will be logged
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     // hook morganBody to express app
-    morganBody(app);
-    app.use(morgan(':date[clf] >>> Request  - :method :url'))
-    app.use(morgan(':date[clf] <<< Response - :status :res[content-length] - :response-time ms'))
+    morganbody(app);
     
     // Info
 	app.get('/_info', function (req, res) {
@@ -95,17 +94,17 @@ let webServer;
     })
     // Mise à jour d'un état d'un device
     .put('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
-        const command = await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
+        await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('X-Request-DeviceId', req.params.devicenum);
         res.setHeader('X-Request-EndpointId', req.params.endpointnum);
-        res.end(JSON.stringify(command));
+        res.end(JSON.stringify(resultatOK));
     })
     // Refresh des valeurs du jumeau numérique par rapport aux équipements physiques
     .post('/refresh/all', async function(req, res) {
-        const refresh = await client.post('/refresh/all');
+        await client.post('/refresh/all');
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(refresh));
+        res.end(JSON.stringify(resultatOK));
     })	
     // Erreur
     .use(function(req, res, next){
