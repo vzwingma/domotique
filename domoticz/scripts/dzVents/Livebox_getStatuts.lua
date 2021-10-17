@@ -10,6 +10,7 @@ return {
         shellCommandResponses = { 'livebox_getStatuts' }
     },
     logging = {
+        level = domoticz.LOG_INFO,
         marker = "[ORANGE Livebox] "
     },
     execute = function(domoticz, item)
@@ -36,12 +37,12 @@ return {
     -- ## Déclenchement de la fonction /
         if(item.isTimer) then
             -- d'abord l'Authentification
-            -- domoticz.log("Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
+            domoticz.log("Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
             domoticz.helpers.authenticateToLivebox('livebox_getStatuts', domoticz)
             
         -- ## Call back après AUth
         elseif(item.isShellCommandResponse) then 
-            domoticz.log(item.statusCode .. " - " .. item.statusText)
+            domoticz.log("Auth Callback " .. item.statusCode .. " - " .. item.statusText, domoticz.LOG_DEBUG)
             sessionConnectedToLivebox(item.json.data.contextID, domoticz)
         end
 

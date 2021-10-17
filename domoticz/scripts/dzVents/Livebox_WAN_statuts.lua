@@ -8,7 +8,7 @@ return {
         httpResponses = { 'livebox_WAN_statuts' }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[WAN Livebox] "
     },
     execute = function(domoticz, item)
@@ -36,7 +36,7 @@ return {
     
         -- ##### Exécution des traitments sur les API Orange
         function getStatutsFromLivebox(WANStatutData, domoticz)
-           domoticz.log("Etat de la connexion Livebox/Orange : WAN=" .. WANStatutData.WanState .. ", Link=" .. WANStatutData.LinkState)
+           domoticz.log("Etat de la connexion Livebox/Orange : WAN=" .. WANStatutData.WanState .. ", Link=" .. WANStatutData.LinkState, domoticz.LOG_INFO)
            local alertLevel = domoticz.ALERTLEVEL_GREY
            if(WANStatutData.WanState == "up" and  WANStatutData.LinkState == "up") then
                alertLevel = domoticz.ALERTLEVEL_GREEN

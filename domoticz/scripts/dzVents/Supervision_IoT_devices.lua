@@ -8,7 +8,7 @@ return {
         devicesNoDataAllowed = { initial = { 69, 70, 108 }},
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Supervision IoT devices] "
     },
     execute = function(domoticz, item)
