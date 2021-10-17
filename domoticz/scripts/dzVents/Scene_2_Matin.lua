@@ -18,13 +18,13 @@ return
         -- sauf si Eté & Week-end : dans ce cas, il n'y a que le scénario 2B
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
         if(modeDomicile == '_ete' and domoticz.helpers.isWeekEnd(domoticz)) then 
-            domoticz.log("Week-end en été, le scénario 2 Matin est ignoré")
+            domoticz.log("Week-end en été, le scénario 2 Matin est ignoré", domoticz.LOG_INFO)
             return
         elseif(modeDomicile == '_ete') then
             modeDomicile = ''
         end
         
-        domoticz.log("Activation matin pour le mode [" .. modeDomicile .."]")
+        domoticz.log("Activation matin pour le mode [" .. modeDomicile .."]", domoticz.LOG_INFO)
         domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).setLevel(domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value)
 
     end

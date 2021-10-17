@@ -4,7 +4,7 @@ return {
         devices = { 'MaJ Tydom Temperature' }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_ERROR,
         marker = "[TYDOM Refresh] "
     },
     execute = function(domoticz, item)

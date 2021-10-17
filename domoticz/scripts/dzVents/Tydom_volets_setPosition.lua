@@ -5,7 +5,7 @@ return
         devices = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[TYDOM Volets] "
     },
     execute = function(domoticz, item)
@@ -28,7 +28,7 @@ return
             pOuverture = item.level
         end
         
-        domoticz.log("[".. voletName .."] set Position=" .. pOuverture .. "%")
+        domoticz.log("[".. voletName .."] set Position=" .. pOuverture .. "%", domoticz.LOG_INFO)
         
         -- Appel du bridge Tydom
         local postData = { ['name'] = 'position', ['value'] = pOuverture }

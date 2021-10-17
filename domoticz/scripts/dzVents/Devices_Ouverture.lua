@@ -8,7 +8,7 @@ return {
         supervisionDelay = { initial = 30 }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Ouverture] "
     },
     -- Fonction chargée de surveiller l'ouverture et la fermeture d'une porte ou d'une fenêtre
@@ -17,14 +17,14 @@ return {
         
         -- Déclenchement du timeout, la porte doit être fermée avant xx secondes sinon alerte
         function startSurveillance(device, domoticz)
-            domoticz.log("Surveillance de l'ouverture de [" .. device.name .. "]")
+            domoticz.log("Ouverture de [" .. device.name .. "]", domoticz.LOG_INFO)
             domoticz.emitEvent('Supervision Ouverture', device.name ).afterSec(domoticz.data.supervisionDelay)
         end
         
         -- Fin du timeout, on vérifie l'état. Si toujours ouverte, alerte et relance du timeout
         function checkStateAfterTimeout(event, domoticz)
             local item = domoticz.devices(event.data)
-            domoticz.log("[" .. event.data .. "] : état courant après " .. domoticz.data.supervisionDelay .. " s : " .. item.state)
+            domoticz.log("[" .. event.data .. "] : état courant après " .. domoticz.data.supervisionDelay .. " s : " .. item.state, domoticz.LOG_DEBUG)
             -- Si toujours Ouvert, on alerte
             if(item.state == "Open" or item.state == "On") then
                 notifyAlerteOuverture(item, domoticz)
@@ -42,11 +42,11 @@ return {
         
         -- Etat : Open ou Closed d'une porte ou d'une fenêtre
         if(item.isDevice) then
-            domoticz.log("Changement d'état " .. item.name .. "::".. item.state)
+            domoticz.log("Changement d'état " .. item.name .. "::".. item.state, domoticz.LOG_DEBUG)
             if(item.state == "Open" or item.state == "On") then
                 startSurveillance(item, domoticz)
             elseif(item.state == "Closed" or item.state == "Off") then
-                domoticz.log("Fermeture de [" .. item.name .. "]")
+                domoticz.log("Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
             end
         -- Déclenchement du timer
         elseif(item.isCustomEvent ) then

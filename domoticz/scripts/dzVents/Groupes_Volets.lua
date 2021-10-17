@@ -15,15 +15,15 @@ return
         function getVoletsNameFromGroup(group)
             
             if(group.name == domoticz.helpers.GROUPE_TOUS_VOLETS) then
-                domoticz.log("Ouverture tous volets : " .. group.state)
+                domoticz.log("Ouverture tous volets : " .. group.state, domoticz.LOG_INFO)
                 return { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON }
             
             elseif(group.name == domoticz.helpers.GROUPE_VOLETS_CHAMBRES) then
-                domoticz.log("Ouverture Volets Chambres : " .. group.state)
+                domoticz.log("Ouverture Volets Chambres : " .. group.state, domoticz.LOG_INFO)
                 return { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS }
                 
             elseif(group.name == domoticz.helpers.GROUPE_VOLETS_SALON) then
-                domoticz.log("Ouverture Volets Salon " .. group.state)
+                domoticz.log("Ouverture Volets Salon " .. group.state, domoticz.LOG_INFO)
                 return { domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D }
             else
                 return {}
@@ -43,7 +43,7 @@ return
         local voletsName = getVoletsNameFromGroup(group)
         local levelSet = getLevelFromGroupState(group)
         for i, voletName in ipairs(voletsName) do 
-            domoticz.log("Ouverture du volet " .. voletName .. " à " .. levelSet .. "%")
+            domoticz.log("Ouverture du volet " .. voletName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(voletName).setLevel(levelSet)
         end
     

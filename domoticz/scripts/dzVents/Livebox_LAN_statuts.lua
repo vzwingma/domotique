@@ -5,14 +5,14 @@ return {
         shellCommandResponses = { 'livebox_LAN_statuts' }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
-        marker = "[ORANGE Livebox] "
+        level = domoticz.LOG_INFO,
+        marker = "[LAN Livebox] "
     },
     execute = function(domoticz, item)
         
         -- #### Fonctions de lecture des statuts
         function liveboxStatut(statut)
-            domoticz.log("Livebox " .. statut.HardwareVersion .. " active=".. tostring(statut.Active))
+            domoticz.log("Livebox " .. statut.HardwareVersion .. "=".. tostring(statut.Active), domoticz.LOG_INFO)
             
             for i, child in ipairs(statut.Children) do 
                 if(child.Name == "lan") then
@@ -35,7 +35,7 @@ return {
         
         -- #### Interfaces (ethx) ####
         function liveboxInterface(interface, mapStatutsTV, mapStatutsDomotique, mapStatutsWifi)
-            -- domoticz.log(". Interface : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
+            domoticz.log(". Interface : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
 
             if(interface.Name == "eth0" or interface.Name == "eth1") then
                 mapStatutsDomotique = getLiveboxDevicesStatut(interface.Children, mapStatutsDomotique, "Domotique")
@@ -48,7 +48,7 @@ return {
         
         function getLiveboxDevicesStatut(devices, mapStatut, categorie)
             for i, device in ipairs(devices) do 
-                -- domoticz.log("... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
+                domoticz.log("... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
                 mapStatut[device.Name]= device.Active
             end
             return mapStatut

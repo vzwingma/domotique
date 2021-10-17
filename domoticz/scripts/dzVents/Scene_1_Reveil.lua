@@ -22,10 +22,10 @@ return
             local level = math.max(paramOuvertureReveil, domoticz.devices(voletName).level)
             
             -- PréOuverture du volet de la chambre, à 5% si fermé - reste à hauteur si plus ouvert
-            domoticz.log("Ouverture du volet "..voletName .. " : " .. level .. "%")
+            domoticz.log("Ouverture du volet "..voletName .. " : " .. level .. "%", domoticz.LOG_INFO)
             domoticz.devices(voletName).setLevel(level)
         else
-            domoticz.log('Personne à la maison, pas d\'ouverture du volet [' .. voletName .. ']')
+            domoticz.log('Personne à la maison, pas d\'ouverture du volet [' .. voletName .. ']', domoticz.LOG_INFO)
         end
     end       
 }

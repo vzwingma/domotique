@@ -6,7 +6,7 @@ return {
         previousRainRate = { initial = 0 }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Supervision Pluie] "
     },
     execute = function(domoticz, item)
