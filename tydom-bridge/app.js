@@ -1,7 +1,7 @@
 // Required when testing against a local Tydom hardware
 // to fix "self signed certificate" errors
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-//process.env.DEBUG= 'tydom-client';
+//process.env.DEBUG 'tydom-client'; =
 
 // *****************************
 //       Connexion à Tydom
@@ -24,9 +24,9 @@ const morganbody = require('morgan-body');
 let webServer;
 
 // Fonction de validation de la Basic Auth
-function apiBasicAuthorizer(username, password) {
-    const userMatches = basicAuth.safeCompare(username, process.env.AUTHAPI);
-    const passwordMatches = basicAuth.safeCompare(password, process.env.PASSWDAPI);
+function apiBasicAuthorizer(calledUsername, calledPassword) {
+    const userMatches = basicAuth.safeCompare(calledUsername, process.env.AUTHAPI);
+    const passwordMatches = basicAuth.safeCompare(calledPassword, process.env.PASSWDAPI);
     return userMatches & passwordMatches;
 }
 
@@ -35,7 +35,8 @@ function apiBasicAuthorizer(username, password) {
     let hostname = host;
     console.log("Connexion à la box Tydom [" + username + "] @ [" + hostname + "]");
     const client = createClient({username, password, hostname});
-    const socket = await client.connect();
+    // Connexion
+    await client.connect();
 
     // Si OK, on expose l'API express
     const app = express();
