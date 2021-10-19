@@ -134,7 +134,6 @@ return {
         callTydomBridgeGET = function (uriToCall, callbackName, domoticz)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
-            domoticz.log("Auth : " .. auth_tydom_bridge)
             if(callbackName == nil) then
                callbackName = 'global_HTTP_response' 
             end

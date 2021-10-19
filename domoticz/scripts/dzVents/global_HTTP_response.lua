@@ -5,7 +5,7 @@ return
         httpResponses = { 'global_HTTP_response' }
     },
     logging = {
-        level = domoticz.LOG_INFO,
+        level = domoticz.LOG_DEBUG,
         marker = "[HTTP Response] "
     },
     execute = function(domoticz, item)
