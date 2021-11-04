@@ -32,7 +32,7 @@ return {
         domoticz.log(" Compteur d'absence : " .. domoticz.data.compteurNbTelsAZero, domoticz.LOG_DEBUG)
         if(domoticz.data.compteurNbTelsAZero >= 3) then
             notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domicile
+            domoticz.data.previousPresenceTels = presenceTels
         end
-        domoticz.data.previousPresenceTels = presenceTels
     end
 }
