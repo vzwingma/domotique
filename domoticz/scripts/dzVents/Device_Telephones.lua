@@ -16,6 +16,7 @@ return {
         function notifyConnectedDevices(presenceTels, domoticz)
             if(presenceTels ~= domoticz.data.previousPresenceTels) then
                 domoticz.emitEvent('Presence Domicile', presenceTels )
+                domoticz.data.previousPresenceTels = presenceTels
             end
         end
 
@@ -25,14 +26,13 @@ return {
         
         if(nbTels == 0) then
             -- Aucun tel : on incrémente un compteur pour éviter les faux positifs
-           domoticz.data.compteurNbTelsAZero = domoticz.data.compteurNbTelsAZero + 1 
+            domoticz.data.compteurNbTelsAZero = domoticz.data.compteurNbTelsAZero + 1 
+            if(domoticz.data.compteurNbTelsAZero >= 3) then
+                notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domicile
+            end
         else 
             domoticz.data.compteurNbTelsAZero = 0
-        end
-        domoticz.log(" Compteur d'absence : " .. domoticz.data.compteurNbTelsAZero, domoticz.LOG_DEBUG)
-        if(domoticz.data.compteurNbTelsAZero >= 3) then
-            notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domicile
-            domoticz.data.previousPresenceTels = presenceTels
+            notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domiciles
         end
     end
 }
