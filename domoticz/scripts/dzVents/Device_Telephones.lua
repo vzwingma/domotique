@@ -7,7 +7,7 @@ return {
         compteurNbTelsAZero = { initial = 0 }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Equipements Personnels] "
     },
     execute = function(domoticz, item)

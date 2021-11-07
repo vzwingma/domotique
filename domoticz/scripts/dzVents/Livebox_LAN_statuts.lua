@@ -93,6 +93,7 @@ return {
             local personnalDevicesTab = domoticz.utils.stringSplit(domoticz.variables(domoticz.helpers.VAR_LIVEBOX_DEVICES).value, ",")
             for i, personnalDevice in ipairs(personnalDevicesTab) do 
                 if(mapStatutsWifi[personnalDevice]) then
+                    domoticz.log("Wifi > tel [" .. personnalDevice .. "] connecté", domoticz.LOG_DEBUG)
                     nbPersonnalDevicesUp = nbPersonnalDevicesUp + 1
                 end
             end
