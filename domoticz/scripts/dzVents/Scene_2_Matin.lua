@@ -26,6 +26,6 @@ return
         
         domoticz.log("Activation matin pour le mode [" .. modeDomicile .."]", domoticz.LOG_INFO)
         domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).setLevel(domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value)
-
+        domoticz.devices(domoticz.helpers.DEVICE_LAMPE_SALON).switchOff()
     end
 }

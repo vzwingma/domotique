@@ -3,10 +3,11 @@ return {
         devices = { 'Equipements Personnels' }
     },
     data = {
-        previousPresenceTels = { initial = true }
+        previousPresenceTels = { initial = true },
+        compteurNbTelsAZero = { initial = 0 }
     },
     logging = {
-        level = domoticz.LOG_ERROR,
+        level = domoticz.LOG_INFO,
         marker = "[Equipements Personnels] "
     },
     execute = function(domoticz, item)
@@ -15,14 +16,23 @@ return {
         function notifyConnectedDevices(presenceTels, domoticz)
             if(presenceTels ~= domoticz.data.previousPresenceTels) then
                 domoticz.emitEvent('Presence Domicile', presenceTels )
+                domoticz.data.previousPresenceTels = presenceTels
             end
         end
 
         local nbTels = domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).sensorValue
         local presenceTels = nbTels > 0
         domoticz.log("Nombre de téléphones connectés : " .. nbTels .. " - Présence : " .. tostring(presenceTels), domoticz.LOG_DEBUG)
-        notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domicile
-        domoticz.data.previousPresenceTels = presenceTels
         
+        if(nbTels == 0) then
+            -- Aucun tel : on incrémente un compteur pour éviter les faux positifs
+            domoticz.data.compteurNbTelsAZero = domoticz.data.compteurNbTelsAZero + 1 
+            if(domoticz.data.compteurNbTelsAZero >= 3) then
+                notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domicile
+            end
+        else 
+            domoticz.data.compteurNbTelsAZero = 0
+            notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domiciles
+        end
     end
 }

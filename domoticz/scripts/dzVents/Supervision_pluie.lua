@@ -3,7 +3,8 @@ return {
         timer = { 'every 30 minutes' }
     },
     data = {
-        previousRainRate = { initial = 0 }
+        previousRainRate = { initial = 0 },
+        previousRainState = { initial = 'Off' }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -20,9 +21,10 @@ return {
                 domoticz.data.previousRainRate = devicePluie.rainRate
                 domoticz.helpers.notify('Alerte pluie : ' .. devicePluie.rainRate .. 'mm', domoticz)
             end
-            if(deviceIlPleut.state == 'On') then
+            if(deviceIlPleut.state == 'On' and deviceIlPleut.state ~= domoticz.data.previousRainState) then
                 domoticz.log('Il pleut !', domoticz.LOG_INFO)
                 domoticz.helpers.notify('Alerte pluie', domoticz)
+                domoticz.data.previousRainState = deviceIlPleut.state
             end
         end
 

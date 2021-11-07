@@ -9,6 +9,8 @@ return
         marker = "[Scene PreReveil] "
     },
     execute = function(domoticz, scene)
+        -- Suivi de la phase du jour
+        domoticz.globalData.scenePhase = scene.name
         
         -- Recherche de la température à appliquer suivant le mode de domicile
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
