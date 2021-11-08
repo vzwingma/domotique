@@ -109,7 +109,7 @@ return {
         end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
         getNodeFromJSonTreeByName = function(jsonData, nodeName)
-            for i, node in pairs(jsonData) do
+            for _, node in pairs(jsonData) do
                 if(node.name == nodeName) then
                     return node
                 end
