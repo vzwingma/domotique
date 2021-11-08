@@ -12,7 +12,7 @@ return {
         
         -- #### Fonctions de lecture des statuts
         function liveboxStatut(statut)
-            domoticz.log("Livebox " .. statut.HardwareVersion .. "=".. tostring(statut.Active), domoticz.LOG_INFO)
+            domoticz.log("Livebox " .. statut.HardwareVersion .. "=".. tostring(statut.Active), domoticz.LOG_DEBUG)
             
             for i, child in ipairs(statut.Children) do 
                 if(child.Name == "lan") then
@@ -81,7 +81,7 @@ return {
                 alertLevel = domoticz.ALERTLEVEL_ORANGE
             end
             -- Mise à jour du statut WAN
-            domoticz.log(domoticzDeviceToUpdate .. " = " .. domoticzStatutLabel, domoticz.LOG_INFO)
+            domoticz.log(domoticzDeviceToUpdate .. " = " .. domoticzStatutLabel, domoticz.LOG_DEBUG)
             domoticz.devices(domoticzDeviceToUpdate).updateAlertSensor(alertLevel, domoticzStatutLabel)
         end
         
@@ -97,7 +97,7 @@ return {
                     nbPersonnalDevicesUp = nbPersonnalDevicesUp + 1
                 end
             end
-            domoticz.log("Wifi = " .. nbPersonnalDevicesUp .. " tels connectés", domoticz.LOG_INFO)
+            domoticz.log("Wifi = " .. nbPersonnalDevicesUp .. " tels connectés", domoticz.LOG_DEBUG)
             domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).updateCustomSensor(nbPersonnalDevicesUp)
         end
         
