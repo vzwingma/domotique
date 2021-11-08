@@ -10,7 +10,7 @@ return {
     execute = function(domoticz, item)
     -- ### Commandes
         devices = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' }
-        -- ### Appel de Tydom bridge pour récupérer la température mesurée
+        -- ### Appel de Tydom bridge pour récupérer la valeur de la position
         if (item.isTimer or item.isDevice) then
             
             for _, kdeviceName in pairs(devices) do 
