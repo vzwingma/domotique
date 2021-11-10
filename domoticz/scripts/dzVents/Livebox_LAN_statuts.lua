@@ -1,5 +1,5 @@
 -- ## Scripts de lecture des éléments issus du service Devices.Device.HGW de la Livebox
-
+-- Script appelé à partir du script livebox_getStatuts, qui gère l'authentification et l'initialisation de la connexion
 return {
     on = {
         shellCommandResponses = { 'livebox_LAN_statuts' }

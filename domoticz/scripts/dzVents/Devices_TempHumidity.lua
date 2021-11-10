@@ -1,3 +1,5 @@
+-- ## Scripts de mise à jour des devices virtuels Temp+Humidité à partir des valeurs des devices jumeaux numériques des capteurs Xioamo
+-- Appelé pour chaque mise à jour des jumeaux numériques Température
 return {
     on = {
         devices = { 'Température - Chambre Bébé', 'Température - Chambre Nous', 'Température - Salle de Bain' }

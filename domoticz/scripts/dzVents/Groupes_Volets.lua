@@ -1,3 +1,5 @@
+-- ## Scripts de commande des groupes de volets
+-- Script déclenché pour chaque groupe de volet : lance les niveaux et statuts des volets constituant le groupe (ou le groupe de groupe)
 return
 {
     on =

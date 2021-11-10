@@ -9,11 +9,11 @@ return {
     },
     execute = function(domoticz, item)
     -- ### Commandes
-        devices = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' }
+        
         -- ### Appel de Tydom bridge pour récupérer la valeur de la position
         if (item.isTimer or item.isDevice) then
             
-            for _, kdeviceName in pairs(devices) do 
+            for _, kdeviceName in pairs(domoticz.helpers.DEVICES_TOUS_VOLETS) do 
                 local tydomIds = domoticz.helpers.getTydomDeviceNumberFromDzItem(kdeviceName, domoticz)
                 domoticz.log("Refresh position du volet " .. kdeviceName, domoticz.LOG_DEBUG) --.. " (" .. tydomIds.deviceId .. "/" .. tydomIds.endpointId .. ")")
                 domoticz.helpers.callTydomBridgeGET('/device/' .. tydomIds.deviceId .. '/endpoints/' .. tydomIds.endpointId, 'Tydom_volets_getPosition', domoticz)
