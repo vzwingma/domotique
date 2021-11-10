@@ -23,7 +23,7 @@ return
             if(modeDomicile == '' or modeDomicile == '_ete') then
                 local prcent_lumiere = domoticz.variables(domoticz.helpers.VAR_PRCENT_LUMIERE_SALON_SOIR).value
                 domoticz.log("Allumage de la lampe du salon " .. prcent_lumiere .. "%", domoticz.LOG_INFO)
-                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_SALON).setLevel(prcent_lumiere)
+                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV).setLevel(prcent_lumiere)
             else
                 domoticz.log('Personne à la maison, pas d\'allumage des lampes', domoticz.LOG_INFO)
             end
