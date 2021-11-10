@@ -4,7 +4,8 @@ return {
     },
     data = {
         previousPresenceTels = { initial = true },
-        compteurNbTelsAZero = { initial = 0 }
+        compteurNbTelsAZero = { initial = 0 },
+        seuilDecoAbsence = { initial = 3 },
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -27,7 +28,7 @@ return {
         if(nbTels == 0) then
             -- Aucun tel : on incrémente un compteur pour éviter les faux positifs
             domoticz.data.compteurNbTelsAZero = domoticz.data.compteurNbTelsAZero + 1 
-            if(domoticz.data.compteurNbTelsAZero >= 3) then
+            if(domoticz.data.compteurNbTelsAZero >= domoticz.data.seuilDecoAbsence) then
                 notifyConnectedDevices(presenceTels, domoticz)  -- notifie pour le changement de domicile
             end
         else 
