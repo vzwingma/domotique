@@ -7,8 +7,8 @@ return {
         previousMode = { initial = '' }
     },
     logging = {
-        level = domoticz.LOG_INFO,        
-        marker = "[Mode domicile] "
+        level = domoticz.LOG_DEBUG,
+        marker = "[Lampes] "
     },
     execute = function(domoticz, item)
         

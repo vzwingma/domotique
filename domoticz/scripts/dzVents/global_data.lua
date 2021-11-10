@@ -28,7 +28,7 @@ return {
         DEVICE_VOLET_SALON_D = 'Volet Salon D',
         DEVICE_VOLET_BEBE = 'Volet Bebe',
         DEVICE_VOLET_NOUS = 'Volet Nous',
-        DEVICES_TOUS_VOLETS = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' }
+        DEVICES_TOUS_VOLETS = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' },
         DEVICE_TYDOM_TEMPERATURE='Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT='Tydom Thermostat',
         DEVICE_LAMPE_TV='Lumière TV',
