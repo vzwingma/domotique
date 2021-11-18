@@ -47,7 +47,8 @@ jobs:
   build-push-tydom:
 
     runs-on: ubuntu-latest
-
+    needs: 
+      - scan-sonar
     env:      
       DOCKER_REGISTRY: registry.hub.docker.com
       DOCKER_IMAGE: vzwingmadomatic/domoticz-tydom
