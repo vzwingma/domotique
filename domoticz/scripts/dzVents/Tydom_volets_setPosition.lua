@@ -65,8 +65,7 @@ return
         -- Commande de position de volet
         updateVoletPosition(item, domoticz)
         -- Alignement groupe
-        -- TODO : A valider
-        -- aligneGroupeVolet(item.name, domoticz)
+        aligneGroupeVolet(item.name, domoticz)
         
     end       
 }
