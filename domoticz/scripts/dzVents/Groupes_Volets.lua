@@ -45,7 +45,7 @@ return
         function aligneGroupeVolet(groupe, domoticz)
             domoticz.log("Vérification du groupe [" .. groupe .. "]", domoticz.LOG_DEBUG )
             if(groupe == domoticz.helpers.GROUPE_VOLETS_CHAMBRES or groupe == domoticz.helpers.GROUPE_VOLETS_SALON) then
-                verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON} , domoticz)
+                verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, getVoletsNameFromGroup(domoticz.helpers.GROUPE_TOUS_VOLETS) , domoticz)
             end
         end
 

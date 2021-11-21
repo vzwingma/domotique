@@ -5,7 +5,7 @@ return
         devices = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[TYDOM Volets] "
     },
     execute = function(domoticz, item)
