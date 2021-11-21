@@ -7,8 +7,8 @@ return {
         previousMode = { initial = '' }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
-        marker = "[Lampes] "
+        level = domoticz.LOG_INFO,
+        marker = "[Lumières] "
     },
     execute = function(domoticz, item)
         
@@ -16,16 +16,14 @@ return {
         function updateLightsMode(statutsLampes, domoticz)
             
             if(statutsLampes == "false") then
-                domoticz.log("Extinction de toutes les lampes", domoticz.LOG_DEBUG)
-                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV).switchOff()
-                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_SALON).switchOff()
-                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_CUISINE).switchOff()
+                domoticz.log("Extinction de toutes les Lumières", domoticz.LOG_DEBUG)
+                domoticz.devices(domoticz.helpers.GROUPE_LUMIERES_SALON).switchOff()
             end
         end        
         
         -- Notification depuis ailleurs dans le système (nb de tels connectés)
         if(item.isCustomEvent) then
-            domoticz.log("Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_DEBUG)
+            domoticz.log("Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_INFO)
             
             if(item.customEvent == "Presence Domicile") then
                 updateLightsMode(item.data, domoticz)
