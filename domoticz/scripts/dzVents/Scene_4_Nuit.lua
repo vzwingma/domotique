@@ -13,8 +13,6 @@ return
         -- Suivi de la phase du jour
         domoticz.globalData.scenePhase = scene.name
 
-
-
         -- Fermeture du groupe de volets  (quel que soit le mode Domicile)
         domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
         -- Extinction des lampes
