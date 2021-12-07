@@ -7,25 +7,22 @@ return
         devices = { '[Grp] Volets Salon', '[Grp] Tous Volets', '[Grp] Volets Chambres' },
     },
     logging = {
-        level = domoticz.LOG_INFO,
+        level = domoticz.LOG_DEBUG,
         marker = "[Groupe Volets] "
     },
     -- Activation du groupe de volets
     execute = function(domoticz, group)
     -- ### Fonctions internes ###
         -- Recherche des volets du groupe
-        function getVoletsNameFromGroup(group)
-            
-            if(group.name == domoticz.helpers.GROUPE_TOUS_VOLETS) then
-                domoticz.log("Ouverture tous volets : " .. group.state, domoticz.LOG_INFO)
+        function getVoletsNameFromGroup(groupName)
+            domoticz.log("Recherche des volets du groupe " .. groupName)
+            if(groupName == domoticz.helpers.GROUPE_TOUS_VOLETS) then
                 return { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON }
             
-            elseif(group.name == domoticz.helpers.GROUPE_VOLETS_CHAMBRES) then
-                domoticz.log("Ouverture Volets Chambres : " .. group.state, domoticz.LOG_INFO)
+            elseif(groupName == domoticz.helpers.GROUPE_VOLETS_CHAMBRES) then
                 return { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS }
                 
-            elseif(group.name == domoticz.helpers.GROUPE_VOLETS_SALON) then
-                domoticz.log("Ouverture Volets Salon " .. group.state, domoticz.LOG_INFO)
+            elseif(groupName == domoticz.helpers.GROUPE_VOLETS_SALON) then
                 return { domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D }
             else
                 return {}
@@ -72,7 +69,8 @@ return
 
 
     -- ### Lancement du scénario du Groupe ###
-        local voletsName = getVoletsNameFromGroup(group)
+        local voletsName = getVoletsNameFromGroup(group.name)
+        domoticz.log("Ouverture " .. group.name .. " : " .. group.state, domoticz.LOG_INFO)
         local levelSet = getLevelFromGroupState(group)
         for i, voletName in ipairs(voletsName) do 
             domoticz.log("Ouverture du volet " .. voletName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
