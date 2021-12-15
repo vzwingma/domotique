@@ -13,7 +13,7 @@ return {
     },
     execute = function(domoticz, item)
         
-        -- Notification par SMS lors du changement de nombre de connexions
+        -- Mise à jour d'un item TempHumidity d'une pièce
         function updateTempHumidity(itemName, domoticz)
             local piece = string.sub(itemName, 16)
             domoticz.log("Mise à jour des valeurs de Température et d'Humidité de ".. piece, domoticz.LOG_DEBUG)
@@ -22,7 +22,7 @@ return {
             domoticz.log ("température=" .. temp .. "°C / humidité=" .. humidity .. "%", domoticz.LOG_DEBUG)
             domoticz.devices("TempératureHumidité - " .. piece).updateTempHum(temp, humidity)
         end
-
+        -- Alignement des températures et humidité d'une pièce à partir des valeurs des devices virtuels unitaires
         updateTempHumidity(item.name, domoticz)
     end
 }

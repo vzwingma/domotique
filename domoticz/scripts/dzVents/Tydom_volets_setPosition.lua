@@ -29,7 +29,7 @@ return
             
             -- Appel du bridge Tydom
             local postData = { ['name'] = 'position', ['value'] = pOuverture }
-           domoticz.helpers.callTydomBridgePUT('/device/'..tydomIds.deviceId..'/endpoints/'..tydomIds.endpointId , postData, nil, domoticz)
+            domoticz.helpers.callTydomBridgePUT('/device/'..tydomIds.deviceId..'/endpoints/'..tydomIds.endpointId , postData, nil, domoticz)
         end
         
         -- Alignement des groupes de volets
@@ -38,8 +38,6 @@ return
                 verifyGroupeFromItem(domoticz.helpers.GROUPE_VOLETS_SALON, { domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D} , domoticz)
             elseif(item == domoticz.helpers.DEVICE_VOLET_BEBE or item == domoticz.helpers.DEVICE_VOLET_NOUS) then
                 verifyGroupeFromItem(domoticz.helpers.GROUPE_VOLETS_CHAMBRES, { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS} , domoticz)
-            elseif(item == domoticz.helpers.GROUPE_VOLETS_CHAMBRES or item == domoticz.helpers.GROUPE_VOLETS_SALON) then
-                verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON} , domoticz)
             end
         end
 
@@ -49,14 +47,16 @@ return
             local valeur = nil
             local sameLevel = false
             for _, pair in pairs(items) do
-                domoticz.log(" > " .. pair .. ":" .. domoticz.devices(pair).level)
+                domoticz.log(" > " .. pair .. ":" .. domoticz.devices(pair).level, domoticz.LOG_DEBUG )
                 if(valeur == nil or valeur == domoticz.devices(pair).level ) then
                     sameLevel = true
+                elseif(valeur ~= domoticz.devices(pair).level) then
+                    sameLevel = false
                 end
                 valeur = domoticz.devices(pair).level 
             end
             -- Réalignement du groupe si les volets du groupe ont la même valeur et différentes de celle du groupe
-            if(sameLevel and domoticz.devices(groupe).level ~= valeur) then
+            if(sameLevel == true and domoticz.devices(groupe).level ~= valeur) then
                 domoticz.log("Réalignement des volets du groupe [" .. groupe .. "] " .. domoticz.devices(groupe).level .. " > " .. valeur .. "%", domoticz.LOG_INFO) 
                 domoticz.devices(groupe).setLevel(valeur)
             end
@@ -65,8 +65,7 @@ return
         -- Commande de position de volet
         updateVoletPosition(item, domoticz)
         -- Alignement groupe
-        -- TODO : A valider
-        -- aligneGroupeVolet(item.name, domoticz)
+        aligneGroupeVolet(item.name, domoticz)
         
     end       
 }

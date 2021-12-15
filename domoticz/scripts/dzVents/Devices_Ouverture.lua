@@ -26,7 +26,7 @@ return {
             local item = domoticz.devices(event.data)
             domoticz.log("[" .. event.data .. "] : état courant après " .. domoticz.data.supervisionDelay .. " s : " .. item.state, domoticz.LOG_DEBUG)
             -- Si toujours Ouvert, on alerte
-            if(item.state == "Open" or item.state == "On") then
+            if(item.active == true) then
                 notifyAlerteOuverture(item, domoticz)
                 -- et relance de la supervision
                 startSurveillance(item, domoticz)
@@ -43,9 +43,9 @@ return {
         -- Etat : Open ou Closed d'une porte ou d'une fenêtre
         if(item.isDevice) then
             domoticz.log("Changement d'état " .. item.name .. "::".. item.state, domoticz.LOG_DEBUG)
-            if(item.state == "Open" or item.state == "On") then
+            if(item.active == true) then
                 startSurveillance(item, domoticz)
-            elseif(item.state == "Closed" or item.state == "Off") then
+            else
                 domoticz.log("Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
             end
         -- Déclenchement du timer

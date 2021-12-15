@@ -31,6 +31,7 @@ return {
         DEVICES_TOUS_VOLETS = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' },
         DEVICE_TYDOM_TEMPERATURE='Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT='Tydom Thermostat',
+        -- Lumières
         DEVICE_LAMPE_TV='Lumière TV',
         DEVICE_LAMPE_SALON='Lumière Salon',
         DEVICE_LAMPE_CUISINE='Lumière Cuisine',
@@ -38,6 +39,7 @@ return {
         GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
         GROUPE_VOLETS_CHAMBRES = '[Grp] Volets Chambres',
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
+        GROUPE_LUMIERES_SALON = '[Grp] Lumières Salon',
         -- Mode
         DEVICE_MODE_DOMICILE = 'Mode Domicile',
         -- livebox
