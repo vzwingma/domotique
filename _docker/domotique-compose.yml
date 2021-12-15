@@ -30,7 +30,7 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro    
-      - /home/pi/appli/deCONZ:/opt/deCONZ/
+      - /home/pi/appli/deCONZ:/opt/deCONZ
     restart: always
 # DOMOTICZ
   domoticz:
