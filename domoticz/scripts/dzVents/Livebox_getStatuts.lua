@@ -9,6 +9,9 @@ return {
         timer = { 'every minute' },
         shellCommandResponses = { 'livebox_getStatuts' }
     },
+    data = {
+        uuid = { initial = "" }
+    },
     logging = {
         level = domoticz.LOG_INFO,
         marker = "[ORANGE Livebox] "
@@ -20,15 +23,15 @@ return {
     
         -- Recherche des équipements connectés
         function getConnectedDevices(contextId, domoticz)
-            -- domoticz.log("Recherche des équipements connectés", domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Recherche des équipements connectés", domoticz.LOG_DEBUG)
             local postData = { ['service'] = 'Devices.Device.HGW' , ['method'] = 'topology', ['parameters'] = {} }
-            domoticz.helpers.callLiveboxPOST(contextId, postData, 'livebox_LAN_statuts', domoticz)
+            domoticz.helpers.callLiveboxPOST(contextId, postData, domoticz.data.uuid, 'livebox_LAN_statuts', domoticz)
         end
 
     
         -- ##### Exécution des traitments sur les API Orange
         function sessionConnectedToLivebox(contextId, domoticz)
-            domoticz.log("Connecté à la Livebox - contextID = ["..contextId.."]", domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Connecté à la Livebox - contextID = ["..contextId.."]", domoticz.LOG_DEBUG)
             -- Une fois connecté, on appelle les différents services
             getConnectedDevices(contextId, domoticz)
         end 
@@ -36,13 +39,14 @@ return {
         
     -- ## Déclenchement de la fonction /
         if(item.isTimer) then
+            domoticz.data.uuid = domoticz.helpers.uuid()
             -- d'abord l'Authentification
-            domoticz.log("Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
-            domoticz.helpers.authenticateToLivebox('livebox_getStatuts', domoticz)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Init de la connexion à la Livebox Orange", domoticz.LOG_DEBUG)
+            domoticz.helpers.authenticateToLivebox(domoticz.data.uuid, 'livebox_getStatuts', domoticz)
             
         -- ## Call back après AUth
         elseif(item.isShellCommandResponse) then 
-            domoticz.log("Auth Callback " .. item.statusCode .. " - " .. item.statusText, domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Auth Callback " .. item.statusCode .. " - " .. item.statusText, domoticz.LOG_DEBUG)
             sessionConnectedToLivebox(item.json.data.contextID, domoticz)
         end
 

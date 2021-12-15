@@ -109,7 +109,8 @@ return {
             return suffixeMode
         end,
         -- # Fonction d'envoi de notification
-        notify = function(messageToSent, domoticz)
+        notify = function(messageToSent, uuid, domoticz)
+            domoticz.log("[" .. uuid .. "] Notification SMS : " .. messageToSent, domoticz.LOG_INFO)
             domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_CLICKATELL)
         end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
@@ -130,13 +131,22 @@ return {
             end
             return false
         end,
-        
+        -- # Fonction de génération d'UUID
+        uuid = function()
+            local random = math.random
+            local template ='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+            return string.gsub(template, '[xy]', function (c)
+                    local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
+                    return string.format('%x', v)
+                end)
+        end,
         -- ###############################################
         -- ###  FONCTIONS HTTP VERS LE BRIDGE TYDOM    ###
         -- ###############################################        
         
         -- # Fonction d'appel GET de la passerelle Tydom
-        callTydomBridgeGET = function (uriToCall, callbackName, domoticz)
+        callTydomBridgeGET = function (uriToCall, corrId, callbackName, domoticz)
+            domoticz.log("[".. corrId .. "] Appel Tydom GET [" .. uriToCall .. "]", domoticz.LOG_INFO)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
             if(callbackName == nil) then
@@ -146,28 +156,30 @@ return {
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
                 method = 'GET',
-                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge },
+                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge,  ['X-CorrId'] = corrId },
                 callback = callbackName
             })
             return
         end,
         
         -- # Fonction d'appel POST de la passerelle Tydom
-        callTydomBridgePOST = function (uriToCall, domoticz)
+        callTydomBridgePOST = function (uriToCall, corrId, domoticz)
+            domoticz.log("[".. corrId .. "] Appel Tydom POST [" .. uriToCall .. "]", domoticz.LOG_INFO)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
                 method = 'POST',
-                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge },
+                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge,  ['X-CorrId'] = corrId },
                 callback = 'global_HTTP_response'
             })
             return
         end,
         
         -- # Fonction d'appel PUT de la passerelle Tydom
-        callTydomBridgePUT = function (uriToCall, putData, callbackName, domoticz)
+        callTydomBridgePUT = function (uriToCall, putData, corrId, callbackName, domoticz)
+            domoticz.log("[".. corrId .. "] Appel Tydom PUT [" .. uriToCall .. "]", domoticz.LOG_INFO)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
@@ -179,7 +191,7 @@ return {
             domoticz.openURL({
                 url = 'http://'..host_tydom_bridge..'' .. uriToCall,
                 method = 'PUT',
-                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge },
+                headers = { ['Content-Type'] = 'application/json', ['Authorization'] = auth_tydom_bridge,  ['X-CorrId'] = corrId},
                 postData = putData,
                 callback = callbackName
             })
@@ -190,9 +202,9 @@ return {
         -- ###     FONCTIONS HTTP VERS LA LIVEBOX      ###
         -- ###############################################
         -- Authentification
-        authenticateToLivebox = function(callbackName, domoticz)
+        authenticateToLivebox = function(uuid, callbackName, domoticz)
     
-            domoticz.log("Authentification à la Livebox ORANGE", domoticz.LOG_DEBUG) 
+            domoticz.log("[" .. uuid .. "] Authentification à la Livebox ORANGE", domoticz.LOG_DEBUG) 
     
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
             local login_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_LOGIN).value
@@ -203,7 +215,7 @@ return {
                                                   ['username'] = login_livebox, 
                                                   ['password'] = pwd_livebox }}
             -- Appel de l'authentification
-            local fullcmd = "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"Authorization:X-Sah-Login\" -d '" 
+            local fullcmd = "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"X-CorrId:".. uuid .."\" -H \"Authorization:X-Sah-Login\" -d '" 
                             .. domoticz.utils.toJSON(authData) .. "' -c /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie -X POST " ..
                             "'http://" .. host_livebox .. "/ws'"
 
@@ -212,16 +224,16 @@ return {
         	            callback = callbackName })
         end,  
         -- Appel POST
-        callLiveboxPOST = function (contextId, postData, callbackName, domoticz)
+        callLiveboxPOST = function (contextId, postData, corrId, callbackName, domoticz)
             
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
-            
+            domoticz.log("[".. corrId .. "] Appel Livebox POST", domoticz.LOG_INFO)
             if(callbackName == nil) then
                callbackName = 'global_HTTP_response' 
             end
-            domoticz.log("contextId=["..contextId.."]", domoticz.LOG_DEBUG)
+            domoticz.log("[".. corrId .. "] contextId=["..contextId.."]", domoticz.LOG_DEBUG)
             local fullcmd = "SESSID=`cat /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie  | awk 'END{print}' | awk '{new_var=$(NF-1)\"=\"$(NF); print new_var}'` ; " ..
-            "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"X-Context: " .. contextId .. "\" -d '" .. domoticz.utils.toJSON(postData) .. "' -b \"$SESSID\" -X POST 'http://" .. host_livebox .. "/ws'"
+            "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\"  -H \"X-CorrId: " .. corrId ..  "\"  -H \"X-Context: " .. contextId ..  "\" -d '" .. domoticz.utils.toJSON(postData) .. "' -b \"$SESSID\" -X POST 'http://" .. host_livebox .. "/ws'"
 
         	domoticz.executeShellCommand({ 
         	        command = fullcmd, 
