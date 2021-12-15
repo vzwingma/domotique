@@ -6,6 +6,7 @@ return {
         seuilBattery = { initial = 20 },
         seuilData = { initial = 1440 },
         devicesNoDataAllowed = { initial = { 69, 70, 108 }},
+        uuid = { initial = "" }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -17,8 +18,8 @@ return {
         function supervisionBatteryLevel(device)
             -- Alerte si < 20%
             if(device.batteryLevel ~= nil and device.batteryLevel < domoticz.data.seuilBattery) then
-                domoticz.log('Device [' .. device.name .. '] - Niveau de batterie : ' .. device.batteryLevel .. '%', domoticz.LOG_ERROR)
-                domoticz.helpers.notify('Capteur [' .. device.name .. '] - Batterie : ' .. device.batteryLevel .. '%', domoticz)
+                domoticz.log('[' .. domoticz.data.uuid .. '] Device [' .. device.name .. '] - Niveau de batterie : ' .. device.batteryLevel .. '%', domoticz.LOG_ERROR)
+                domoticz.helpers.notify('Capteur [' .. device.name .. '] - Batterie : ' .. device.batteryLevel .. '%', domoticz.data.uuid, domoticz)
             end
 
         end
@@ -27,12 +28,13 @@ return {
         function supervisionData(device)
             
             local deviceToIgnore = domoticz.helpers.tabContainsItem(domoticz.data.devicesNoDataAllowed, device.id, domoticz)
-            domoticz.log('Device [' .. device.id .. '/' .. device.name .. '] - Dernière mise à jour, il y a ' .. device.lastUpdate.minutesAgo .. ' mins', domoticz.INFO)
+            domoticz.log('[' .. domoticz.data.uuid .. '] Device [' .. device.id .. '/' .. device.name .. '] - Dernière mise à jour, il y a ' .. device.lastUpdate.minutesAgo .. ' mins', domoticz.INFO)
             if( device.lastUpdate.minutesAgo > domoticz.data.seuilData and deviceToIgnore == false ) then
-               domoticz.helpers.notify('Capteur [' .. device.name .. '] - Aucune réception de données depuis ' .. device.lastUpdate.minutesAgo .. ' mins', domoticz)
+               domoticz.helpers.notify('Capteur [' .. device.name .. '] - Aucune réception de données depuis ' .. device.lastUpdate.minutesAgo .. ' mins', domoticz.data.uuid, domoticz)
             end
             
         end
+        domoticz.data.uuid = domoticz.helpers.uuid()
         -- Itération sur tous les devices
         domoticz.devices().forEach(function(device)
 

@@ -9,9 +9,10 @@ return {
     },
     execute = function(domoticz, item)
         -- ### Appel de Tydom bridge pour refresh 
+        local uuid = domoticz.helpers.uuid()
         if (item.isTimer or item.isDevice) then
-            domoticz.log("Rafraichissement des valeurs de Tydom", domoticz.LOG_DEBUG)
-            domoticz.helpers.callTydomBridgePOST('/refresh/all', domoticz)
+            domoticz.log("[" .. uuid .. "] Rafraichissement des valeurs de Tydom", domoticz.LOG_DEBUG)
+            domoticz.helpers.callTydomBridgePOST('/refresh/all', uuid, domoticz)
         end
     end
 }

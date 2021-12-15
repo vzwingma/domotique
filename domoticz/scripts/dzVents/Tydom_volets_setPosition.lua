@@ -4,6 +4,9 @@ return
     {
         devices = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' }
     },
+    data = {
+        uuid = { initial = "" }
+    },
     logging = {
         level = domoticz.LOG_INFO,
         marker = "[TYDOM Volets] "
@@ -25,11 +28,11 @@ return
                 pOuverture = item.level
             end
             
-            domoticz.log("[".. voletName .."] set Position=" .. pOuverture .. "%", domoticz.LOG_INFO)
+            domoticz.log("[" .. domoticz.data.uuid .. "] [".. voletName .."] set Position=" .. pOuverture .. "%", domoticz.LOG_INFO)
             
             -- Appel du bridge Tydom
             local postData = { ['name'] = 'position', ['value'] = pOuverture }
-            domoticz.helpers.callTydomBridgePUT('/device/'..tydomIds.deviceId..'/endpoints/'..tydomIds.endpointId , postData, nil, domoticz)
+            domoticz.helpers.callTydomBridgePUT('/device/'..tydomIds.deviceId..'/endpoints/'..tydomIds.endpointId , postData, domoticz.data.uuid, nil, domoticz)
         end
         
         -- Alignement des groupes de volets
@@ -43,7 +46,7 @@ return
 
         -- Vérification de la valeur du groupe // à ses items
         function verifyGroupeFromItem(groupe, items, domoticz)
-            domoticz.log("Vérification du groupe " .. groupe, domoticz.LOG_DEBUG )
+            domoticz.log("[" .. domoticz.data.uuid .. "] Vérification du groupe " .. groupe, domoticz.LOG_DEBUG )
             local valeur = nil
             local sameLevel = false
             for _, pair in pairs(items) do
@@ -57,10 +60,12 @@ return
             end
             -- Réalignement du groupe si les volets du groupe ont la même valeur et différentes de celle du groupe
             if(sameLevel == true and domoticz.devices(groupe).level ~= valeur) then
-                domoticz.log("Réalignement des volets du groupe [" .. groupe .. "] " .. domoticz.devices(groupe).level .. " > " .. valeur .. "%", domoticz.LOG_INFO) 
+                domoticz.log("[" .. domoticz.data.uuid .. "] Réalignement des volets du groupe [" .. groupe .. "] " .. domoticz.devices(groupe).level .. " > " .. valeur .. "%", domoticz.LOG_INFO) 
                 domoticz.devices(groupe).setLevel(valeur)
             end
         end
+        
+        domoticz.data.uuid = domoticz.helpers.uuid()
         
         -- Commande de position de volet
         updateVoletPosition(item, domoticz)

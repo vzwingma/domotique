@@ -109,7 +109,8 @@ return {
             return suffixeMode
         end,
         -- # Fonction d'envoi de notification
-        notify = function(messageToSent, domoticz)
+        notify = function(messageToSent, uuid, domoticz)
+            domoticz.log("[" .. uuid .. "] Notification SMS : " .. messageToSent, domoticz.LOG_INFO)
             domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_CLICKATELL)
         end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
@@ -144,8 +145,7 @@ return {
         -- ###############################################        
         
         -- # Fonction d'appel GET de la passerelle Tydom
-        callTydomBridgeGET = function (uriToCall, callbackName, domoticz)
-            local corrId = domoticz.helpers.uuid()
+        callTydomBridgeGET = function (uriToCall, corrId, callbackName, domoticz)
             domoticz.log("[".. corrId .. "] Appel Tydom GET [" .. uriToCall .. "]", domoticz.LOG_INFO)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
@@ -163,8 +163,7 @@ return {
         end,
         
         -- # Fonction d'appel POST de la passerelle Tydom
-        callTydomBridgePOST = function (uriToCall, domoticz)
-            local corrId = domoticz.helpers.uuid()
+        callTydomBridgePOST = function (uriToCall, corrId, domoticz)
             domoticz.log("[".. corrId .. "] Appel Tydom POST [" .. uriToCall .. "]", domoticz.LOG_INFO)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
@@ -179,8 +178,7 @@ return {
         end,
         
         -- # Fonction d'appel PUT de la passerelle Tydom
-        callTydomBridgePUT = function (uriToCall, putData, callbackName, domoticz)
-            local corrId = domoticz.helpers.uuid()
+        callTydomBridgePUT = function (uriToCall, putData, corrId, callbackName, domoticz)
             domoticz.log("[".. corrId .. "] Appel Tydom PUT [" .. uriToCall .. "]", domoticz.LOG_INFO)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value

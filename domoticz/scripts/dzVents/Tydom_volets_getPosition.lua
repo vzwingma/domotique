@@ -14,9 +14,10 @@ return {
         if (item.isTimer or item.isDevice) then
             
             for _, kdeviceName in pairs(domoticz.helpers.DEVICES_TOUS_VOLETS) do 
+                local uuid = domoticz.helpers.uuid()
                 local tydomIds = domoticz.helpers.getTydomDeviceNumberFromDzItem(kdeviceName, domoticz)
-                domoticz.log("Refresh position du volet " .. kdeviceName, domoticz.LOG_DEBUG) --.. " (" .. tydomIds.deviceId .. "/" .. tydomIds.endpointId .. ")")
-                domoticz.helpers.callTydomBridgeGET('/device/' .. tydomIds.deviceId .. '/endpoints/' .. tydomIds.endpointId, 'Tydom_volets_getPosition', domoticz)
+                domoticz.log("[" .. uuid .. "] Refresh position du volet " .. kdeviceName, domoticz.LOG_DEBUG) --.. " (" .. tydomIds.deviceId .. "/" .. tydomIds.endpointId .. ")")
+                domoticz.helpers.callTydomBridgeGET('/device/' .. tydomIds.deviceId .. '/endpoints/' .. tydomIds.endpointId, uuid, 'Tydom_volets_getPosition', domoticz)
             end
 
         -- ### Callback
@@ -25,12 +26,12 @@ return {
             local validityPositionTydom = domoticz.helpers.getNodeFromJSonTreeByName(item.json.data, 'position').validity
             
             local voletName = domoticz.helpers.getDzItemFromTydomDeviceId(item.headers["X-Request-DeviceId"], item.headers["X-Request-EndpointId"], domoticz)
-
+            local uuidCallB = item.headers["X-CorrId"]
             local positionDz = domoticz.devices(voletName).level
-            domoticz.log('Volet ' .. voletName .. ' [Commande Tydom = ' .. positionTydom .. '%, (validite='.. validityPositionTydom ..')] [Commande Dz = '.. positionDz ..'%]', domoticz.LOG_INFO)
+            domoticz.log('[" .. uuid .. "] Volet ' .. voletName .. ' [Commande Tydom = ' .. positionTydom .. '%, (validite='.. validityPositionTydom ..')] [Commande Dz = '.. positionDz ..'%]', domoticz.LOG_INFO)
             
             if(positionDz > positionTydom + 1 or positionDz < positionTydom - 1 ) then
-                domoticz.log("Réalignement du niveau de Volet sur Domoticz par rapport à la commande réelle [" .. positionTydom .. "]", domoticz.LOG_INFO)
+                domoticz.log("[" .. uuid .. "] Réalignement du niveau de Volet sur Domoticz par rapport à la commande réelle [" .. positionTydom .. "]", domoticz.LOG_INFO)
                 domoticz.devices(voletName).setLevel(positionTydom)
             end
         end
