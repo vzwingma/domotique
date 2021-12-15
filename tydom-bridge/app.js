@@ -29,6 +29,11 @@ function apiBasicAuthorizer(calledUsername, calledPassword) {
     const passwordMatches = basicAuth.safeCompare(calledPassword, process.env.PASSWDAPI);
     return userMatches & passwordMatches;
 }
+// Mise à jour des entêtes
+function updateHeaders(req, res) {
+	res.setHeader('Content-Type', 'text/plain');
+	res.setHeader('X-CorrId', req.get('X-CorrId'));
+}
 
 (async () => {
     // Lancement de la connexion à la box Tydom
@@ -51,29 +56,26 @@ function apiBasicAuthorizer(calledUsername, calledPassword) {
     
     // Info
 	app.get('/_info', function (req, res) {
-	    res.setHeader('Content-Type', 'application/json');
+		updateHeaders(req, res);
         const tydomOK = { resultat : 'Le bridge Tydom [ ' + username + ' ] est opérationnel' };
         res.send(JSON.stringify(tydomOK));
 	})
     // INFO Tydom
     app.get('/info', async function(req, res) {
         const info = await client.get('/info');
-		res.setHeader('X-CorrId', req.get('X-CorrId'));
-        res.setHeader('Content-Type', 'application/json');
+		updateHeaders(req, res);
         res.end(JSON.stringify(info));
     })
     // Liste des devices
     .get('/devices/data', async function(req, res) {
         const devices = await client.get('/devices/data');
-        res.setHeader('Content-Type', 'application/json');
-		res.setHeader('X-CorrId', req.get('X-CorrId'));
+		updateHeaders(req, res);
         res.end(JSON.stringify(devices));
     })
     // Etat d'un device
     .get('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
         const info = await client.get('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data');
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('X-CorrId', req.get('X-CorrId'));
+		updateHeaders(req, res);
 		res.setHeader('X-Request-DeviceId', req.params.devicenum);
         res.setHeader('X-Request-EndpointId', req.params.endpointnum);
         res.end(JSON.stringify(info));
@@ -81,8 +83,7 @@ function apiBasicAuthorizer(calledUsername, calledPassword) {
     // Mise à jour d'un état d'un device
     .put('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
         await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('X-CorrId', req.get('X-CorrId'));
+		updateHeaders(req, res);
 		res.setHeader('X-Request-DeviceId', req.params.devicenum);
         res.setHeader('X-Request-EndpointId', req.params.endpointnum);
         res.end(JSON.stringify(resultatOK));
@@ -90,15 +91,13 @@ function apiBasicAuthorizer(calledUsername, calledPassword) {
     // Refresh des valeurs du jumeau numérique par rapport aux équipements physiques
     .post('/refresh/all', async function(req, res) {
         await client.post('/refresh/all');
-        res.setHeader('X-CorrId', req.get('X-CorrId'));
-		res.setHeader('Content-Type', 'application/json');
+		updateHeaders(req, res);
         res.end(JSON.stringify(resultatOK));
     })	
     // Erreur
     .use(function(req, res, next){
-        res.setHeader('Content-Type', 'text/plain');
-		res.setHeader('X-CorrId', req.get('X-CorrId'));
-        res.status(404).send('Page introuvable !');
+		updateHeaders(req, res);
+        res.status(404).send('{"message" : "Page introuvable !"}');
     });
 
     webServer = app.listen(port, function () {
