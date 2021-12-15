@@ -2,6 +2,8 @@ return {
     on = {
         -- Evénement poussé par le nombre de tels connectés ou le scénario Nuit
         customEvents = { 'Presence Domicile', 'Scenario Nuit' },
+        -- Evénement poussé le matin au lever du soleil
+        timer = { '30 minutes after sunrise' }
     },
     data = {
         previousMode = { initial = '' }
@@ -30,6 +32,9 @@ return {
             elseif(item.customEvent == "Scenario Nuit") then
                 updateLightsMode("false", domoticz)
             end
+        elseif(item.isTimer) then
+            domoticz.log("Lever du soleil + 30 mins : " .. item.data, domoticz.LOG_INFO)
+            updateLightsMode("false", domoticz)
         end
     end
 }
