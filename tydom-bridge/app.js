@@ -32,7 +32,12 @@ function apiBasicAuthorizer(calledUsername, calledPassword) {
 // Mise à jour des entêtes
 function updateHeaders(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
-	res.setHeader('X-CorrId', req.get('X-CorrId'));
+	let corrId = req.get('X-CorrId');
+	if (corrId != undefined) { 
+		res.setHeader('X-CorrId', corrId); 
+	} else {
+		res.setHeader('X-CorrId', "undefined"); 
+	}
 }
 
 (async () => {
