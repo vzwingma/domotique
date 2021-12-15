@@ -7,6 +7,9 @@ return {
         timer = { 'every hour' },
         httpResponses = { 'livebox_WAN_statuts' }
     },
+    data = {
+        uuid = { initial = "" }
+    },
     logging = {
         level = domoticz.LOG_INFO,
         marker = "[WAN Livebox] "
@@ -16,9 +19,9 @@ return {
     -- #### Fonctions de communication avec la Livebox
     
         -- Recherche du statut WAN de la Livebox
-        function getWanStatutLivebox()
+        function getWanStatutLivebox(uuid)
     
-           domoticz.log("Recherche du statut de la Livebox Orange", domoticz.LOG_DEBUG)
+           domoticz.log("[" .. domoticz.data.uuid .. "] Recherche du statut de la Livebox Orange", domoticz.LOG_DEBUG)
             
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
             local WANData = { ['service'] = 'NMC' , ['method'] = 'getWANStatus', ['parameters'] = {} }
@@ -26,7 +29,7 @@ return {
             domoticz.openURL({
                 url = 'http://'..host_livebox..'/ws',
                 method = 'POST',
-                headers = { ['Content-type'] = 'application/x-sah-ws-4-call+json' },
+                headers = { ['Content-type'] = 'application/x-sah-ws-4-call+json', ['X-CorrId'] = domoticz.data.uuid },
                 postData = WANData,
                 callback = 'livebox_WAN_statuts'
             })
@@ -36,7 +39,7 @@ return {
     
         -- ##### Exécution des traitments sur les API Orange
         function getStatutsFromLivebox(WANStatutData, domoticz)
-           domoticz.log("Etat de la connexion Livebox/Orange : WAN=" .. WANStatutData.WanState .. ", Link=" .. WANStatutData.LinkState, domoticz.LOG_INFO)
+           domoticz.log("[" .. domoticz.data.uuid .. "] Etat de la connexion Livebox/Orange : WAN=" .. WANStatutData.WanState .. ", Link=" .. WANStatutData.LinkState, domoticz.LOG_INFO)
            local alertLevel = domoticz.ALERTLEVEL_GREY
            if(WANStatutData.WanState == "up" and  WANStatutData.LinkState == "up") then
                alertLevel = domoticz.ALERTLEVEL_GREEN
@@ -55,11 +58,12 @@ return {
         
     -- ## Déclenchement de la fonction sur time
         if(item.isTimer) then
+            domoticz.data.uuid = domoticz.helpers.uuid()
             getWanStatutLivebox()
             
         -- ## Call back après AUth
         elseif(item.isHTTPResponse) then 
-            domoticz.log(item.statusCode .. " - " .. item.statusText)
+            domoticz.log("[" .. domoticz.data.uuid .. "] " .. item.statusCode .. " - " .. item.statusText)
             getStatutsFromLivebox(item.json.data, domoticz)
         end
 

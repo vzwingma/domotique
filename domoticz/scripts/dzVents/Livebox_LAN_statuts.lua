@@ -4,15 +4,18 @@ return {
     on = {
         shellCommandResponses = { 'livebox_LAN_statuts' }
     },
+    data = {
+        uuid = { initial = " " }
+    },
     logging = {
-        level = domoticz.LOG_INFO,
+        level = domoticz.LOG_DEBUG,
         marker = "[LAN Livebox] "
     },
     execute = function(domoticz, item)
         
         -- #### Fonctions de lecture des statuts
         function liveboxStatut(statut)
-            domoticz.log("Livebox " .. statut.HardwareVersion .. "=".. tostring(statut.Active), domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Livebox " .. statut.HardwareVersion .. "=".. tostring(statut.Active), domoticz.LOG_DEBUG)
             
             for i, child in ipairs(statut.Children) do 
                 if(child.Name == "lan") then
@@ -35,7 +38,7 @@ return {
         
         -- #### Interfaces (ethx) ####
         function liveboxInterface(interface, mapStatutsTV, mapStatutsDomotique, mapStatutsWifi)
-            domoticz.log(". Interface : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] . Interface : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
 
             if(interface.Name == "eth0" or interface.Name == "eth1") then
                 mapStatutsDomotique = getLiveboxDevicesStatut(interface.Children, mapStatutsDomotique, "Domotique")
@@ -48,7 +51,7 @@ return {
         
         function getLiveboxDevicesStatut(devices, mapStatut, categorie)
             for i, device in ipairs(devices) do 
-                domoticz.log("... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
+                domoticz.log("[" .. domoticz.data.uuid .. "] ... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
                 mapStatut[device.Name]= device.Active
             end
             return mapStatut
@@ -81,7 +84,7 @@ return {
                 alertLevel = domoticz.ALERTLEVEL_ORANGE
             end
             -- Mise à jour du statut WAN
-            domoticz.log(domoticzDeviceToUpdate .. " = " .. domoticzStatutLabel, domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] " .. domoticzDeviceToUpdate .. " = " .. domoticzStatutLabel, domoticz.LOG_DEBUG)
             domoticz.devices(domoticzDeviceToUpdate).updateAlertSensor(alertLevel, domoticzStatutLabel)
         end
         
@@ -93,22 +96,23 @@ return {
             local personnalDevicesTab = domoticz.utils.stringSplit(domoticz.variables(domoticz.helpers.VAR_LIVEBOX_DEVICES).value, ",")
             for i, personnalDevice in ipairs(personnalDevicesTab) do 
                 if(mapStatutsWifi[personnalDevice]) then
-                    domoticz.log("Wifi > tel [" .. personnalDevice .. "] connecté", domoticz.LOG_DEBUG)
+                    domoticz.log("[" .. domoticz.data.uuid .. "] Wifi > tel [" .. personnalDevice .. "] connecté", domoticz.LOG_DEBUG)
                     nbPersonnalDevicesUp = nbPersonnalDevicesUp + 1
                 end
             end
-            domoticz.log("Wifi = " .. nbPersonnalDevicesUp .. " tels connectés", domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Wifi = " .. nbPersonnalDevicesUp .. " tels connectés", domoticz.LOG_DEBUG)
             domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).updateCustomSensor(nbPersonnalDevicesUp)
         end
         
         
         -- ## Déclenchement de la fonction globale
         if (item.ok) then -- statusCode == 2xx
+            domoticz.data.uuid = domoticz.helpers.uuid()
             for i, statut in ipairs(item.json.status) do 
                 liveboxStatut(statut)
             end
         else
-            domoticz.log("Erreur lors de la recherche des appareils connectés", domoticz.LOG_ERROR)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Erreur lors de la recherche des appareils connectés", domoticz.LOG_ERROR)
         end
     
     end
