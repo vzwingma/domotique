@@ -233,7 +233,7 @@ return {
             if(callbackName == nil) then
                callbackName = 'global_HTTP_response' 
             end
-            domoticz.log("contextId=["..contextId.."]", domoticz.LOG_DEBUG)
+            domoticz.log("[".. corrId .. "] contextId=["..contextId.."]", domoticz.LOG_DEBUG)
             local fullcmd = "SESSID=`cat /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie  | awk 'END{print}' | awk '{new_var=$(NF-1)\"=\"$(NF); print new_var}'` ; " ..
             "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\"  -H \"X-CorrId: " .. corrId ..  "\"  -H \"X-Context: " .. contextId ..  "\" -d '" .. domoticz.utils.toJSON(postData) .. "' -b \"$SESSID\" -X POST 'http://" .. host_livebox .. "/ws'"
 

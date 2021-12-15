@@ -8,7 +8,7 @@ return {
         uuid = { initial = " " }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[LAN Livebox] "
     },
     execute = function(domoticz, item)
