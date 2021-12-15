@@ -1,4 +1,4 @@
-FROM node:16.1.0-slim
+FROM node:current-slim
 # Construit à partir de Node
 LABEL MAINTAINER="vincent.zwingmann@github.com"
 
