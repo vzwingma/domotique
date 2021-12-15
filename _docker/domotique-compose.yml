@@ -18,7 +18,7 @@ services:
     restart: always
 # deCONZ
   deconz:
-    image: marthoc/deconz:latest
+    image: deconzcommunity/deconz:latest
     ports:
       - 9102:9102
       - 9143:9143
@@ -30,7 +30,7 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro    
-      - /home/pi/appli/deCONZ:/root/.local/share/dresden-elektronik/deCONZ/
+      - /home/pi/appli/deCONZ:/opt/deCONZ/
     restart: always
 # DOMOTICZ
   domoticz:
