@@ -23,3 +23,5 @@ domoticz/database_local/scripts/dzVents/domoticzData.lua
 domoticz/database_local/
 
 domoticz.log.gz
+
+sncf-extraction-sla/
