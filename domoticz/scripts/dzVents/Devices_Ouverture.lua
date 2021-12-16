@@ -42,8 +42,10 @@ return {
         domoticz.data.uuid = domoticz.helpers.uuid()
         -- Etat : Open ou Closed d'une porte ou d'une fenêtre
         if(item.isDevice) then
+            
             domoticz.log("[" .. domoticz.data.uuid .. "] Changement d'état " .. item.name .. "::".. item.state, domoticz.LOG_DEBUG)
             if(item.active == true) then
+                domoticz.helpers.notify("Ouverture de [" .. item.name .. "]", domoticz.data.uuid, domoticz)
                 startSurveillance(item, domoticz)
             else
                 domoticz.log("[" .. domoticz.data.uuid .. "] Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
