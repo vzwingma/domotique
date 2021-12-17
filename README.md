@@ -1,5 +1,8 @@
-### # Domotique #
+## Domotique
+
 Gestion domotique de la maison
+
+#### DomoticZ
 
 Lien vers le wiki : https://github.com/vzwingma/domotique/wiki/
 
