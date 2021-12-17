@@ -18,7 +18,7 @@ return {
         function updateLightsMode(statutsLampes, domoticz)
             
             if(statutsLampes == "false") then
-                domoticz.log("Extinction de toutes les Lumières", domoticz.LOG_DEBUG)
+                domoticz.log("Extinction de toutes les Lumières", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.GROUPE_LUMIERES_SALON).switchOff()
             end
         end        
@@ -33,7 +33,7 @@ return {
                 updateLightsMode("false", domoticz)
             end
         elseif(item.isTimer) then
-            domoticz.log("Lever du soleil + 30 mins : " .. item.data, domoticz.LOG_INFO)
+            domoticz.log("Lever du soleil + 30 mins", domoticz.LOG_INFO)
             updateLightsMode("false", domoticz)
         end
     end

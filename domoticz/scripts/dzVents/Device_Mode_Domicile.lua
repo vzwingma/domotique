@@ -36,7 +36,7 @@ return {
             -- Notification par SMS lors du changement de mode, si changement
             local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
             if(modeDomicile ~= domoticz.data.previousMode) then
-                domoticz.helpers.notify('Changement du mode Domicile : ' .. item.levelName, domoticz)
+                domoticz.helpers.notify('Changement du mode Domicile : ' .. item.levelName, domoticz.helpers.uuid(), domoticz)
             end
             domoticz.data.previousMode = modeDomicile
         end

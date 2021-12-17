@@ -110,8 +110,8 @@ return {
         end,
         -- # Fonction d'envoi de notification
         notify = function(messageToSent, uuid, domoticz)
-            domoticz.log("[" .. uuid .. "] Notification SMS : " .. messageToSent, domoticz.LOG_INFO)
-            domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_CLICKATELL)
+            domoticz.log("[" .. uuid .. "] Notification : " .. messageToSent, domoticz.LOG_INFO)
+            domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_HTTP)
         end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
         getNodeFromJSonTreeByName = function(jsonData, nodeName)
