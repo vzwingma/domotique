@@ -1,6 +1,6 @@
 return {
     helpers = {
-        -- Variables d'environnements
+        -- #### Variables d'environnements ####
         -- Tydom
         VAR_TYDOM_BRIDGE = 'tydom_bridge_host',
         VAR_TYDOM_BRIDGE_AUTH = 'tydom_bridge_auth',
@@ -10,6 +10,7 @@ return {
         VAR_LIVEBOX_PWD = 'livebox_pwd',
         -- Connected Devices sur Livebox
         VAR_LIVEBOX_DEVICES = 'livebox_devices',
+        
         -- #### Configuration d'usage ####
         -- ces variables sont ensuite suffixées par le mode Domicile
         -- Config Température
@@ -22,32 +23,35 @@ return {
         -- Config Lumière Salon
         VAR_PRCENT_LUMIERE_SALON_SOIR = 'param_lampe_salon_soir',
         
-        -- # Configuration des composants #
-        -- Devices
+        -- #### Configuration des composants ####
+        -- # Devices #
+        --   Volets
         DEVICE_VOLET_SALON_G = 'Volet Salon G',
         DEVICE_VOLET_SALON_D = 'Volet Salon D',
         DEVICE_VOLET_BEBE = 'Volet Bebe',
         DEVICE_VOLET_NOUS = 'Volet Nous',
         DEVICES_TOUS_VOLETS = { 'Volet Salon D', 'Volet Salon G', 'Volet Bebe', 'Volet Nous' },
+        --   Tydom
         DEVICE_TYDOM_TEMPERATURE='Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT='Tydom Thermostat',
-        -- Lumières
+        --   Lumières
         DEVICE_LAMPE_TV='Lumière TV',
         DEVICE_LAMPE_SALON='Lumière Salon',
         DEVICE_LAMPE_CUISINE='Lumière Cuisine',
-        -- Groupe
-        GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
-        GROUPE_VOLETS_CHAMBRES = '[Grp] Volets Chambres',
-        GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
-        GROUPE_LUMIERES_SALON = '[Grp] Lumières Salon',
         -- Mode
         DEVICE_PRESENCE = 'Présence',
         DEVICE_MODE_DOMICILE = 'Mode',
-        -- livebox
+        -- Livebox
         DEVICE_STATUT_LIVEBOX = 'Livebox',
         DEVICE_STATUT_DOMOTIQUE = 'Domotique',
         DEVICE_STATUT_TV = 'TV',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
+
+        -- # Groupes #
+        GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
+        GROUPE_VOLETS_CHAMBRES = '[Grp] Volets Chambres',
+        GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
+        GROUPE_LUMIERES_SALON = '[Grp] Lumières Salon',
         
         -- ###############################################
         -- #                Tydom DATA                   #
@@ -157,7 +161,7 @@ return {
         
         -- # Fonction d'appel GET de la passerelle Tydom
         callTydomBridgeGET = function (uriToCall, corrId, callbackName, domoticz)
-            domoticz.log("[".. corrId .. "] Appel Tydom GET [" .. uriToCall .. "]", domoticz.LOG_INFO)
+            domoticz.log("[".. corrId .. "] Appel Tydom GET [" .. uriToCall .. "]", domoticz.LOG_DEBUG)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
             if(callbackName == nil) then
@@ -175,7 +179,7 @@ return {
         
         -- # Fonction d'appel POST de la passerelle Tydom
         callTydomBridgePOST = function (uriToCall, corrId, domoticz)
-            domoticz.log("[".. corrId .. "] Appel Tydom POST [" .. uriToCall .. "]", domoticz.LOG_INFO)
+            domoticz.log("[".. corrId .. "] Appel Tydom POST [" .. uriToCall .. "]", domoticz.LOG_DEBUG)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
@@ -190,7 +194,7 @@ return {
         
         -- # Fonction d'appel PUT de la passerelle Tydom
         callTydomBridgePUT = function (uriToCall, putData, corrId, callbackName, domoticz)
-            domoticz.log("[".. corrId .. "] Appel Tydom PUT [" .. uriToCall .. "]", domoticz.LOG_INFO)
+            domoticz.log("[".. corrId .. "] Appel Tydom PUT [" .. uriToCall .. "]", domoticz.LOG_DEBUG)
             
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
             local auth_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE_AUTH).value
