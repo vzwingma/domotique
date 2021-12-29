@@ -92,8 +92,9 @@ return {
             domoticz.log("weekDay = " .. weekDay, domoticz.LOG_INFO)
             return (weekDay == 1 or weekDay == 7)
         end,
-        -- # Fonction de recherche du suffixe suivant le mode du Domicile
+        -- # Fonction de recherche du suffixe suivant la présence au domicile
         getPresenceDomicile = function(domoticz)
+            
             local presenceDomicile = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE).levelName
             domoticz.log("Présence Domicile : [" .. presenceDomicile .. "]", domoticz.LOG_INFO)
             local suffixeMode = ''
@@ -104,14 +105,16 @@ return {
             end
             return suffixeMode
         end,
+        -- # Fonction de recherche du suffixe suivant le mode du Domicile
         getModeDomicile = function(domoticz)
+            local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
             domoticz.log("Mode Domicile : [" .. modeDomicile .. "]", domoticz.LOG_INFO)
             if(modeDomicile == 'Normal') then
-                suffixeMode = suffixeMode.. ''
+                suffixeMode = ''
             elseif(modeDomicile == 'Vacances') then
-                suffixeMode = suffixeMode .. '_vacs'
+                suffixeMode = '_vacs'
             elseif(modeDomicile == 'Eté') then
-                suffixeMode = suffixeMode .. '_ete'
+                suffixeMode = '_ete'
             end
             domoticz.log("  suffixeMode Domicile : [" .. suffixeMode .. "]",  domoticz.LOG_DEBUG)
             return suffixeMode

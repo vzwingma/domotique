@@ -33,7 +33,7 @@ return {
             domoticz.log("Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_DEBUG)
             updatePresenceDomicile(item.data, domoticz)
         elseif(item.isDevice) then        
-            -- Notification par SMS lors du changement de mode, si changement
+            -- Notification lors du changement de présence, si changement
             local presenceDomDevice = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE)
             if(presenceDomDevice ~= domoticz.data.previousMode) then
                 domoticz.helpers.notify('Changement Domicile : ' .. item.levelName, domoticz.helpers.uuid(), domoticz)
