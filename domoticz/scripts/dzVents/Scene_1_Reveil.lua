@@ -14,18 +14,20 @@ return
         domoticz.globalData.scenePhase = scene.name
         
         -- Récupération des paramètres et activation suivant le mode de domicile
-        local voletName = domoticz.helpers.DEVICE_VOLET_NOUS
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-        -- Activation seulement si mode par défaut ou Eté
-        if(modeDomicile == '' or modeDomicile == '_ete') then
+        local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
+        
+        -- Activation seulement si Présent & mode Normal ou Eté
+        if(presenceDomicile == '' and (modeDomicile == '' or modeDomicile == '_ete')) then
             local paramOuvertureReveil = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_REVEIL).value
             local level = math.max(paramOuvertureReveil, domoticz.devices(voletName).level)
             
             -- PréOuverture du volet de la chambre, à 5% si fermé - reste à hauteur si plus ouvert
+            local voletName = domoticz.helpers.DEVICE_VOLET_NOUS
             domoticz.log("Ouverture du volet "..voletName .. " : " .. level .. "%", domoticz.LOG_INFO)
             domoticz.devices(voletName).setLevel(level)
         else
-            domoticz.log('Personne à la maison, pas d\'ouverture du volet [' .. voletName .. ']', domoticz.LOG_INFO)
+            domoticz.log('Personne à la maison ou vacances, pas d\'ouverture du volet [' .. voletName .. ']', domoticz.LOG_INFO)
         end
     end       
 }

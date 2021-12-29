@@ -19,8 +19,8 @@ return
         domoticz.emitEvent('Scenario Nuit', "false" ) -- event vers les devices lampes
         
         -- Thermostat pour la nuit, suivant le mode Domicile
-        local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-        local tempNuit = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_SOIR .. modeDomicile).value
+        local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
+        local tempNuit = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_SOIR .. presenceDomicile).value
         
         domoticz.log("Activation pour la nuit. Temp=[" .. tempNuit .. "]", domoticz.LOG_INFO)
         domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempNuit)

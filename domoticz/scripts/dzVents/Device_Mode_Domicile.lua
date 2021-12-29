@@ -1,46 +1,38 @@
 return {
     on = {
-        devices = { 'Mode Domicile' },
-        -- Evénement poussé par le nombre de tels connectés
-        customEvents = { 'Presence Domicile' },
+        devices = { 'Mode' },
     },
     data = {
         previousMode = { initial = '' }
     },
     logging = {
-        level = domoticz.LOG_INFO,        
-        marker = "[Mode domicile] "
+        level = domoticz.LOG_INFO,
+        marker = "[Mode Domicile] "
     },
-    execute = function(domoticz, item)
+    execute = function(domoticz, device)
+
+        -- Replay de tous les scénarios jusqu'à la phase en cours, mais en mode "Normal"
+        function replaySceneInNormal(domoticz)
+            domoticz.log("Réactivation du scénario [" .. domoticz.globalData.scenePhase .. "]", domoticz.LOG_DEBUG) 
+            domoticz.scenes(domoticz.globalData.scenePhase).switchOn()
+            -- Thermostat
+            local tempMatin = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_MATIN).value
+            domoticz.log("Activation pour la journée Temp=[" .. tempMatin .. "°]")
+            domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempMatin)
+        end
+
+
+
+        local modeDomicile = device.levelName
         
-        -- Changement du mode de domicile suivant la Présence
-        function updateDomicileMode(presenceTels, domoticz)
+        -- Notification lors du changement de mode, si changement
+        if(modeDomicile ~= domoticz.data.previousMode) then
+            domoticz.helpers.notify('Changement Mode : ' .. device.levelName, domoticz.helpers.uuid(), domoticz)
+            -- Activation si passage en mode "Normal" , dans ce cas, on rejoue le scénario de la journée
+            if(modeDomicile == 'Normal') then
+               replaySceneInNormal(domoticz)
+            end
             
-            local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-            local modeDomDevice = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE)
-            -- mode domicile = absent
-            if((modeDomicile == '' or modeDomicile == '_ete' ) and presenceTels == "false") then
-                domoticz.log("0 présent -> Passage en mode Absent", domoticz.LOG_INFO)
-                modeDomDevice.setLevel('Absents')
-            elseif(modeDomicile == '_abs' and presenceTels == "true") then
-                domoticz.log("Au moins un présent -> Retour au mode précédent (Présent/Eté) " .. modeDomDevice.lastLevel, domoticz.LOG_INFO)
-                modeDomDevice.setLevel(modeDomDevice.lastLevel)
-            end
-        end        
-        
-        -- Notification depuis ailleurs dans le système (nb de tels connectés)
-        if(item.isCustomEvent) then
-            domoticz.log("Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_DEBUG)
-            updateDomicileMode(item.data, domoticz)
-        elseif(item.isDevice) then        
-            -- Notification par SMS lors du changement de mode, si changement
-            local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-            if(modeDomicile ~= domoticz.data.previousMode) then
-                domoticz.helpers.notify('Changement du mode Domicile : ' .. item.levelName, domoticz.helpers.uuid(), domoticz)
-            end
-            domoticz.data.previousMode = modeDomicile
         end
     end
 }
-
---
