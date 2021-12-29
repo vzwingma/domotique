@@ -41,7 +41,8 @@ return {
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
         GROUPE_LUMIERES_SALON = '[Grp] Lumières Salon',
         -- Mode
-        DEVICE_MODE_DOMICILE = 'Mode Domicile',
+        DEVICE_PRESENCE = 'Présence',
+        DEVICE_MODE_DOMICILE = 'Mode',
         -- livebox
         DEVICE_STATUT_LIVEBOX = 'Livebox',
         DEVICE_STATUT_DOMOTIQUE = 'Domotique',
@@ -92,18 +93,25 @@ return {
             return (weekDay == 1 or weekDay == 7)
         end,
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
-        getModeDomicile = function(domoticz)
-            local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
-            domoticz.log("Mode Domicile : [" .. modeDomicile .. "]", domoticz.LOG_INFO)
+        getPresenceDomicile = function(domoticz)
+            local presenceDomicile = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE).levelName
+            domoticz.log("Présence Domicile : [" .. presenceDomicile .. "]", domoticz.LOG_INFO)
             local suffixeMode = ''
-            if(modeDomicile == 'Présents') then
+            if(presenceDomicile == 'Présents') then
                 suffixeMode = ''
-            elseif(modeDomicile == 'Absents') then
+            elseif(presenceDomicile == 'Absents') then
                 suffixeMode = '_abs'
+            end
+            return suffixeMode
+        end,
+        getModeDomicile = function(domoticz)
+            domoticz.log("Mode Domicile : [" .. modeDomicile .. "]", domoticz.LOG_INFO)
+            if(modeDomicile == 'Normal') then
+                suffixeMode = suffixeMode.. ''
             elseif(modeDomicile == 'Vacances') then
-                suffixeMode = '_vacs'
+                suffixeMode = suffixeMode .. '_vacs'
             elseif(modeDomicile == 'Eté') then
-                suffixeMode = '_ete'
+                suffixeMode = suffixeMode .. '_ete'
             end
             domoticz.log("  suffixeMode Domicile : [" .. suffixeMode .. "]",  domoticz.LOG_DEBUG)
             return suffixeMode

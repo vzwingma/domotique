@@ -12,9 +12,9 @@ return
         -- Suivi de la phase du jour
         domoticz.globalData.scenePhase = scene.name
         
-        -- Recherche de la température à appliquer suivant le mode de domicile
-        local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-        local tempMatin = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_MATIN .. modeDomicile).value
+        -- Recherche de la température à appliquer suivant la présence
+        local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
+        local tempMatin = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_MATIN .. presenceDomicile).value
 
         domoticz.log("Activation pour le matin. Temp=[" .. tempMatin .. "]")
         -- Thermostat

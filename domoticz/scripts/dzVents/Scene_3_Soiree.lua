@@ -18,9 +18,9 @@ return
             domoticz.devices(deviceName).setLevel(minLevelVoletsSoir)
         end
 
-        -- Activation de la lampe seulement si mode par défaut ou Eté, et si présence
-        function activationLampeSalon(modeDomicile)
-            if(modeDomicile == '' or modeDomicile == '_ete') then
+        -- Activation de la lampe seulement  si présenc
+        function activationLampeSalon(presenceDomicile)
+            if(presenceDomicile == '') then
                 local prcent_lumiere = domoticz.variables(domoticz.helpers.VAR_PRCENT_LUMIERE_SALON_SOIR).value
                 domoticz.log("Allumage de la lampe du salon " .. prcent_lumiere .. "%", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV).setLevel(prcent_lumiere)
@@ -30,32 +30,31 @@ return
         end
     
         -- Maj Level Salon & Chambre suivant le paramétrage         
-        function activationVolets(modeDomicile)
+        function activationVolets(presenceDomicile, modeDomicile)
 
             local levelVoletsSoir = nil
             if( modeDomicile == '_ete') then
                 levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR .. modeDomicile).value
             else 
-                levelVoletsSoir = 0
+                levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR .. presenceDomicile).value
             end
     
-            -- Fermeture du groupe de volets Salon &  Chambres
+            -- Fermeture des groupes de volets Salon &  Chambres
             domoticz.log("Fermeture des volets Salon et Chambre : " .. levelVoletsSoir .. "%", domoticz.LOG_INFO)
-            setVoletsLevelToMinValue(domoticz.helpers.GROUPE_VOLETS_SALON, levelVoletsSoir)
-            setVoletsLevelToMinValue(domoticz.helpers.DEVICE_VOLET_NOUS, levelVoletsSoir)
-            
-            domoticz.log("Fermeture du volet "..domoticz.helpers.DEVICE_VOLET_BEBE .. " : 0 %", domoticz.LOG_INFO)
-            setVoletsLevelToMinValue(domoticz.helpers.DEVICE_VOLET_BEBE, 0)
+            setVoletsLevelToMinValue(domoticz.helpers.GROUPE_TOUS_VOLETS, levelVoletsSoir)
         end
         
         -- Mode soirée, activation suivant le mode domicile.
         if(item.isScene) then
             -- Suivi de la phase du jour
             domoticz.globalData.scenePhase = item.name
-        
+
+            -- Récupération des paramètres et activation suivant le mode de domicile
             local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-            activationLampeSalon(modeDomicile)
-            activationVolets(modeDomicile)
+            local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
+
+            activationLampeSalon(presenceDomicile)
+            activationVolets(presenceDomicile, modeDomicile)
             
         -- + si la présence change dans une plage soirée < p < nuit, réactivation de la lampe
         elseif(item.isCustomEvent and item.data == "true" and domoticz.globalData.scenePhase == "Soiree") then
