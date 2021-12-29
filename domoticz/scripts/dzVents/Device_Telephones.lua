@@ -5,7 +5,7 @@ return {
     data = {
         previousPresenceTels = { initial = true },
         compteurNbTelsAZero = { initial = 0 },
-        seuilDecoAbsence = { initial = 3 },
+        seuilDecoAbsence = { initial = 5 },
     },
     logging = {
         level = domoticz.LOG_INFO,
