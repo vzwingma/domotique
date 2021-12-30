@@ -2,8 +2,7 @@ return
 {
     on =
     {
-        scenes = { 'Soiree' },
-        customEvents = { 'Presence Domicile' },
+        scenes = { 'Soiree' }
     },
     data = {
         uuid = { initial = "" }
@@ -21,7 +20,7 @@ return
             domoticz.devices(deviceName).setLevel(minLevelVoletsSoir)
         end
 
-        -- Activation de la lampe seulement  si présenc
+        -- Activation de la lampe seulement  si présence
         function activationLampeSalon(presenceDomicile)
             if(presenceDomicile == '') then
                 local prcent_lumiere = domoticz.variables(domoticz.helpers.VAR_PRCENT_LUMIERE_SALON_SOIR).value
@@ -49,22 +48,14 @@ return
         
         -- Mode soirée, activation suivant le mode domicile.
         domoticz.data.uuid = domoticz.helpers.uuid()
-        if(item.isScene) then
-            -- Suivi de la phase du jour
-            domoticz.globalData.scenePhase = item.name
+        -- Suivi de la phase du jour
+        domoticz.globalData.scenePhase = item.name
 
-            -- Récupération des paramètres et activation suivant le mode de domicile
-            local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
-            local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
+        -- Récupération des paramètres et activation suivant le mode de domicile
+        local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
+        local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
 
-            activationLampeSalon(presenceDomicile)
-            activationVolets(presenceDomicile, modeDomicile)
-            
-        -- + si la présence change dans une plage soirée < p < nuit, réactivation de la lampe
-        elseif(item.isCustomEvent and item.data == "true" and domoticz.globalData.scenePhase == "Soiree") then
-        
-            activationLampeSalon('')
-        
-        end
+        activationLampeSalon(presenceDomicile)
+        activationVolets(presenceDomicile, modeDomicile)
     end       
 }

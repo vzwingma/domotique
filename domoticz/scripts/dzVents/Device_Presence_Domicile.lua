@@ -31,13 +31,16 @@ return {
         
         -- Notification depuis ailleurs dans le système (nb de tels connectés)
         if(item.isCustomEvent) then
+            domoticz.data.uuid = "get from event"
             domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_DEBUG)
             updatePresenceDomicile(item.data, domoticz)
-        elseif(item.isDevice) then        
+            
+        elseif(item.isDevice) then
+            domoticz.data.uuid = domoticz.helpers.uuid()
             -- Notification lors du changement de présence, si changement
             local presenceDomDevice = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE)
             if(presenceDomDevice ~= domoticz.data.previousMode) then
-                domoticz.helpers.notify('Changement Domicile : ' .. item.levelName, domoticz.helpers.uuid(), domoticz)
+                domoticz.helpers.notify('Changement Domicile : ' .. item.levelName, domoticz.data.uuid, domoticz)
             end
             domoticz.data.previousMode = presenceDomDevice
         end
