@@ -18,10 +18,13 @@ return {
         -- Changement du mode de domicile suivant la Présence
         function updateLightsMode(statutsLampes, domoticz)
             
-            if(statutsLampes == "false") then
+            if(statutsLampes == false) then
+                
                 domoticz.log("[" .. domoticz.data.uuid .. "] Extinction de toutes les Lumières", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.GROUPE_LUMIERES_SALON).switchOff()
-            elseif(statutsLampes == "true") then
+                
+            elseif(statutsLampes) then
+                
                 local prcent_lumiere = domoticz.variables(domoticz.helpers.VAR_PRCENT_LUMIERE_SALON_SOIR).value
                 domoticz.log("[" .. domoticz.data.uuid .. "] Allumage de la lampe du salon " .. prcent_lumiere .. "%", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV).setLevel(prcent_lumiere)
@@ -30,20 +33,23 @@ return {
 
         -- Notification depuis ailleurs dans le système (nb de tels connectés)
         if(item.isCustomEvent) then
-            domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_INFO)
+            domoticz.data.uuid = item.json.uuid
+            domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : " .. tostring(item.json.data), domoticz.LOG_DEBUG)
             
             -- Si absence :: Extinction des lampes, idem si scénario nuit ou au lever du soleil +30 mins
             if(item.customEvent == "Presence Domicile") then
                 -- si présence : allumage seulement si c'est le soir
-                if(item.data == 'false' or (item.data == 'true' and domoticz.globalData.scenePhase == 'Soiree')) then
-                    updateLightsMode(item.data, domoticz)
+                if(item.json.data == false or (item.json.data and domoticz.globalData.scenePhase == 'Soiree')) then
+                    updateLightsMode(item.json.data, domoticz)
                 end
             elseif(item.customEvent == "Scenario Nuit") then
-                updateLightsMode('false', domoticz)
+                updateLightsMode(false, domoticz)
             end
+    
         elseif(item.isTimer) then
+            domoticz.data.uuid = domoticz.helpers.uuid()
             domoticz.log("[" .. domoticz.data.uuid .. "] Lever du soleil + 30 mins", domoticz.LOG_INFO)
-            updateLightsMode("false", domoticz)
+            updateLightsMode(false, domoticz)
         end
     end
 }
