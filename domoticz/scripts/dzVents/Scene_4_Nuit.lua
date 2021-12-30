@@ -20,7 +20,7 @@ return
         -- Fermeture du groupe de volets  (quel que soit le mode Domicile)
         domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).switchOff()
         -- Extinction des lampes
-        domoticz.emitEvent('Scenario Nuit', "false" ) -- event vers les devices lampes
+        domoticz.emitEvent('Scenario Nuit', { data = false, uuid = domoticz.data.uuid }) -- event vers les devices lampes
         
         -- Thermostat pour la nuit, suivant le mode Domicile
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)

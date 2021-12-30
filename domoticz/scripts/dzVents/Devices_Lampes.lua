@@ -43,7 +43,7 @@ return {
                     updateLightsMode(item.json.data, domoticz)
                 end
             elseif(item.customEvent == "Scenario Nuit") then
-                updateLightsMode(false, domoticz)
+                updateLightsMode(item.json.data, domoticz)
             end
     
         elseif(item.isTimer) then

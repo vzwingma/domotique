@@ -21,7 +21,7 @@ return {
         -- Recherche du statut WAN de la Livebox
         function getWanStatutLivebox(uuid)
     
-           domoticz.log("[" .. domoticz.data.uuid .. "] Recherche du statut de la Livebox Orange", domoticz.LOG_DEBUG)
+           domoticz.log("[" .. uuid .. "] Recherche du statut de la Livebox Orange", domoticz.LOG_DEBUG)
             
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
             local WANData = { ['service'] = 'NMC' , ['method'] = 'getWANStatus', ['parameters'] = {} }
@@ -29,7 +29,7 @@ return {
             domoticz.openURL({
                 url = 'http://'..host_livebox..'/ws',
                 method = 'POST',
-                headers = { ['Content-type'] = 'application/x-sah-ws-4-call+json', ['X-CorrId'] = domoticz.data.uuid },
+                headers = { ['Content-type'] = 'application/x-sah-ws-4-call+json', ['X-CorrId'] = uuid },
                 postData = WANData,
                 callback = 'livebox_WAN_statuts'
             })
@@ -59,7 +59,7 @@ return {
     -- ## Déclenchement de la fonction sur time
         if(item.isTimer) then
             domoticz.data.uuid = domoticz.helpers.uuid()
-            getWanStatutLivebox()
+            getWanStatutLivebox(domoticz.data.uuid)
             
         -- ## Call back après AUth
         elseif(item.isHTTPResponse) then 
