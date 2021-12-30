@@ -18,9 +18,24 @@ return
         -- Suivi de la phase du jour
         domoticz.globalData.scenePhase = scene.name
         
-        if(modeDomicile == '_ete' or modeDomicile == '_vacs' or presenceDomicile == '_abs') then
-            domoticz.log("Activation matin spécial pour le mode [" .. presenceDomicile .. "/" .. modeDomicile .."]", domoticz.LOG_INFO)
-            domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).setLevel(domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value)
-        end        
+        -- Activation du mode suivant la présence au domicile et le mode
+        local modeVolet = ''
+        -- Présence
+        if(presenceDomicile == '') then
+            modeVolet = presenceDomicile
+            -- en été : surcharge pour redescendre les volets
+            if(modeDomicile == '_ete') then
+               modeVolet = modeDomicile
+            end
+        -- Absence
+        elseif(presenceDomicile == '_abs') then
+            -- en vacances : surcharge pour redescendre les volets
+            if(modeDomicile == '_vacs') then
+               modeVolet = modeDomicile 
+            end
+        end
+
+        domoticz.log("Activation matin 2 pour le mode [" .. presenceDomicile .. "/" .. modeDomicile .."]", domoticz.LOG_INFO)
+        domoticz.devices(domoticz.helpers.GROUPE_TOUS_VOLETS).setLevel(domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeVolet).value)
     end       
 }
