@@ -5,7 +5,8 @@ return {
         customEvents = { 'Presence Domicile' },
     },
     data = {
-        previousMode = { initial = '' }
+        previousMode = { initial = '' },
+        uuid = { initial = "" }
     },
     logging = {
         level = domoticz.LOG_INFO,        
@@ -20,17 +21,17 @@ return {
             local presenceDomDevice = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE)
             -- mode domicile = absent
             if(presenceDomicile == '' and presenceTels == "false") then
-                domoticz.log("0 présent -> Passage en mode Absent", domoticz.LOG_INFO)
+                domoticz.log("[" .. domoticz.data.uuid .. "] 0 présent -> Passage en mode Absent", domoticz.LOG_INFO)
                 presenceDomDevice.setLevel('Absents')
             elseif(presenceDomicile == '_abs' and presenceTels == "true") then
-                domoticz.log("Au moins un présent -> Retour au mode précédent Présent " .. presenceDomDevice.lastLevel, domoticz.LOG_INFO)
+                domoticz.log("[" .. domoticz.data.uuid .. "] Au moins un présent -> Retour au mode précédent Présent " .. presenceDomDevice.lastLevel, domoticz.LOG_INFO)
                 presenceDomDevice.setLevel(presenceDomDevice.lastLevel)
             end
         end        
         
         -- Notification depuis ailleurs dans le système (nb de tels connectés)
         if(item.isCustomEvent) then
-            domoticz.log("Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : " .. item.data, domoticz.LOG_DEBUG)
             updatePresenceDomicile(item.data, domoticz)
         elseif(item.isDevice) then        
             -- Notification lors du changement de présence, si changement
