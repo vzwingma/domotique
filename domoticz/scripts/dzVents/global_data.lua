@@ -242,7 +242,7 @@ return {
         callLiveboxPOST = function (contextId, postData, corrId, callbackName, domoticz)
             
             local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
-            domoticz.log("[".. corrId .. "] Appel Livebox POST", domoticz.LOG_INFO)
+            domoticz.log("[".. corrId .. "] Appel Livebox POST", domoticz.LOG_DEBUG)
             if(callbackName == nil) then
                callbackName = 'global_HTTP_response' 
             end
