@@ -10,7 +10,7 @@ return
         uuid = { initial = "" }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Groupe Volets] "
     },
     -- Activation du groupe de volets
