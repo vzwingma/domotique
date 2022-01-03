@@ -31,7 +31,7 @@ return {
             domoticz.helpers.notify('Changement Mode : ' .. device.levelName, domoticz.data.uuid, domoticz)
             -- Activation si passage en mode "Normal" , dans ce cas, on rejoue le scénario de la journée
             if(modeDomicile == 'Normal') then
-               replaySceneInNormal(uuid, domoticz)
+               replaySceneInNormal(domoticz.data.uuid, domoticz)
             end
             
         end
