@@ -20,7 +20,7 @@ return
         function getVoletsNameFromGroup(groupName)
             domoticz.log("[" .. domoticz.data.uuid .. "] Recherche des volets du groupe " .. groupName, domoticz.LOG_DEBUG)
             if(groupName == domoticz.helpers.GROUPE_TOUS_VOLETS) then
-                return { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON }
+                return { domoticz.helpers.DEVICE_VOLET_NOUS, domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D }
             
             elseif(groupName == domoticz.helpers.GROUPE_VOLETS_CHAMBRES) then
                 return { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS }
@@ -42,14 +42,7 @@ return
         end
 
         -- Alignement des groupes de volets
-        function aligneGroupeVolet(groupe, domoticz)
-            domoticz.log("[" .. domoticz.data.uuid .. "] Vérification du groupe [" .. groupe .. "]", domoticz.LOG_DEBUG )
-            if(groupe == domoticz.helpers.GROUPE_VOLETS_CHAMBRES or groupe == domoticz.helpers.GROUPE_VOLETS_SALON) then
-                verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, getVoletsNameFromGroup(domoticz.helpers.GROUPE_TOUS_VOLETS) , domoticz)
-            end
-        end
-
-        -- Vérification de la valeur du groupe // à ses items
+        -- Vérification de la valeur du groupe // à ses items (les autres groupes)
         function verifyGroupeFromItem(groupe, items, domoticz)
             domoticz.log("[" .. domoticz.data.uuid .. "] Vérification des groupes du groupe [" .. groupe .. "]", domoticz.LOG_DEBUG )
             local valeur = nil
@@ -66,7 +59,7 @@ return
             -- Réalignement du groupe si les volets du groupe ont la même valeur et différentes de celle du groupe
             if(sameLevel == true and domoticz.devices(groupe).level ~= valeur) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Réalignement des groupes du groupe [" .. groupe .. "] " .. domoticz.devices(groupe).level .. " > " .. valeur .. "%", domoticz.LOG_DEBUG) 
-                domoticz.devices(groupe).setLevel(valeur)
+                domoticz.devices(groupe).setLevel(valeur).silent()
             end
         end
 
@@ -80,7 +73,7 @@ return
             domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture du volet " .. voletName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(voletName).setLevel(levelSet)
         end
-        -- Alignement groupe
-        aligneGroupeVolet(group.name, domoticz)
+        -- Alignement du groupe de groupe
+        verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON } , domoticz)
     end       
 }

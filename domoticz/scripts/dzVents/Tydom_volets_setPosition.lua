@@ -61,7 +61,7 @@ return
             -- Réalignement du groupe si les volets du groupe ont la même valeur et différentes de celle du groupe
             if(sameLevel == true and domoticz.devices(groupe).level ~= valeur) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Réalignement des volets du groupe [" .. groupe .. "] " .. domoticz.devices(groupe).level .. " > " .. valeur .. "%", domoticz.LOG_INFO) 
-                domoticz.devices(groupe).setLevel(valeur)
+                domoticz.devices(groupe).setLevel(valeur).silent()
             end
         end
         
