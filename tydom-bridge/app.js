@@ -1,7 +1,7 @@
 // Required when testing against a local Tydom hardware
 // to fix "self signed certificate" errors
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-//process.env.DEBUG= 'tydom-client';
+process.env.DEBUG= 'tydom-client';
 
 const {createClient} = require('tydom-client');
 const express = require('express');
@@ -32,7 +32,7 @@ let webServer;
     // hook morganBody to express app
     morganbody(app);
     
-    // Info
+    // **** Info ****
 	app.get('/_info', function (req, res) {
 	    res.send('Le bridge Tydom [ ' + username + ' ] est opérationnel');
 	})
@@ -42,6 +42,42 @@ let webServer;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(info));
     })
+    // ********************
+    // **     CONFIG     **
+    // ********************
+    // Configuration
+    .get('/configs/file', async function(req, res) {
+        const configs = await client.get('/configs/file');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(configs));
+    })
+    // Moments
+    .get('/moments/file', async function(req, res) {
+        const moments = await client.get('/moments/file');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(moments));
+    })
+    // Groupes
+    .get('/groups/file', async function(req, res) {
+        const groups = await client.get('/groups/file');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(groups));
+    })
+    // Liste des scénarios
+    .get('/scenarios/file', async function(req, res) {
+        const scenarios = await client.get('/scenarios/file');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(scenarios));
+    })
+    // Protocoles disponibles
+    .get('/protocols', async function(req, res) {
+        const protocols = await client.get('/protocols');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(protocols));
+    })
+    // ********************
+    // **    DEVICES     **
+    // ********************
     // Liste des devices
     .get('/devices/data', async function(req, res) {
         const devices = await client.get('/devices/data');
@@ -60,30 +96,9 @@ let webServer;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(devices));
     })
-    // Configuration
-    .get('/configs/file', async function(req, res) {
-        const configs = await client.get('/configs/file');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(configs));
-    })
-    // Moments
-    .get('/moments/file', async function(req, res) {
-        const moments = await client.get('/moments/file');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(moments));
-    })
-    // Liste des scénarios
-    .get('/scenarios/file', async function(req, res) {
-        const scenarios = await client.get('/scenarios/file');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(scenarios));
-    })
-    // Protocoles disponibles
-    .get('/protocols', async function(req, res) {
-        const protocols = await client.get('/protocols');
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(protocols));
-    })
+    // ********************
+    // **     DEVICE     **
+    // ********************    
     // Etat d'un device
     .get('/device/:devicenum/endpoints/:endpointnum', async function(req, res) {
         const info = await client.get('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data');
@@ -100,6 +115,27 @@ let webServer;
         res.setHeader('X-Request-EndpointId', req.params.endpointnum);
         res.end(JSON.stringify(resultatOK));
     })
+    // Commande d'un état d'un device
+    .put('/device/:devicenum/endpoints/:endpointnum/commande/:command', async function(req, res) {
+        await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/cdata?name=' + req.params.command, []);
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Request-DeviceId', req.params.devicenum);
+        res.setHeader('X-Request-EndpointId', req.params.endpointnum);
+        res.end(JSON.stringify(resultatOK));
+    })
+    // ********************
+    // **    GROUPES     **
+    // ********************
+    // Mise à jour d'un état d'un device
+    .put('/group/:groupnum', async function(req, res) {
+        await client.put('/groups/' + req.params.groupnum, [req.body]);
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Request-GroupId', req.params.groupnum);
+        res.end(JSON.stringify(resultatOK));
+    })    
+    // ********************
+    // **    REFRESH     **
+    // ********************    
     // Refresh des valeurs du jumeau numérique par rapport aux équipements physiques
     .post('/refresh/all', async function(req, res) {
         await client.post('/refresh/all');
