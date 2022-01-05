@@ -1,0 +1,20 @@
+version: "3.2"
+services:
+# TYDOM - TEST
+  tydom-bridge-test:
+    image: vzwingmadomatic/domoticz-tydom:tydom
+    environment:
+      # Configuration Box Tydom
+      - HOST=tydom.local
+      - MAC=#Set TYDOM MAC adress
+      - PASSWD=#Set TYDOM password      
+      # Configuration passerelle Tydom
+      - PORT=9001
+      # Configuration pour les api
+      - AUTHAPI=#Set Auth login for API
+      - PASSWDAPI=#Set Auth password for API
+    ports:
+      - 5102:9001
+    volumes:
+      - /home/pi/appli/build_tydom/app.js:/usr/app/app.js
+    restart: always
