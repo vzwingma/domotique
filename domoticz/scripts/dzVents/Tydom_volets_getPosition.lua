@@ -28,10 +28,10 @@ return {
             local voletName = domoticz.helpers.getDzItemFromTydomDeviceId(item.headers["X-Request-DeviceId"], item.headers["X-Request-EndpointId"], domoticz)
             local uuidCallB = item.headers["X-CorrId"]
             local positionDz = domoticz.devices(voletName).level
-            domoticz.log('[" .. uuid .. "] Volet ' .. voletName .. ' [Commande Tydom = ' .. positionTydom .. '%, (validite='.. validityPositionTydom ..')] [Commande Dz = '.. positionDz ..'%]', domoticz.LOG_INFO)
+            domoticz.log('[' .. uuidCallB .. '] Volet ' .. voletName .. ' [Commande Tydom = ' .. positionTydom .. '%, (validite='.. validityPositionTydom ..')] [Commande Dz = '.. positionDz ..'%]', domoticz.LOG_INFO)
             
             if(positionDz > positionTydom + 1 or positionDz < positionTydom - 1 ) then
-                domoticz.log("[" .. uuid .. "] Réalignement du niveau de Volet sur Domoticz par rapport à la commande réelle [" .. positionTydom .. "]", domoticz.LOG_INFO)
+                domoticz.log("[" .. uuidCallB .. "] Réalignement du niveau de Volet sur Domoticz par rapport à la commande réelle [" .. positionTydom .. "]", domoticz.LOG_INFO)
                 domoticz.devices(voletName).setLevel(positionTydom)
             end
         end
