@@ -16,10 +16,10 @@ return {
         
         -- Notification par SMS lors du changement de nombre de connexions
         function notifyConnectedDevices(presenceTels, uuid, domoticz)
-            -- if(presenceTels ~= domoticz.data.previousPresenceTels) then
+            if(presenceTels ~= domoticz.data.previousPresenceTels) then
                 domoticz.emitEvent('Presence Domicile', { data = presenceTels, uuid = uuid })
                 domoticz.data.previousPresenceTels = presenceTels
-            -- end
+            end
         end
 
         domoticz.data.uuid = domoticz.helpers.uuid()
