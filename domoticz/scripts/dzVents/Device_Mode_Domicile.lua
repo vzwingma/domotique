@@ -18,7 +18,7 @@ return {
             domoticz.scenes(domoticz.globalData.scenePhase).switchOn()
             -- Thermostat
             local tempMatin = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_MATIN).value
-            domoticz.log("[" .. uuid .. "] Activation pour la journée Temp=[" .. tempMatin .. "°]")
+            domoticz.log("[" .. uuid .. "] Activation pour la journée Temp=[" .. tempMatin .. "°]", domoticz.LOG_DEBUG)
             domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempMatin)
         end
 
