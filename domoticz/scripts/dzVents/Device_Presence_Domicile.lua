@@ -22,10 +22,10 @@ return {
             -- mode domicile = absent
             if(presenceDomicile == '' and presenceTels == false) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] 0 présent -> Passage en mode Absent", domoticz.LOG_INFO)
-                presenceDomDevice.setLevel('Absents').checkFirst()
+                presenceDomDevice.setLevel('Absents')
             elseif(presenceDomicile == '_abs' and presenceTels) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Au moins un présent -> Retour au mode précédent Présent " .. presenceDomDevice.lastLevel, domoticz.LOG_INFO)
-                presenceDomDevice.setLevel(presenceDomDevice.lastLevel).checkFirst()
+                presenceDomDevice.setLevel(presenceDomDevice.lastLevel)
             end
         end        
         

@@ -11,7 +11,7 @@ return {
     -- ### Commandes
         
         -- ### Appel de Tydom bridge pour récupérer la valeur de la position
-        if (item.isTimer or item.isDevice) then
+        if (item.isTimer) then
             
             for _, kdeviceName in pairs(domoticz.helpers.DEVICES_TOUS_VOLETS) do 
                 local uuid = domoticz.helpers.uuid()

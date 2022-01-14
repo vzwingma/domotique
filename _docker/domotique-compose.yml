@@ -1,5 +1,15 @@
 version: "3.2"
 services:
+# HTTPD
+  httpd-proxy:
+    image: vzwingmadomatic/httpd:latest
+    ports:
+      - 8243:8243  
+    volumes:
+      - /home/pi/appli/httpd_logs:/usr/local/apache2/logs
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
 # TYDOM
   tydom-bridge:
     image: vzwingmadomatic/domoticz-tydom:latest
@@ -29,7 +39,7 @@ services:
       - /dev/ttyAMA0:/dev/ttyAMA0
     volumes:
       - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro    
+      - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/deCONZ:/opt/deCONZ
     restart: always
 # DOMOTICZ
