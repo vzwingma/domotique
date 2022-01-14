@@ -55,8 +55,8 @@ jobs:
           [ "$VERSION" == "master" ] && VERSION=latest
 
           echo "DOCKER_IMAGE_TAG=$DOCKER_IMAGE:$VERSION" >> $GITHUB_ENV
-       - name: print secrets
-         run: |
+      - name: extract certificate from secrets
+        run: |
               echo $HTTPDDOMOTICZSERVER_CERT >> _docker/build_httpd/httpddomoticzserver.crt
               echo $HTTPDDOMOTICZSERVER_KEY >> _docker/build_httpd/httpddomoticzserver.key
               cat _docker/build_httpd/httpddomoticzserver.crt
