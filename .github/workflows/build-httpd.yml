@@ -58,5 +58,6 @@ jobs:
    
       - name: Build ARM image
         run: |
-          cd _docker/httpd.conf
+          echo ${{ secrets.HTTPDDOMOTICZSERVER_CERT }} > httpddomoticzserver.crt
+          echo ${{ secrets.HTTPDDOMOTICZSERVER_KEY }} > httpddomoticzserver.key
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
