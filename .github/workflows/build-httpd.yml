@@ -55,9 +55,16 @@ jobs:
           [ "$VERSION" == "master" ] && VERSION=latest
 
           echo "DOCKER_IMAGE_TAG=$DOCKER_IMAGE:$VERSION" >> $GITHUB_ENV
-   
+       - name: print secrets
+         run: |
+              echo $HTTPDDOMOTICZSERVER_CERT >> _docker/build_httpd/httpddomoticzserver.crt
+              echo $HTTPDDOMOTICZSERVER_KEY >> _docker/build_httpd/httpddomoticzserver.key
+              cat _docker/build_httpd/httpddomoticzserver.crt
+          shell: bash
+          env:
+            HTTPDDOMOTICZSERVER_CERT : ${{secrets.HTTPDDOMOTICZSERVER_CERT}}
+            HTTPDDOMOTICZSERVER_KEY : ${{secrets.HTTPDDOMOTICZSERVER_KEY}}
       - name: Build ARM image
         run: |
-          echo ${{ secrets.HTTPDDOMOTICZSERVER_CERT }} > httpddomoticzserver.crt
-          echo ${{ secrets.HTTPDDOMOTICZSERVER_KEY }} > httpddomoticzserver.key
+          cd _docker/build_httpd
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
