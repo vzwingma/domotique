@@ -29,7 +29,7 @@ services:
       - /dev/ttyAMA0:/dev/ttyAMA0
     volumes:
       - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro    
+      - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/deCONZ:/opt/deCONZ
     restart: always
 # DOMOTICZ
