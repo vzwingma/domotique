@@ -38,6 +38,7 @@ return {
         DEVICE_LAMPE_TV='Lumière TV',
         DEVICE_LAMPE_SALON='Lumière Salon',
         DEVICE_LAMPE_CUISINE='Lumière Cuisine',
+        DEVICE_LAMPE_BEBE='Lumière Bébé',
         -- Mode
         DEVICE_PRESENCE = 'Présence',
         DEVICE_MODE_DOMICILE = 'Mode',
@@ -52,7 +53,7 @@ return {
         GROUPE_VOLETS_CHAMBRES = '[Grp] Volets Chambres',
         GROUPE_VOLETS_SALON = '[Grp] Volets Salon',
         GROUPE_LUMIERES_SALON = '[Grp] Lumières Salon',
-        
+        GROUPE_LUMIERES_TOUTES = '[Grp] Toutes lumières',
         -- ###############################################
         -- #                Tydom DATA                   #
         -- ###############################################

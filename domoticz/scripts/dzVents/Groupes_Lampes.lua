@@ -4,13 +4,13 @@ return
 {
     on =
     {
-        devices = { '[Grp] Lumières Salon' },
+        devices = { '[Grp] Lumières Salon', '[Grp] Toutes lumières' },
     },
     data = {
         uuid = { initial = "" }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Groupe Lumières] "
     },
     -- Activation du groupe de lumières
@@ -22,6 +22,9 @@ return
             if(group.name == domoticz.helpers.GROUPE_LUMIERES_SALON) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Activation toutes lumières salon : " .. group.state, domoticz.LOG_INFO)
                 return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE }
+            elseif(group.name == domoticz.helpers.GROUPE_LUMIERES_TOUTES) then
+                domoticz.log("[" .. domoticz.data.uuid .. "] Activation toutes lumières : " .. group.state, domoticz.LOG_INFO)
+                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE, domoticz.helpers.DEVICE_LAMPE_BEBE }
             else
                 return {}
             end
