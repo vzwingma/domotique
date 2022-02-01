@@ -7,7 +7,7 @@ return {
     },
     data = {
         previousMode = { initial = '' },
-        uuid = { initial = "" }
+        uuid = { initial = '' }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -21,7 +21,7 @@ return {
             if(statutsLampes == false) then
                 
                 domoticz.log("[" .. domoticz.data.uuid .. "] Extinction de toutes les Lumières", domoticz.LOG_INFO)
-                domoticz.devices(domoticz.helpers.GROUPE_LUMIERES_SALON).switchOff()
+                domoticz.devices(domoticz.helpers.GROUPE_LUMIERES_TOUTES).switchOff()
                 
             elseif(statutsLampes) then
                 
