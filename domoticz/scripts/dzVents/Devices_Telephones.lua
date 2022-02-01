@@ -1,6 +1,6 @@
 return {
     on = {
-        devices = { 'Equipements Personnels' }
+        devices = { 'Equipements Personnels' },
     },
     data = {
         previousPresenceTels = { initial = true },
@@ -9,7 +9,7 @@ return {
         uuid = { initial = "" }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Equipements Personnels] "
     },
     execute = function(domoticz, item)
