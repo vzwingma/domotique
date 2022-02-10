@@ -5,7 +5,8 @@ return {
         shellCommandResponses = { 'livebox_LAN_statuts' }
     },
     data = {
-        uuid = { initial = " " }
+        uuid = { initial = " " },
+        previousNbPersonnalDevicesUp = { initial = 0 }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -101,7 +102,10 @@ return {
                 end
             end
             domoticz.log("[" .. domoticz.data.uuid .. "] Wifi = " .. nbPersonnalDevicesUp .. " tels connectés", domoticz.LOG_DEBUG)
-            domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).updateCustomSensor(nbPersonnalDevicesUp)
+            if( nbPersonnalDevicesUp ~= domoticz.data.previousNbPersonnalDevicesUp ) then
+                domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).updateCustomSensor(nbPersonnalDevicesUp)
+                domoticz.data.previousNbPersonnalDevicesUp = nbPersonnalDevicesUp
+            end
         end
         
         
