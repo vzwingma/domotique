@@ -5,7 +5,7 @@ return {
     data = {
         previousPresenceTels = { initial = true },
         compteurNbTelsAZero = { initial = 0 },
-        seuilDecoAbsence = { initial = 5 },
+        seuilDecoAbsence = { initial = 1 },
         uuid = { initial = "" }
     },
     logging = {

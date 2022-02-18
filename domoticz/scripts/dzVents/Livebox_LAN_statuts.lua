@@ -51,9 +51,11 @@ return {
         end
         
         function getLiveboxDevicesStatut(devices, mapStatut, categorie)
-            for i, device in ipairs(devices) do 
-                domoticz.log("[" .. domoticz.data.uuid .. "] ... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
-                mapStatut[device.Name]= device.Active
+            if(devices ~= nil) then
+                for i, device in ipairs(devices) do 
+                    domoticz.log("[" .. domoticz.data.uuid .. "] ... " .. categorie .. " Device : " .. device.Name .. " active=".. tostring(device.Active), domoticz.LOG_DEBUG)
+                    mapStatut[device.Name]= device.Active
+                end
             end
             return mapStatut
         end
