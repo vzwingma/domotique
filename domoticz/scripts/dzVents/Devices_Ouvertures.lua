@@ -22,7 +22,7 @@ return {
         -- Déclenchement du timeout, la porte doit être fermée avant xx secondes sinon alerte
         function startSurveillance(device, uuid, domoticz)
             domoticz.log("startSurveillance :: " .. device.name)
-            incrCompteurDelaiOuverture(device.name, domoticz)
+            incrCompteurDelaiOuverture(device.name, 1, domoticz)
             local delaiSurveillance = getCompteurDelaiOuverture(device.name, domoticz) * domoticz.data.supervisionDelay
             domoticz.emitEvent('Supervision Ouverture', { deviceName = device.name, uuid = uuid } ).afterSec(delaiSurveillance)
         end
@@ -64,13 +64,20 @@ return {
         end        
 
         -- incrémente le compteur délai d'ouverture suivant l'item
-        function incrCompteurDelaiOuverture(itemName, domoticz) 
+        function incrCompteurDelaiOuverture(itemName, increment, domoticz) 
+            local compteurDelaiOuverture = getCompteurDelaiOuverture(itemName, domoticz)
+            if(increment == 0) then
+               compteurDelaiOuverture = 0 
+            else
+                compteurDelaiOuverture = compteurDelaiOuverture + increment
+            end
+            
             if(itemName == 'Porte') then 
-               domoticz.data.compteurDelaiOuverturePorte = domoticz.data.compteurDelaiOuverturePorte + 1
+               domoticz.data.compteurDelaiOuverturePorte = compteurDelaiOuverture
             elseif(itemName == 'Balcon G') then
-                domoticz.data.compteurDelaiOuvertureBalconG = domoticz.data.compteurDelaiOuvertureBalconG + 1
+                domoticz.data.compteurDelaiOuvertureBalconG = compteurDelaiOuverture
             elseif(itemName == 'Balcon D') then
-                domoticz.data.compteurDelaiOuvertureBalconD = domoticz.data.compteurDelaiOuvertureBalconD + 1                
+                domoticz.data.compteurDelaiOuvertureBalconD = compteurDelaiOuverture              
             end
         end          
         
@@ -84,8 +91,8 @@ return {
                 startSurveillance(item, uuid, domoticz)
             else
                 domoticz.log("[" .. uuid .. "] Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
-                local compteurDelaiOuverture = getCompteurDelaiOuverture(item.name, domoticz)
-                compteurDelaiOuverture = 0
+                domoticz.helpers.notify("Fermeture de [" .. item.name .. "]", uuid, domoticz)
+                incrCompteurDelaiOuverture(item.name, 0, domoticz)
             end
         -- Déclenchement du timer
         elseif(item.isCustomEvent ) then
