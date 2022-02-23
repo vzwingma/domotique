@@ -1,13 +1,15 @@
 return {
     on = {
-        devices = { 'Porte' },
+        devices = { 'Porte', 'Balcon D', 'Balcon G' },
         customEvents = { 'Supervision Ouverture' }
     },
     data = {
         -- Délai en seconde avant alarme
         supervisionDelay = { initial = 30 },
         -- 
-        compteurDelaiOuverture = { initial = 0 },
+        compteurDelaiOuverturePorte = { initial = 0 },
+        compteurDelaiOuvertureBalconG = { initial = 0 },
+        compteurDelaiOuvertureBalconD = { initial = 0 },
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -19,8 +21,9 @@ return {
         
         -- Déclenchement du timeout, la porte doit être fermée avant xx secondes sinon alerte
         function startSurveillance(device, uuid, domoticz)
-            domoticz.data.compteurDelaiOuverture = domoticz.data.compteurDelaiOuverture + 1
-            local delaiSurveillance = domoticz.data.compteurDelaiOuverture * domoticz.data.supervisionDelay
+            local compteurDelaiOuverture = getCompteurDelaiOuverture(device.name, domoticz)
+            compteurDelaiOuverture = compteurDelaiOuverture + 1
+            local delaiSurveillance = compteurDelaiOuverture * domoticz.data.supervisionDelay
             domoticz.emitEvent('Supervision Ouverture', { deviceName = device.name, uuid = uuid } ).afterSec(delaiSurveillance)
         end
         
@@ -28,7 +31,8 @@ return {
         function checkStateAfterTimeout(event, domoticz)
             local item = domoticz.devices(event.json.deviceName)
             local uuid = event.json.uuid
-            local delaiTotal = ((domoticz.data.compteurDelaiOuverture * (domoticz.data.compteurDelaiOuverture + 1))/2) * domoticz.data.supervisionDelay
+            local compteurDelaiOuverture = getCompteurDelaiOuverture(event.json.deviceName, domoticz)
+            local delaiTotal = ((compteurDelaiOuverture * (compteurDelaiOuverture + 1))/2) * domoticz.data.supervisionDelay
             domoticz.log("[" .. uuid .. "] [" .. event.json.deviceName .. "] Etat courant après " .. delaiTotal .. " s : " .. item.state, domoticz.LOG_DEBUG)
             -- Si toujours Ouvert, on alerte
             if(item.active) then
@@ -37,7 +41,7 @@ return {
                 startSurveillance(item, uuid, domoticz)
             -- sinon rien - raz du compteur
             else
-                domoticz.data.compteurDelaiOuverture = 0
+                compteurDelaiOuverture = 0
             end
         end
 
@@ -58,11 +62,23 @@ return {
                 startSurveillance(item, uuid, domoticz)
             else
                 domoticz.log("[" .. uuid .. "] Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
-                domoticz.data.compteurDelaiOuverture = 0
+                local compteurDelaiOuverture = getCompteurDelaiOuverture(item.name, domoticz)
+                compteurDelaiOuverture = 0
             end
         -- Déclenchement du timer
         elseif(item.isCustomEvent ) then
             checkStateAfterTimeout(item, domoticz)
+        end
+        
+        -- Retourne le compteur délai d'ouverture
+        function getCompteurDelaiOuverture(itemName, domoticz) 
+            if(itemName == 'Porte') then 
+               return domoticz.data.compteurDelaiOuverturePorte
+            elseif(itemName == 'Balcon G') then
+                return domoticz.data.compteurDelaiOuvertureBalconG
+            elseif(itemName == 'Balcon D') then
+                return domoticz.data.compteurDelaiOuvertureBalconD                
+            end
         end
     end
 }
