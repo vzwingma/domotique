@@ -5,6 +5,7 @@ return {
     data = {
         previousPresenceTels = { initial = true },
         compteurNbTelsAZero = { initial = 0 },
+        -- Obligatoire à 1, car il n'y a des notifs qu'au changement de nb de tels connectés. Si stable à 0, il n'y a pas plusieurs éléments à 0
         seuilDecoAbsence = { initial = 1 },
         uuid = { initial = "" }
     },
