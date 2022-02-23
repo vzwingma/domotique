@@ -104,7 +104,7 @@ return {
                 end
             end
             domoticz.log("[" .. domoticz.data.uuid .. "] Wifi = " .. nbPersonnalDevicesUp .. " tels connectés", domoticz.LOG_DEBUG)
-            if( nbPersonnalDevicesUp ~= domoticz.data.previousNbPersonnalDevicesUp ) then
+            if( nbPersonnalDevicesUp == 0 or nbPersonnalDevicesUp ~= domoticz.data.previousNbPersonnalDevicesUp ) then
                 domoticz.devices(domoticz.helpers.DEVICE_STATUT_PERSONNAL_DEVICES).updateCustomSensor(nbPersonnalDevicesUp)
                 domoticz.data.previousNbPersonnalDevicesUp = nbPersonnalDevicesUp
             end
