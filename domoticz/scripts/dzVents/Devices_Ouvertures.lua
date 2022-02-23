@@ -12,7 +12,7 @@ return {
         compteurDelaiOuvertureBalconD = { initial = 0 },
     },
     logging = {
-        level = domoticz.LOG_INFO,
+        level = domoticz.LOG_DEBUG,
         marker = "[Ouverture] "
     },
     -- Fonction chargée de surveiller l'ouverture et la fermeture d'une porte ou d'une fenêtre
@@ -21,9 +21,9 @@ return {
         
         -- Déclenchement du timeout, la porte doit être fermée avant xx secondes sinon alerte
         function startSurveillance(device, uuid, domoticz)
-            local compteurDelaiOuverture = getCompteurDelaiOuverture(device.name, domoticz)
-            compteurDelaiOuverture = compteurDelaiOuverture + 1
-            local delaiSurveillance = compteurDelaiOuverture * domoticz.data.supervisionDelay
+            domoticz.log("startSurveillance :: " .. device.name)
+            incrCompteurDelaiOuverture(device.name, domoticz)
+            local delaiSurveillance = getCompteurDelaiOuverture(device.name, domoticz) * domoticz.data.supervisionDelay
             domoticz.emitEvent('Supervision Ouverture', { deviceName = device.name, uuid = uuid } ).afterSec(delaiSurveillance)
         end
         
@@ -52,6 +52,28 @@ return {
         end
         
         
+        -- Retourne le compteur délai d'ouverture suivant l'item
+        function getCompteurDelaiOuverture(itemName, domoticz) 
+            if(itemName == 'Porte') then 
+               return domoticz.data.compteurDelaiOuverturePorte
+            elseif(itemName == 'Balcon G') then
+                return domoticz.data.compteurDelaiOuvertureBalconG
+            elseif(itemName == 'Balcon D') then
+                return domoticz.data.compteurDelaiOuvertureBalconD                
+            end
+        end        
+
+        -- incrémente le compteur délai d'ouverture suivant l'item
+        function incrCompteurDelaiOuverture(itemName, domoticz) 
+            if(itemName == 'Porte') then 
+               domoticz.data.compteurDelaiOuverturePorte = domoticz.data.compteurDelaiOuverturePorte + 1
+            elseif(itemName == 'Balcon G') then
+                domoticz.data.compteurDelaiOuvertureBalconG = domoticz.data.compteurDelaiOuvertureBalconG + 1
+            elseif(itemName == 'Balcon D') then
+                domoticz.data.compteurDelaiOuvertureBalconD = domoticz.data.compteurDelaiOuvertureBalconD + 1                
+            end
+        end          
+        
         -- Etat : Open ou Closed d'une porte ou d'une fenêtre
         if(item.isDevice) then
             local uuid = domoticz.helpers.uuid()
@@ -69,16 +91,6 @@ return {
         elseif(item.isCustomEvent ) then
             checkStateAfterTimeout(item, domoticz)
         end
-        
-        -- Retourne le compteur délai d'ouverture
-        function getCompteurDelaiOuverture(itemName, domoticz) 
-            if(itemName == 'Porte') then 
-               return domoticz.data.compteurDelaiOuverturePorte
-            elseif(itemName == 'Balcon G') then
-                return domoticz.data.compteurDelaiOuvertureBalconG
-            elseif(itemName == 'Balcon D') then
-                return domoticz.data.compteurDelaiOuvertureBalconD                
-            end
-        end
+
     end
 }
