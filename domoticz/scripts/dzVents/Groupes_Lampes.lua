@@ -19,12 +19,14 @@ return
         -- Recherche des volets du groupe
         function getLumieresNameFromGroup(group)
 
+            -- Groupe lumières du salon
             if(group.name == domoticz.helpers.GROUPE_LUMIERES_SALON) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Activation toutes lumières salon : " .. group.state, domoticz.LOG_INFO)
                 return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE }
+            -- Groupe toutes les lumières
             elseif(group.name == domoticz.helpers.GROUPE_LUMIERES_TOUTES) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Activation toutes lumières : " .. group.state, domoticz.LOG_INFO)
-                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE, domoticz.helpers.DEVICE_LAMPE_BEBE }
+                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE, domoticz.helpers.DEVICE_LAMPE_BEBE, domoticz.helpers.DEVICE_LAMPE_NOUS }
             else
                 return {}
             end

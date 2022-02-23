@@ -9,7 +9,7 @@ return {
         uuid = { initial = "" }
     },
     logging = {
-        level = domoticz.LOG_INFO,
+        level = domoticz.LOG_DEBUG,
         marker = "[Supervision IoT devices] "
     },
     execute = function(domoticz, item)
