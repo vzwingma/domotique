@@ -1,6 +1,6 @@
 return {
     on = {
-        devices = { 'Porte', 'Balcon D', 'Balcon G' },
+        devices = { 'Porte' , 'Balcon D', 'Balcon G', 'Fenêtre bébé' },
         customEvents = { 'Supervision Ouverture' }
     },
     data = {
@@ -10,6 +10,7 @@ return {
         compteurDelaiOuverturePorte = { initial = 0 },
         compteurDelaiOuvertureBalconG = { initial = 0 },
         compteurDelaiOuvertureBalconD = { initial = 0 },
+        compteurDelaiOuvertureBebe = { initial = 0 }
     },
     logging = {
         level = domoticz.LOG_DEBUG,
@@ -60,6 +61,9 @@ return {
                 return domoticz.data.compteurDelaiOuvertureBalconG
             elseif(itemName == 'Balcon D') then
                 return domoticz.data.compteurDelaiOuvertureBalconD                
+            elseif(itemName == 'Fenêtre bébé') then
+                return domoticz.data.compteurDelaiOuvertureBebe                
+            
             end
         end        
 
@@ -77,7 +81,9 @@ return {
             elseif(itemName == 'Balcon G') then
                 domoticz.data.compteurDelaiOuvertureBalconG = compteurDelaiOuverture
             elseif(itemName == 'Balcon D') then
-                domoticz.data.compteurDelaiOuvertureBalconD = compteurDelaiOuverture              
+                domoticz.data.compteurDelaiOuvertureBalconD = compteurDelaiOuverture
+            elseif(itemName == 'Fenêtre bébé') then
+                domoticz.data.compteurDelaiOuvertureBebe = compteurDelaiOuverture
             end
         end          
         
@@ -88,7 +94,9 @@ return {
             if(item.active == true) then
                 domoticz.log("[" .. uuid .. "] Ouverture de [" .. item.name .. "]", domoticz.LOG_INFO)
                 domoticz.helpers.notify("Ouverture de [" .. item.name .. "]", uuid, domoticz)
-                startSurveillance(item, uuid, domoticz)
+                if(item.name == 'Porte') then
+                    startSurveillance(item, uuid, domoticz)
+                end
             else
                 domoticz.log("[" .. uuid .. "] Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
                 domoticz.helpers.notify("Fermeture de [" .. item.name .. "]", uuid, domoticz)
