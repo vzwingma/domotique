@@ -24,6 +24,7 @@ return {
                     local mapStatutsTV = {}
                     local mapStatutsDomotique = {}
                     local mapStatutsWifi = {}
+                    local mapStatutsAutres = {}
                     
                     for i, device in ipairs(child.Children) do 
                         liveboxInterface(device, mapStatutsTV, mapStatutsDomotique, mapStatutsWifi)
@@ -45,11 +46,14 @@ return {
                 mapStatutsDomotique = getLiveboxDevicesStatut(interface.Children, mapStatutsDomotique, "Domotique")
             elseif(interface.Name == "eth2" or interface.Name == "eth3") then
                  mapStatutsTV = getLiveboxDevicesStatut(interface.Children, mapStatutsTV, "TV")
-            elseif(interface.Name == "eth4") then
+                 -- Ajout des 2 interfaces 2,4 GHz et 5 GHz
+            elseif(interface.Name == "eth4" or interface.name == "wl0") then
                 mapStatutsWifi = getLiveboxDevicesStatut(interface.Children, mapStatutsWifi, "WiFi")
+            else
+                getLiveboxDevicesStatut(interface.Children, mapStatutsWifi, "autres")
             end
         end
-        
+
         function getLiveboxDevicesStatut(devices, mapStatut, categorie)
             if(devices ~= nil) then
                 for i, device in ipairs(devices) do 
