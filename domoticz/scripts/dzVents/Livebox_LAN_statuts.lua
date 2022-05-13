@@ -9,7 +9,7 @@ return {
         previousNbPersonnalDevicesUp = { initial = 0 }
     },
     logging = {
-        level = domoticz.LOG_INFO,
+        level = domoticz.LOG_DEBUG,
         marker = "[LAN Livebox] "
     },
     execute = function(domoticz, item)
@@ -24,6 +24,7 @@ return {
                     local mapStatutsTV = {}
                     local mapStatutsDomotique = {}
                     local mapStatutsWifi = {}
+                    local mapStatutsAutres = {}
                     
                     for i, device in ipairs(child.Children) do 
                         liveboxInterface(device, mapStatutsTV, mapStatutsDomotique, mapStatutsWifi)
@@ -43,13 +44,19 @@ return {
 
             if(interface.Name == "eth0" or interface.Name == "eth1") then
                 mapStatutsDomotique = getLiveboxDevicesStatut(interface.Children, mapStatutsDomotique, "Domotique")
-            elseif(interface.Name == "eth2" or interface.Name == "eth3") then
+            elseif(interface.Name == "eth2") then 
                  mapStatutsTV = getLiveboxDevicesStatut(interface.Children, mapStatutsTV, "TV")
-            elseif(interface.Name == "eth4") then
+            elseif(interface.Name == "SagemcomFast5656_OFR") then 
+                domoticz.log("[" .. domoticz.data.uuid .. "] ... TV Device : " .. interface.Name .. " active=".. tostring(interface.Active), domoticz.LOG_DEBUG)
+                mapStatutsTV["Livebox"]= interface.Active
+            -- Ajout des 2 interfaces 2,4 GHz et 5 GHz
+            elseif(interface.Name == "eth4" or interface.name == "wl0") then
                 mapStatutsWifi = getLiveboxDevicesStatut(interface.Children, mapStatutsWifi, "WiFi")
+            else
+                getLiveboxDevicesStatut(interface.Children, mapStatutsWifi, "autres")
             end
         end
-        
+        -- # statut de Libebox
         function getLiveboxDevicesStatut(devices, mapStatut, categorie)
             if(devices ~= nil) then
                 for i, device in ipairs(devices) do 
