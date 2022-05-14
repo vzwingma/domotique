@@ -9,7 +9,7 @@ return {
         previousNbPersonnalDevicesUp = { initial = 0 }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[LAN Livebox] "
     },
     execute = function(domoticz, item)
