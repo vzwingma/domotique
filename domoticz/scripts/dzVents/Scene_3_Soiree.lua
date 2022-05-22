@@ -38,12 +38,16 @@ return
             if( modeDomicile == '_ete') then
                 levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR .. modeDomicile).value
             else 
-                levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR .. presenceDomicile).value
+                levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR ).value
             end
     
             -- Fermeture des groupes de volets Salon &  Chambres
-            domoticz.log("[" .. domoticz.data.uuid .. "] Fermeture des volets Salon et Chambre : " .. levelVoletsSoir .. "%", domoticz.LOG_INFO)
-            setVoletsLevelToMinValue(domoticz.helpers.GROUPE_TOUS_VOLETS, levelVoletsSoir)
+            -- (au maximum à la valeur level - si plus petit, on laisse au plus petit)
+            -- fermeture individuelle pour ne pas réouvrir les volets (surtout de bébé)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Fermeture des volets Salon et Chambre au maximum à : " .. levelVoletsSoir .. "%", domoticz.LOG_INFO)
+            setVoletsLevelToMinValue(domoticz.helpers.GROUPE_VOLETS_SALON, levelVoletsSoir)
+            setVoletsLevelToMinValue(domoticz.helpers.DEVICE_VOLET_BEBE, levelVoletsSoir)
+            setVoletsLevelToMinValue(domoticz.helpers.DEVICE_VOLET_NOUS, levelVoletsSoir)
         end
         
         -- Mode soirée, activation suivant le mode domicile.
