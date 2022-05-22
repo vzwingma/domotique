@@ -38,7 +38,7 @@ return
             if( modeDomicile == '_ete') then
                 levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR .. modeDomicile).value
             else 
-                levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR .. presenceDomicile).value
+                levelVoletsSoir = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_SOIR ).value
             end
     
             -- Fermeture des groupes de volets Salon &  Chambres
