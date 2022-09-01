@@ -29,3 +29,4 @@ sncf-extraction-sla/
 _docker/build_httpd/httpddomoticzserver.crt
 
 _docker/build_httpd/httpddomoticzserver.key
+.idea/
