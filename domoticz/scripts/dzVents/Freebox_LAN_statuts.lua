@@ -118,7 +118,6 @@ return {
             
         if(item.statusCode == 200) then
             domoticz.log("[" .. domoticz.data.uuid .. "] LAN callback : " .. item.statusCode .. " - Data :" .. tostring(item.json.success) , domoticz.LOG_DEBUG)
-            domoticz.log(item)
             getFreeboxLanStatuts(item.json.result, domoticz)
         else 
             domoticz.log("[" .. domoticz.data.uuid .. "] Erreur de connexion à la Freebox " .. item.statusCode .. " - " .. item.json.msg , domoticz.LOG_ERROR)
