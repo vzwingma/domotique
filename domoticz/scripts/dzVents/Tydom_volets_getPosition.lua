@@ -4,7 +4,7 @@ return {
         httpResponses = { 'Tydom_volets_getPosition' }
     },
     logging = {
-        level = domoticz.LOG_ERROR,
+        level = domoticz.LOG_INFO,
         marker = "[TYDOM Refresh] "
     },
     execute = function(domoticz, item)
@@ -16,7 +16,7 @@ return {
             for _, kdeviceName in pairs(domoticz.helpers.DEVICES_TOUS_VOLETS) do 
                 local uuid = domoticz.helpers.uuid()
                 local tydomIds = domoticz.helpers.getTydomDeviceNumberFromDzItem(kdeviceName, domoticz)
-                domoticz.log("[" .. uuid .. "] Refresh position du volet " .. kdeviceName, domoticz.LOG_DEBUG) --.. " (" .. tydomIds.deviceId .. "/" .. tydomIds.endpointId .. ")")
+                domoticz.log("[" .. uuid .. "] Refresh position du volet " .. kdeviceName, domoticz.LOG_INFO) --.. " (" .. tydomIds.deviceId .. "/" .. tydomIds.endpointId .. ")")
                 domoticz.helpers.callTydomBridgeGET('/device/' .. tydomIds.deviceId .. '/endpoints/' .. tydomIds.endpointId, uuid, 'Tydom_volets_getPosition', domoticz)
             end
 
