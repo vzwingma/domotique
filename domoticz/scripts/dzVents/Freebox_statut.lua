@@ -8,21 +8,13 @@ return {
         uuid = { initial = "" }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
-        marker = "[Freebox Statuts] "
+        level = domoticz.LOG_INFO,
+        marker = "[Freebox Statut] "
     },
     execute = function(domoticz, item)
         
-        -- Recherche des équipements connectés
-        function callFreeboxStatus(session_token, domoticz)
-            domoticz.log("[" .. domoticz.data.uuid .. "][" .. session_token .. "] Recherche des équipements connectés", domoticz.LOG_DEBUG)
-            
-            domoticz.helpers.callFreeboxGET('/connection', session_token, domoticz.data.uuid , 'freebox_statut', domoticz)
-            
-        end
-
-        
-        
+        -- Statut de la freebox
+        -- @param : freeboxState : état de la freebox
         function getFreeboxStatus(freeboxState, domoticz)
             domoticz.log("[" .. domoticz.data.uuid .. "] Etat de la Freebox : " .. tostring(freeboxState), domoticz.LOG_INFO)
            local alertLevel = domoticz.ALERTLEVEL_GREY
@@ -44,7 +36,8 @@ return {
         local session_token = item.json.data
         
         domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : " .. session_token, domoticz.LOG_DEBUG)
-        callFreeboxStatus(session_token, domoticz)
+        domoticz.helpers.callFreeboxGET('/connection', session_token, domoticz.data.uuid , 'freebox_statut', domoticz)
+
     -- ## Call back après get connection
     elseif(item.isHTTPResponse and  item.callback == 'freebox_statut') then 
             

@@ -46,6 +46,7 @@ return {
         DEVICE_STATUT_FREEBOX = 'Freebox',
         DEVICE_STATUT_DOMOTIQUE = 'Domotique',
         DEVICE_STATUT_TV = 'TV',
+        DEVICE_STATUT_NAS = 'NAS',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
 
         -- # Groupes #
