@@ -1,7 +1,7 @@
 return {
     on = {
         -- Evénement poussé par la session Freebox
-        customEvents = { 'Freebox session' },
+        customEvents = { 'freebox_session' },
         httpResponses = { 'freebox_statut' },        
     },
     data = {

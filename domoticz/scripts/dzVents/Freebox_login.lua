@@ -6,6 +6,7 @@
 return {
     on = {
         timer = { 'every minute' },
+        customEvents = { 'freebox_endsession' },
         httpResponses = { 'freebox_login', 'freebox_session' },
         shellCommandResponses = { 'freebox_pwd' }
     },
@@ -70,9 +71,21 @@ return {
 
         -- Session ouverte sur la Freebox
         function freeboxAuthenticated(session_token, domoticz)
-            domoticz.emitEvent('Freebox session', { data = session_token, uuid = domoticz.data.uuid })
+            domoticz.emitEvent('freebox_session', { data = session_token, uuid = domoticz.data.uuid })
         end
 
+
+        freeboxCloseSession = function(uuid, sessionToken, domoticz)
+            domoticz.log("[" .. uuid .. "][sessionToken=" .. sessionToken .. "] Clôture de la session", domoticz.LOG_DEBUG)
+            local host_freebox = domoticz.variables(domoticz.helpers.VAR_FREEBOX_HOST).value
+            -- Appel de la session
+            domoticz.openURL({
+                url = 'http://'..host_freebox..'' .. "/login/logout",
+                method = 'POST',
+                headers = { ['Content-Type'] = 'application/json',  ['X-CorrId'] = uuid, ['X-Fbx-App-Auth'] = sessionToken },
+                callback = 'global_HTTP_response'
+            })          
+        end
 
         
     -- ## Déclenchement de la fonction /
@@ -111,6 +124,8 @@ return {
         else 
             domoticz.log("[" .. domoticz.data.uuid .. "] Erreur de connexion à la Freebox " .. item.statusCode .. " - " .. item.json.msg , domoticz.LOG_ERROR)
         end
+    elseif(item.isCustomEvent and item.customEvent == 'freebox_endsession') then 
+        freeboxCloseSession(item.json.uuid, item.json.sessionToken, domoticz)
     end
 end
 }

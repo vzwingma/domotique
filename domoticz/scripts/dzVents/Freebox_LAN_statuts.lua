@@ -1,11 +1,12 @@
 return {
     on = {
         -- Evénement poussé par la session Freebox
-        customEvents = { 'Freebox session' },
+        customEvents = { 'freebox_session' },
         httpResponses = { 'freebox_lan_statuts' },
     },
     data = {
-        uuid = { initial = "" }
+        uuid = { initial = "" },
+        session_token = { initial = "" }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -32,6 +33,8 @@ return {
             updateDomoticzStatut(mapStatutsTV, 2, domoticz.helpers.DEVICE_STATUT_TV)
             updateDomoticzStatut(mapStatutsNas, 1, domoticz.helpers.DEVICE_STATUT_NAS)
             updatePersonnalConnectedDevices(mapStatutsWifi, domoticz)
+            
+            domoticz.emitEvent('freebox_endsession', { uuid = domoticz.data.uuid, sessionToken = domoticz.data.session_token })
         end
         
         
@@ -107,7 +110,7 @@ return {
     if(item.isCustomEvent) then
         domoticz.data.uuid = item.json.uuid
         local session_token = item.json.data
-        
+        domoticz.data.session_token = session_token
         domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : " .. session_token, domoticz.LOG_DEBUG)
         domoticz.helpers.callFreeboxGET('/lan/browser/pub', session_token, domoticz.data.uuid , 'freebox_lan_statuts', domoticz)
     -- ## Call back après get connection
@@ -115,6 +118,7 @@ return {
             
         if(item.statusCode == 200) then
             domoticz.log("[" .. domoticz.data.uuid .. "] LAN callback : " .. item.statusCode .. " - Data :" .. tostring(item.json.success) , domoticz.LOG_DEBUG)
+            domoticz.log(item)
             getFreeboxLanStatuts(item.json.result, domoticz)
         else 
             domoticz.log("[" .. domoticz.data.uuid .. "] Erreur de connexion à la Freebox " .. item.statusCode .. " - " .. item.json.msg , domoticz.LOG_ERROR)
