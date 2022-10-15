@@ -5,9 +5,8 @@ return {
         VAR_TYDOM_BRIDGE = 'tydom_bridge_host',
         VAR_TYDOM_BRIDGE_AUTH = 'tydom_bridge_auth',
         -- Livebox
-        VAR_LIVEBOX_HOST = 'livebox_host',
-        VAR_LIVEBOX_LOGIN = 'livebox_login',
-        VAR_LIVEBOX_PWD = 'livebox_pwd',
+        VAR_FREEBOX_HOST = 'freebox_host',
+        VAR_FREEBOX_APP_TOKEN = 'freebox_apptoken',
         -- Connected Devices sur Livebox
         VAR_LIVEBOX_DEVICES = 'livebox_devices',
         
@@ -44,9 +43,10 @@ return {
         DEVICE_PRESENCE = 'Présence',
         DEVICE_MODE_DOMICILE = 'Mode',
         -- Livebox
-        DEVICE_STATUT_LIVEBOX = 'Livebox',
+        DEVICE_STATUT_FREEBOX = 'Freebox',
         DEVICE_STATUT_DOMOTIQUE = 'Domotique',
         DEVICE_STATUT_TV = 'TV',
+        DEVICE_STATUT_NAS = 'NAS',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
 
         -- # Groupes #
@@ -93,12 +93,14 @@ return {
         -- ###############################################
         -- ###           Fonctions utilitaires         ###
         -- ###############################################
+        -- # Fonction si le jour courant est dans le week end
         isWeekEnd = function(domoticz)
             local weekDay = domoticz.time.wday
             domoticz.log("weekDay = " .. weekDay, domoticz.LOG_INFO)
             return (weekDay == 1 or weekDay == 7)
         end,
         -- # Fonction de recherche du suffixe suivant la présence au domicile
+        -- @param domoticz.helpers.DEVICE_PRESENCE : présence au domicile
         getPresenceDomicile = function(domoticz)
             
             local presenceDomicile = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE).levelName
@@ -112,6 +114,7 @@ return {
             return suffixeMode
         end,
         -- # Fonction de recherche du suffixe suivant le mode du Domicile
+        -- @param domoticz.helpers.DEVICE_MODE_DOMICILE : mode domicile
         getModeDomicile = function(domoticz)
             local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
             domoticz.log("Mode Domicile : [" .. modeDomicile .. "]", domoticz.LOG_INFO)
@@ -126,11 +129,15 @@ return {
             return suffixeMode
         end,
         -- # Fonction d'envoi de notification
+        -- @param messageToSent : message à envoyer
+        -- @param : uuid de traçabilité
         notify = function(messageToSent, uuid, domoticz)
             domoticz.log("[" .. uuid .. "] Notification : " .. messageToSent, domoticz.LOG_INFO)
             domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_HTTP)
         end,
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
+        -- @param jsonData : contenu json
+        -- @param nodeName : nom du node
         getNodeFromJSonTreeByName = function(jsonData, nodeName)
             for _, node in pairs(jsonData) do
                 if(node.name == nodeName) then
@@ -140,6 +147,8 @@ return {
             return nil
         end,
         -- # Fonction pour vérifier si un item est dans le tableau
+        -- @param table : tableau
+        -- @param item : item à vérifier
         tabContainsItem = function(table, item, domoticz)
             for _, value in pairs(table) do
                 if value == item then
@@ -216,45 +225,23 @@ return {
         end,
 
         -- ###############################################
-        -- ###     FONCTIONS HTTP VERS LA LIVEBOX      ###
+        -- ###     FONCTIONS HTTP VERS LA FREEBOX      ###
         -- ###############################################
-        -- Authentification
-        authenticateToLivebox = function(uuid, callbackName, domoticz)
-    
-            domoticz.log("[" .. uuid .. "] Authentification à la Livebox ORANGE", domoticz.LOG_DEBUG) 
-    
-            local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
-            local login_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_LOGIN).value
-            local pwd_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_PWD).value
-            local authData = { ['service'] = 'sah.Device.Information', 
-                               ['method'] = 'createContext',
-                               ['parameters'] = { ['applicationName'] = 'so_sdkut', 
-                                                  ['username'] = login_livebox, 
-                                                  ['password'] = pwd_livebox }}
-            -- Appel de l'authentification
-            local fullcmd = "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\" -H \"X-CorrId:".. uuid .."\" -H \"Authorization:X-Sah-Login\" -d '" 
-                            .. domoticz.utils.toJSON(authData) .. "' -c /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie -X POST " ..
-                            "'http://" .. host_livebox .. "/ws'"
-
-        	domoticz.executeShellCommand({ 
-        	            command = fullcmd, 
-        	            callback = callbackName })
-        end,  
-        -- Appel POST
-        callLiveboxPOST = function (contextId, postData, corrId, callbackName, domoticz)
+        -- Appel GET
+        callFreeboxGET = function (uriToCall, sessionToken, corrId, callbackName, domoticz)
             
-            local host_livebox = domoticz.variables(domoticz.helpers.VAR_LIVEBOX_HOST).value
-            domoticz.log("[".. corrId .. "] Appel Livebox POST", domoticz.LOG_DEBUG)
+            local host_freebox = domoticz.variables(domoticz.helpers.VAR_FREEBOX_HOST).value
+            domoticz.log("[".. corrId .. "] Appel Freebox GET", domoticz.LOG_DEBUG)
             if(callbackName == nil) then
                callbackName = 'global_HTTP_response' 
             end
-            domoticz.log("[".. corrId .. "] contextId=["..contextId.."]", domoticz.LOG_DEBUG)
-            local fullcmd = "SESSID=`cat /opt/domoticz/userdata/scripts/dzVents/data/liveboxCookieAuth.cookie  | awk 'END{print}' | awk '{new_var=$(NF-1)\"=\"$(NF); print new_var}'` ; " ..
-            "curl -s -H \"Content-Type: application/x-sah-ws-4-call+json\"  -H \"X-CorrId: " .. corrId ..  "\"  -H \"X-Context: " .. contextId ..  "\" -d '" .. domoticz.utils.toJSON(postData) .. "' -b \"$SESSID\" -X POST 'http://" .. host_livebox .. "/ws'"
-
-        	domoticz.executeShellCommand({ 
-        	        command = fullcmd, 
-        	        callback = callbackName })            
+            domoticz.log("[".. corrId .. "] sessionToken=["..sessionToken.."]", domoticz.LOG_DEBUG)
+            domoticz.openURL({
+                url = 'http://'..host_freebox..'' .. uriToCall,
+                method = 'GET',
+                headers = { ['Content-Type'] = 'application/json', ['X-Fbx-App-Auth'] = sessionToken,  ['X-CorrId'] = corrId},
+                callback = callbackName
+            })      
         end
     },
     data = {

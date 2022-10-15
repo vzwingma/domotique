@@ -50,7 +50,7 @@ return
             local valeur = nil
             local sameLevel = false
             for _, pair in pairs(items) do
-                domoticz.log(" > " .. pair .. ":" .. domoticz.devices(pair).level, domoticz.LOG_DEBUG )
+                domoticz.log("[" .. domoticz.data.uuid .. "]  > " .. pair .. " : " .. domoticz.devices(pair).level .. "%", domoticz.LOG_DEBUG )
                 if(valeur == nil or valeur == domoticz.devices(pair).level ) then
                     sameLevel = true
                 elseif(valeur ~= domoticz.devices(pair).level) then
