@@ -31,15 +31,6 @@ return
                 return {}
             end
         end
-        -- Recheche du niveau de volets suivant l'état du groupe 
-        function getLevelFromGroupState(group)
-            if(group.state == 'On') then
-                -- Ouverture du groupe de volets suivant la valeur du niveau
-               return group.level
-            else
-               return 0
-            end
-        end
 
         -- Alignement des groupes de volets
         -- Vérification de la valeur du groupe // à ses items (les autres groupes)
@@ -68,7 +59,7 @@ return
         domoticz.data.uuid = domoticz.helpers.uuid()
         local voletsName = getVoletsNameFromGroup(group.name)
         domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture " .. group.name .. " : " .. group.state, domoticz.LOG_INFO)
-        local levelSet = getLevelFromGroupState(group)
+        local levelSet = domoticz.helpers.getLevelFromState(group)
         for i, voletName in ipairs(voletsName) do 
             domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture du volet " .. voletName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(voletName).setLevel(levelSet)

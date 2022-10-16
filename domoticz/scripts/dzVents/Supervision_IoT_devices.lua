@@ -1,15 +1,15 @@
 return {
     on = {
-        timer = { 'every day' },
+        timer = { 'at 13:45' },
     },
     data = {
         seuilBattery = { initial = 20 },
         seuilData = { initial = 1440 },
-        devicesNoDataAllowed = { initial = { 69, 70, 108 }},
+        devicesNoDataAllowed = { initial = { 69, 70, 119 }},
         uuid = { initial = "" }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Supervision IoT devices] "
     },
     execute = function(domoticz, item)
@@ -20,6 +20,8 @@ return {
             if(device.batteryLevel ~= nil and device.batteryLevel < domoticz.data.seuilBattery) then
                 domoticz.log('[' .. domoticz.data.uuid .. '] Device [' .. device.name .. '] - Niveau de batterie : ' .. device.batteryLevel .. '%', domoticz.LOG_ERROR)
                 domoticz.helpers.notify('Capteur [' .. device.name .. '] - Batterie : ' .. device.batteryLevel .. '%', domoticz.data.uuid, domoticz)
+            else 
+                domoticz.log('[' .. domoticz.data.uuid .. '] Device [' .. device.name .. '] - Niveau de batterie : ' .. device.batteryLevel .. '%', domoticz.LOG_DEBUG)
             end
 
         end
