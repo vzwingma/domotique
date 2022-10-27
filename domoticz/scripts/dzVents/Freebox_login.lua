@@ -6,7 +6,7 @@
 return {
     on = {
         timer = { 'every minute' },
-        customEvents = { 'freebox_endsession' },
+        customEvents = { 'freebox_initsession', 'freebox_endsession' },
         httpResponses = { 'freebox_login', 'freebox_session' },
         shellCommandResponses = { 'freebox_pwd' }
     },
@@ -89,7 +89,7 @@ return {
 
         
     -- ## Déclenchement de la fonction /
-    if(item.isTimer) then
+    if(item.isTimer or (item.isCustomEvent and item.customEvent == 'freebox_initsession')) then
         domoticz.data.uuid = domoticz.helpers.uuid()
         -- d'abord l'Authentification
         domoticz.log("[" .. domoticz.data.uuid .. "] Init de la connexion à la Freebox", domoticz.LOG_DEBUG)

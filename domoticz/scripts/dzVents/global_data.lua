@@ -164,7 +164,7 @@ return {
         -- @param table : tableau
         -- @param item : item à vérifier
         tabContainsItem = function(table, item, domoticz)
-            for _, value in pairs(table) do
+            for i, value in ipairs(table) do
                 if value == item then
                     return true
                 end

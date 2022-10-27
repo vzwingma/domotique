@@ -4,8 +4,8 @@ return {
     },
     data = {
         seuilBattery = { initial = 20 },
-        seuilData = { initial = 1440 },
-        devicesNoDataAllowed = { initial = { 69, 70, 119 }},
+        seuilData = { initial = 10080 },
+        devicesNoDataAllowed =  { initial = { 69, 70, 114, 119, 125, 130 }},
         uuid = { initial = "" }
     },
     logging = {
@@ -28,7 +28,8 @@ return {
         
         -- # Supervision des datas : mise à jour aujourd'hui ? sauf pour les devices devicesNoDataAllowed
         function supervisionData(device)
-            
+            domoticz.data.devicesNoDataAllowed =  { 69, 70, 114, 119, 125, 130 }
+
             local deviceToIgnore = domoticz.helpers.tabContainsItem(domoticz.data.devicesNoDataAllowed, device.id, domoticz)
             domoticz.log('[' .. domoticz.data.uuid .. '] Device [' .. device.id .. '/' .. device.name .. '] - Dernière mise à jour, il y a ' .. device.lastUpdate.minutesAgo .. ' mins', domoticz.INFO)
             if( device.lastUpdate.minutesAgo > domoticz.data.seuilData and deviceToIgnore == false ) then
