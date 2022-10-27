@@ -31,21 +31,11 @@ return
                 return {}
             end
         end
-        -- Recheche du niveau de lumières suivant l'état du groupe 
-        function getLevelFromGroupState(group)
-            if(group.state == 'On') then
-                -- Ouverture du groupe de lumières suivant la valeur du niveau
-               return group.level
-            else
-               return 0
-            end
-        end
-
 
     -- ### Lancement du scénario du Groupe ###
         domoticz.data.uuid = domoticz.helpers.uuid()
         local lumieresName = getLumieresNameFromGroup(group)
-        local levelSet = getLevelFromGroupState(group)
+        local levelSet = domoticz.helpers.getLevelFromState(group)
         for _, lumiereName in pairs(lumieresName) do 
             domoticz.log("[" .. domoticz.data.uuid .. "] Allumage de la lumière " .. lumiereName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(lumiereName).setLevel(levelSet)
