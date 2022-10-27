@@ -58,7 +58,7 @@ return {
         -- ###############################################
         -- #                Tydom DATA                   #
         -- ###############################################
-        -- n° devices Tydom
+        -- n° devices Tydom à partir des n° domoticz
         getTydomDeviceNumberFromDzItem = function(itemName, domoticz)
             local tydomIds = {}   
 
@@ -77,6 +77,7 @@ return {
             end
             return tydomIds
         end,
+        -- n° devices domoticz à partir des n° Tydom
         getDzItemFromTydomDeviceId = function(deviceId, endpointId, domoticz)
             local dzItemId = nil
             if(deviceId == '1612171343' and endpointId == '1612171343') then
@@ -128,6 +129,19 @@ return {
             domoticz.log("  suffixeMode Domicile : [" .. suffixeMode .. "]",  domoticz.LOG_DEBUG)
             return suffixeMode
         end,
+        -- # Fonction pour identifier le niveau, suivant l'état du device
+        -- si On  : c'est le level du device
+        -- si Off : c'est 0
+        getLevelFromState = function(device)
+            if(device.state == 'On') then
+                -- Ouverture du volet suivant la valeur du niveau
+               return device.level
+            else
+                -- Si état=Off, le niveau est 0
+               return 0
+            end
+        end,
+        
         -- # Fonction d'envoi de notification
         -- @param messageToSent : message à envoyer
         -- @param : uuid de traçabilité

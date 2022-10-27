@@ -14,10 +14,10 @@ return {
     },
     execute = function(domoticz, item)
         
-        -- Replay de tous les scénarios jusqu'à la phase en cours, mais en mode "Normal"
+        -- Replay de tous les scénarios jusqu'à la phase en cours, lors du changement de présence
         function replayScene(uuid, domoticz)
             domoticz.log("[" .. uuid .. "] Réactivation du scénario [" .. domoticz.globalData.scenePhase .. "]", domoticz.LOG_DEBUG) 
-        --    domoticz.scenes(domoticz.globalData.scenePhase).switchOn()
+            domoticz.scenes(domoticz.globalData.scenePhase).switchOn()
         end        
         
         -- Changement du mode de domicile suivant la Présence

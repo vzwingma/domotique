@@ -96,11 +96,15 @@ return {
                 domoticz.helpers.notify("Ouverture de [" .. item.name .. "]", uuid, domoticz)
                 if(item.name == 'Porte') then
                     startSurveillance(item, uuid, domoticz)
+                    
                 end
             else
                 domoticz.log("[" .. uuid .. "] Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
                 -- domoticz.helpers.notify("Fermeture de [" .. item.name .. "]", uuid, domoticz)
                 incrCompteurDelaiOuverture(item.name, 0, domoticz)
+                if(item.name == 'Porte') then
+                    domoticz.emitEvent('freebox_initsession')
+                end
             end
         -- Déclenchement du timer
         elseif(item.isCustomEvent ) then
