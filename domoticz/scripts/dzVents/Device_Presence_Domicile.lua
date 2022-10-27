@@ -14,6 +14,12 @@ return {
     },
     execute = function(domoticz, item)
         
+        -- Replay de tous les scénarios jusqu'à la phase en cours, mais en mode "Normal"
+        function replayScene(uuid, domoticz)
+            domoticz.log("[" .. uuid .. "] Réactivation du scénario [" .. domoticz.globalData.scenePhase .. "]", domoticz.LOG_DEBUG) 
+        --    domoticz.scenes(domoticz.globalData.scenePhase).switchOn()
+        end        
+        
         -- Changement du mode de domicile suivant la Présence
         function updatePresenceDomicile(presenceTels, domoticz)
             
@@ -40,7 +46,9 @@ return {
             -- Notification lors du changement de présence, si changement
             local presenceDomDevice = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE)
             if(presenceDomDevice ~= domoticz.data.previousMode) then
-                domoticz.helpers.notify('Changement Domicile : ' .. item.levelName, domoticz.data.uuid, domoticz)
+                domoticz.log('[' .. domoticz.data.uuid .. '][' .. domoticz.globalData.scenePhase .. '] Changement Domicile : ' .. item.levelName, domoticz.LOG_INFO)
+                domoticz.helpers.notify('[' .. domoticz.globalData.scenePhase .. '] Changement Domicile : ' .. item.levelName, domoticz.data.uuid, domoticz)
+                replayScene(domoticz.data.uuid, domoticz)
             end
             domoticz.data.previousMode = presenceDomDevice
         end
