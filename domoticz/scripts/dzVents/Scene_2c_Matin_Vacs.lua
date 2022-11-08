@@ -14,8 +14,6 @@ return
     },
     execute = function(domoticz, scene)
         
-        -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
         domoticz.data.uuid = domoticz.helpers.uuid()
 
         -- Ouverture des volets pour le mode été
@@ -33,6 +31,9 @@ return
             domoticz.log("[" .. domoticz.data.uuid .. "] En mode normal ou été, le scénario 2c Matin Vacances est ignoré", domoticz.LOG_INFO)
             return
         end
+
+        -- Suivi de la phase du jour
+        domoticz.globalData.scenePhase = scene.name
         
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
         -- Présence, surcharge de l'ouverture comme le mode normal
