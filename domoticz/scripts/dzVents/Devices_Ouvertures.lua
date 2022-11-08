@@ -103,7 +103,7 @@ return {
                 -- domoticz.helpers.notify("Fermeture de [" .. item.name .. "]", uuid, domoticz)
                 incrCompteurDelaiOuverture(item.name, 0, domoticz)
                 if(item.name == 'Porte') then
-                    domoticz.emitEvent('freebox_initsession')
+                    domoticz.emitEvent('freebox_initsession').afterSec(20)
                 end
             end
         -- Déclenchement du timer
