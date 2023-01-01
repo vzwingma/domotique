@@ -5,7 +5,7 @@ return {
     data = {
         seuilBattery = { initial = 20 },
         seuilData = { initial = 10080 },
-        devicesNoDataAllowed =  { initial = { 69, 70, 114, 119, 125, 130 }},
+        devicesNoDataAllowed =  { initial = { 69, 70, 114, 117, 119, 125, 130 }},
         uuid = { initial = "" }
     },
     logging = {

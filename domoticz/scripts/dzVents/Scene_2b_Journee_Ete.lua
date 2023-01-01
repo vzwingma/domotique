@@ -3,19 +3,17 @@ return
 {
     on =
     {
-        scenes = { 'Matin Ete' },
+        scenes = { 'Journee Ete' },
     },
     data = {
         uuid = { initial = "" }
     },
     logging = {
         level = domoticz.LOG_INFO,
-        marker = "[Scene Matin] "
+        marker = "[Scene Journee] "
     },
     execute = function(domoticz, scene)
         
-        -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
         domoticz.data.uuid = domoticz.helpers.uuid()
 
         -- Ouverture des volets pour le mode été
@@ -30,9 +28,12 @@ return
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
 
         if(modeDomicile ~= '_ete') then
-            domoticz.log("[" .. domoticz.data.uuid .. "] En mode normal ou vacances, le scénario 2b Matin Eté est ignoré", domoticz.LOG_INFO)
+            domoticz.log("[" .. domoticz.data.uuid .. "] En mode normal ou vacances, le scénario 2b Journee Eté est ignoré", domoticz.LOG_INFO)
             return
         end
+
+        -- Suivi de la phase du jour
+        domoticz.globalData.scenePhase = scene.name
         
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
         -- Présence

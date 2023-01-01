@@ -3,14 +3,14 @@ return
 {
     on =
     {
-        scenes = { 'Matin' },
+        scenes = { 'Journee' },
     },
     data = {
         uuid = { initial = "" }
     },
     logging = {
         level = domoticz.LOG_INFO,
-        marker = "[Scene Matin] "
+        marker = "[Scene Journee] "
     },
     execute = function(domoticz, scene)
         
@@ -23,8 +23,6 @@ return
 
         end        
         
-        -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
         domoticz.data.uuid = domoticz.helpers.uuid()
         
         -- Activation du groupe (le niveau est suivant la présence Domicile) 
@@ -33,12 +31,16 @@ return
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
 
         if(modeDomicile ~= '') then
-            domoticz.log("[" .. domoticz.data.uuid .. "] En mode été ou vacances, le scénario 2 Matin est ignoré", domoticz.LOG_INFO)
+            domoticz.log("[" .. domoticz.data.uuid .. "] En mode été ou vacances, le scénario 2 Journee est ignoré", domoticz.LOG_INFO)
             return
         end
+
         -- Sinon activation suivant présence
+        -- Suivi de la phase du jour
+        domoticz.globalData.scenePhase = scene.name
+        
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
-        domoticz.log("[" .. domoticz.data.uuid .. "] Activation matin pour le mode ['" .. presenceDomicile .. "'/'" .. modeDomicile .."']", domoticz.LOG_INFO)
+        domoticz.log("[" .. domoticz.data.uuid .. "] Activation Journee pour le mode ", domoticz.LOG_INFO)
         ouvertureVoletMatin(presenceDomicile)
     end
 }
