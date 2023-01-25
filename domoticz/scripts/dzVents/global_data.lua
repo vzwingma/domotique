@@ -129,6 +129,20 @@ return {
             domoticz.log("  suffixeMode Domicile : [" .. suffixeMode .. "]",  domoticz.LOG_DEBUG)
             return suffixeMode
         end,
+        -- # Fonction de recherche du moment de la journée (matin / soir) suivant le scénario activé
+        -- @param domoticz.globalData.scenePhase : scène phase
+        getMomentJournee = function(domoticz)
+            local moment = nil
+            if(domoticz.globalData.scenePhase == 'Reveil' or domoticz.globalData.scenePhase == 'Journee' or domoticz.globalData.scenePhase == 'Journee Ete'  or domoticz.globalData.scenePhase == 'Journee Vacs') then
+               moment = 'matin'
+            elseif(domoticz.globalData.scenePhase == 'Soiree' or domoticz.globalData.scenePhase == 'Nuit' or domoticz.globalData.scenePhase == 'Nuit 2') then
+                moment = 'soir'
+            else
+                moment = nil
+            end
+            domoticz.log("  moment de la Journee : [" .. moment .. "]",  domoticz.LOG_DEBUG)
+            return moment
+        end,
         -- # Fonction pour identifier le niveau, suivant l'état du device
         -- si On  : c'est le level du device
         -- si Off : c'est 0
@@ -145,10 +159,20 @@ return {
         -- # Fonction d'envoi de notification
         -- @param messageToSent : message à envoyer
         -- @param : uuid de traçabilité
-        notify = function(messageToSent, uuid, domoticz)
-            domoticz.log("[" .. uuid .. "] Notification : " .. messageToSent, domoticz.LOG_INFO)
-            domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', domoticz.NSS_HTTP)
+        sendNotification = function(messageToSent, protocol, uuid, domoticz)
+            domoticz.log("[" .. uuid .. "] Notification " .. protocol .. " : " .. messageToSent, domoticz.LOG_INFO)
+            domoticz.notify('Domoticz', messageToSent, domoticz.PRIORITY_NORMAL, domoticz.SOUND_NONE,'', protocol)
         end,
+        notifySignal = function(messageToSent, uuid, domoticz)
+            domoticz.helpers.sendNotification(messageToSent, domoticz.NSS_HTTP, uuid, domoticz)
+        end,
+        notifySMS = function(messageToSent, uuid, domoticz)
+            domoticz.helpers.sendNotification(messageToSent, domoticz.NSS_CLICKATELL, uuid, domoticz)
+        end,
+        notify = function(messageToSent, uuid, domoticz)
+            domoticz.helpers.notifySignal(messageToSent, uuid, domoticz)
+        end,        
+
         -- # Fonction de recherche d'un node dans un arbre JSON à partir de son nom
         -- @param jsonData : contenu json
         -- @param nodeName : nom du node

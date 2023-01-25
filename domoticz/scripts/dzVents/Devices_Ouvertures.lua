@@ -48,7 +48,7 @@ return {
 
         -- Notification de l'alerte
         function notifyAlerteOuverture(item, delaiTotal, uuid, domoticz)
-            domoticz.helpers.notify(item.name .. ' est ouvert depuis plus de ' .. delaiTotal .. 's', uuid, domoticz)
+            domoticz.helpers.notifySMS(item.name .. ' est ouvert depuis plus de ' .. delaiTotal .. 's', uuid, domoticz)
             domoticz.log("[" .. uuid .. "] " .. item.name .. ' est ouvert depuis plus de ' .. delaiTotal .. 's')
         end
         
@@ -100,7 +100,7 @@ return {
                 end
             else
                 domoticz.log("[" .. uuid .. "] Fermeture de [" .. item.name .. "]", domoticz.LOG_INFO)
-                -- domoticz.helpers.notify("Fermeture de [" .. item.name .. "]", uuid, domoticz)
+                domoticz.helpers.notify("Fermeture de [" .. item.name .. "]", uuid, domoticz)
                 incrCompteurDelaiOuverture(item.name, 0, domoticz)
                 if(item.name == 'Porte') then
                     domoticz.emitEvent('freebox_initsession').afterSec(20)
