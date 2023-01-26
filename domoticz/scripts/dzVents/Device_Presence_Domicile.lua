@@ -20,10 +20,10 @@ return {
          --   domoticz.helpers.notify('[' .. domoticz.globalData.scenePhase .. '] Réactivation du scénario', uuid, domoticz)
             domoticz.scenes(domoticz.globalData.scenePhase).switchOn()
             -- Thermostat
-            local presenceDomDevice = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE)
+            local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
             local momentJournee = domoticz.helpers.getMomentJournee(domoticz)
             if(momentJournee ~= nil) then
-                local tempJournee = domoticz.variables('param_temp_' .. momentJournee .. '_' .. presenceDomicile).value
+                local tempJournee = domoticz.variables('param_temp_' .. momentJournee .. presenceDomicile).value
                 domoticz.log("[" .. uuid .. "] Activation pour le " .. momentJournee .. " Temp=[" .. tempJournee .. "°]", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempJournee)
             end
