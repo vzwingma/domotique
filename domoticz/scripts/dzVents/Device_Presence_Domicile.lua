@@ -17,8 +17,16 @@ return {
         -- Replay de tous les scénarios jusqu'à la phase en cours, lors du changement de présence
         function replayScene(uuid, domoticz)
             domoticz.log("[" .. uuid .. "] Réactivation du scénario [" .. domoticz.globalData.scenePhase .. "]", domoticz.LOG_DEBUG) 
-            domoticz.helpers.notify('[' .. domoticz.globalData.scenePhase .. '] Réactivation du scénario', uuid, domoticz)
+         --   domoticz.helpers.notify('[' .. domoticz.globalData.scenePhase .. '] Réactivation du scénario', uuid, domoticz)
             domoticz.scenes(domoticz.globalData.scenePhase).switchOn()
+            -- Thermostat
+            local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
+            local momentJournee = domoticz.helpers.getMomentJournee(domoticz)
+            if(momentJournee ~= nil) then
+                local tempJournee = domoticz.variables('param_temp_' .. momentJournee .. presenceDomicile).value
+                domoticz.log("[" .. uuid .. "] Activation pour le " .. momentJournee .. " Temp=[" .. tempJournee .. "°]", domoticz.LOG_INFO)
+                domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempJournee)
+            end
         end        
         
         -- Changement du mode de domicile suivant la Présence
