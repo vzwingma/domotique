@@ -1,10 +1,10 @@
 # Image docker DomoticZ
 
 ## Téléchargement depuis Docker Hub
-      docker pull vzwingmann/domoticz-arm:latest
+      docker pull vzwingmadomatic/domoticz:latest
 
 ## Construction de l'image ( *sur une architecture ARM* )
-      docker build -t vzwingmann/domoticz-arm:latest .
+      docker build -t vzwingmadomatic/domoticz:latest .
 
 ## Exécution du conteneur 
       docker run --name=domoticz -d \
@@ -16,11 +16,9 @@
   		    -v /etc/timezone:/etc/timezone:ro \
   		    -v /etc/localtime:/etc/localtime:ro \
   		    -v $DOMOTICZ_PATH/database:/opt/domoticz/userdata \
-  		    -v $DOMOTICZ_PATH/www/images/floorplans:/opt/domoticz/www/images/floorplans \
-  		    -v $DOMOTICZ_PATH/scripts/lua:/opt/domoticz/scripts/lua \
-  		    -t vzwingmann/domoticz-arm:latest
+  		    -v $DOMOTICZ_PATH/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts \
+  		    -t vzwingmadomatic/domoticz:latest
     
 où 
 - `$DOMOTICZ_PATH/database` : Répertoire vers la BDD Domoticz
-- `$DOMOTICZ_PATH/www/images/floorplans` : Répertoire vers les fonds de plans
-- `$DOMOTICZ_PATH/scripts/lua` : Répertoire vers les scripts LUA
+- `$DOMOTICZ_PATH/scripts/dzVents` : Répertoire vers les scripts LUA
