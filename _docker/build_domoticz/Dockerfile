@@ -19,7 +19,5 @@ RUN chmod +x /opt/domoticz/userdata/plugins/DomoticzLinky/plugin.py
 
 # Intégration du plugin deCONZ
 RUN mkdir -p /opt/domoticz/userdata/plugins/Domoticz-deCONZ
-COPY deconz/plugin.py /opt/domoticz/userdata/plugins/Domoticz-deCONZ
-COPY deconz/fonctions.py /opt/domoticz/userdata/plugins/Domoticz-deCONZ
-COPY deconz/API_KEY.py /opt/domoticz/userdata/plugins/Domoticz-deCONZ
+COPY deconz/*.py /opt/domoticz/userdata/plugins/Domoticz-deCONZ
 RUN chmod +x /opt/domoticz/userdata/plugins/Domoticz-deCONZ/plugin.py
