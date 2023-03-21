@@ -42,5 +42,12 @@ return
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
         domoticz.log("[" .. domoticz.data.uuid .. "] Activation Journee pour le mode ", domoticz.LOG_INFO)
         ouvertureVoletMatin(presenceDomicile)
+        
+        local tempMatin = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_MATIN .. presenceDomicile).value
+
+        domoticz.log("[".. domoticz.helpers.uuid() .."] Activation pour la journée. Temp=[" .. tempMatin .. "]")
+        -- Thermostat
+        domoticz.devices(domoticz.helpers.DEVICE_TYDOM_THERMOSTAT).updateSetPoint(tempMatin)
+        
     end
 }
