@@ -15,7 +15,7 @@ return
         
         -- Met à jour le niveau du volet, ssi il est plus petit que la valeur existante
         function setVoletsLevelToMinValue(deviceName, levelVoletsSoir)
-            local minLevelVoletsSoir = math.min(domoticz.devices(deviceName).level, levelVoletsSoir)
+            local minLevelVoletsSoir = math.min(domoticz.helpers.getLevelFromState(domoticz.devices(deviceName)), levelVoletsSoir)
             domoticz.log("[" .. domoticz.data.uuid .. "] Fermeture du volet " .. deviceName .. " : " .. minLevelVoletsSoir .. "%", domoticz.LOG_INFO)
             domoticz.devices(deviceName).setLevel(minLevelVoletsSoir)
         end
@@ -59,7 +59,7 @@ return
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
 
-        activationLampeSalon(presenceDomicile)
+        -- activationLampeSalon(presenceDomicile)
         activationVolets(presenceDomicile, modeDomicile)
     end       
 }

@@ -48,7 +48,7 @@ return {
                 mapStatutsDomotique[statut.primary_name]= statut.active
             elseif(statut.default_name == 'NAS-CS-VZ' ) then
                 mapStatutsNas[statut.primary_name]= statut.active
-            elseif(statut.host_type == 'smartphone' ) then
+            elseif(statut.host_type == 'smartphone' and true ~= mapStatutsWifi[statut.primary_name] ) then
                 mapStatutsWifi[statut.primary_name]= statut.active
             end
 
