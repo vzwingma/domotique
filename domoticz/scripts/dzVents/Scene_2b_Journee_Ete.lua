@@ -26,7 +26,7 @@ return
 
             local paramOuvertureJourEte = domoticz.variables(domoticz.helpers.VAR_PRCENT_VOLET_MATIN .. modeDomicile).value
             local levelBebe = math.min(paramOuvertureJourEte, domoticz.helpers.getLevelFromState(domoticz.devices(domoticz.helpers.DEVICE_VOLET_BEBE)))
-            domoticz.devices(domoticz.helpers.DEVICE_VOLET_BEBE).setLevel(level)
+            domoticz.devices(domoticz.helpers.DEVICE_VOLET_BEBE).setLevel(levelBebe)
             domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture à ".. levelBebe .." % pour bébé", domoticz.LOG_INFO)
         end    
 

@@ -11,7 +11,7 @@ return
         level = domoticz.LOG_INFO,
         marker = "[Scene Soiree] "
     },
-    execute = function(domoticz, item)
+    execute = function(domoticz, scene)
         
         -- Met à jour le niveau du volet, ssi il est plus petit que la valeur existante
         function setVoletsLevelToMinValue(deviceName, levelVoletsSoir)
@@ -53,7 +53,7 @@ return
         -- Mode soirée, activation suivant le mode domicile.
         domoticz.data.uuid = domoticz.helpers.uuid()
         -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = item.name
+        domoticz.globalData.scenePhase = scene.name
 
         -- Récupération des paramètres et activation suivant le mode de domicile
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)

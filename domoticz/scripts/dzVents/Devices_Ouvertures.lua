@@ -13,7 +13,7 @@ return {
         compteurDelaiOuvertureBebe = { initial = 0 }
     },
     logging = {
-        level = domoticz.LOG_DEBUG,
+        level = domoticz.LOG_INFO,
         marker = "[Ouverture] "
     },
     -- Fonction chargée de surveiller l'ouverture et la fermeture d'une porte ou d'une fenêtre
