@@ -133,7 +133,7 @@ return {
         -- @param domoticz.globalData.scenePhase : scène phase
         getMomentJournee = function(domoticz)
             local moment = nil
-            if(domoticz.globalData.scenePhase == 'Reveil' or domoticz.globalData.scenePhase == 'Journee' or domoticz.globalData.scenePhase == 'Journee Ete'  or domoticz.globalData.scenePhase == 'Journee Vacs') then
+            if(domoticz.globalData.scenePhase == 'PreparationChauffage' or domoticz.globalData.scenePhase == 'Reveil' or domoticz.globalData.scenePhase == 'Journee' or domoticz.globalData.scenePhase == 'Journee Ete'  or domoticz.globalData.scenePhase == 'Journee Vacs') then
                moment = 'matin'
             elseif(domoticz.globalData.scenePhase == 'Soiree' or domoticz.globalData.scenePhase == 'Nuit' or domoticz.globalData.scenePhase == 'Nuit 2') then
                 moment = 'soir'
