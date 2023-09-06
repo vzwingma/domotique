@@ -59,7 +59,7 @@ return
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
 
-        -- activationLampeSalon(presenceDomicile)
+        activationLampeSalon(presenceDomicile)
         activationVolets(presenceDomicile, modeDomicile)
     end       
 }
