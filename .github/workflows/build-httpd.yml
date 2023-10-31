@@ -68,6 +68,7 @@ jobs:
       -
         name: Update config in .env
         run: |
+          cd _docker/build_httpd
           sed -e 's/__RULES_ACCESS_1__/${{ secrets.RULES_ACCESS_1 }}/g' -e 's/__RULES_ACCESS_2__/${{ secrets.RULES_ACCESS_2 }}/g' -e 's/__RULES_ACCESS_3__/${{ secrets.RULES_ACCESS_3 }}/g' httpd.template.conf;
           cat httpd.template.conf
       - name: Build ARM image
