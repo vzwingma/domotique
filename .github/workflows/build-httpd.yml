@@ -17,7 +17,7 @@ on:
 jobs:
   # Push image to DockerHub
   build-push-httpdomoticz:
-
+    environment: PROD
     runs-on: ubuntu-latest
     env:      
       DOCKER_REGISTRY: registry.hub.docker.com
@@ -65,6 +65,11 @@ jobs:
         env:
           HTTPDDOMOTICZSERVER_CERT : ${{ secrets.HTTPDDOMOTICZSERVER_CERT }}
           HTTPDDOMOTICZSERVER_KEY : ${{ secrets.HTTPDDOMOTICZSERVER_KEY }}
+      -
+        name: Update config in .env
+        run: |
+          sed -e 's/__RULES_ACCESS__/${{ secrets.RULES_ACCESS }}/g' httpd.template.conf;
+          cat httpd.template.conf
       - name: Build ARM image
         run: |
           cd _docker/build_httpd
