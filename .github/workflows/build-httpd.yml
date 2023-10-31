@@ -69,4 +69,7 @@ jobs:
         run: |
           cd _docker/build_httpd
           sed -e 's/__RULES_ACCESS_1__/${{ secrets.RULES_ACCESS_1 }}/g' -e 's/__RULES_ACCESS_2__/${{ secrets.RULES_ACCESS_2 }}/g' -e 's/__RULES_ACCESS_3__/${{ secrets.RULES_ACCESS_3 }}/g' httpd.conf
+          echo "************"
+          cat httpd.conf
+          echo "************"
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .

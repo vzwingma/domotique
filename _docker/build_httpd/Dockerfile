@@ -9,4 +9,5 @@ COPY httpddomoticzserver.key /usr/local/apache2/conf/ssl_conf/
 
 # Intégration de la conf HTTPD.conf
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+RUN cat /usr/local/apache2/conf/httpd.conf
 
