@@ -47,6 +47,7 @@ jobs:
   build-push-tydom:
 
     runs-on: ubuntu-latest
+    environment: PROD
     needs: 
       - scan-sonar
     env:      
