@@ -65,9 +65,8 @@ jobs:
         env:
           HTTPDDOMOTICZSERVER_CERT : ${{ secrets.HTTPDDOMOTICZSERVER_CERT }}
           HTTPDDOMOTICZSERVER_KEY : ${{ secrets.HTTPDDOMOTICZSERVER_KEY }}
-      -
       - name: Build ARM image
         run: |
           cd _docker/build_httpd
-          sed -e 's/__RULES_ACCESS_1__/${{ secrets.RULES_ACCESS_1 }}/g' -e 's/__RULES_ACCESS_2__/${{ secrets.RULES_ACCESS_2 }}/g' -e 's/__RULES_ACCESS_3__/${{ secrets.RULES_ACCESS_3 }}/g' httpd.conf;
+          sed -e 's/__RULES_ACCESS_1__/${{ secrets.RULES_ACCESS_1 }}/g' -e 's/__RULES_ACCESS_2__/${{ secrets.RULES_ACCESS_2 }}/g' -e 's/__RULES_ACCESS_3__/${{ secrets.RULES_ACCESS_3 }}/g' httpd.conf
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
