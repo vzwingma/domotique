@@ -30,3 +30,4 @@ _docker/build_httpd/httpddomoticzserver.crt
 
 _docker/build_httpd/httpddomoticzserver.key
 .idea/
+_docker/build_httpd/_rules_access_clear_.txt
