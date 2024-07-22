@@ -37,7 +37,7 @@ return
 
         -- Sinon activation suivant présence
         -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
+        domoticz.emitEvent('Scene Phase', {idx = 2,  data = scene.name, uuid = domoticz.data.uuid })
         
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
         domoticz.log("[" .. domoticz.data.uuid .. "] Activation Journee pour le mode ", domoticz.LOG_INFO)

@@ -48,6 +48,7 @@ return {
         DEVICE_STATUT_TV = 'TV',
         DEVICE_STATUT_NAS = 'NAS',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
+        DEVICE_STATUT_PHASE = 'Phase',
 
         -- # Groupes #
         GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
