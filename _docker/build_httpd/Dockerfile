@@ -6,7 +6,8 @@ MAINTAINER vincent.zwingmann@github.com
 RUN mkdir -p /usr/local/apache2/conf/ssl_conf/
 COPY httpddomoticzserver.crt /usr/local/apache2/conf/ssl_conf/
 COPY httpddomoticzserver.key /usr/local/apache2/conf/ssl_conf/
-
+RUN cat httpddomoticzserver.crt
+RUN cat httpddomoticzserver.key
 # Intégration de la conf HTTPD.conf
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 

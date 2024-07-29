@@ -60,10 +60,6 @@ jobs:
         run: |
           echo "${{ env.HTTPDDOMOTICZSERVER_CERT }}" >> _docker/build_httpd/httpddomoticzserver.crt
           echo "${{ env.HTTPDDOMOTICZSERVER_KEY }}" >> _docker/build_httpd/httpddomoticzserver.key
-          echo "CRT"
-          less _docker/build_httpd/httpddomoticzserver.crt
-          echo "KEY"
-          less _docker/build_httpd/httpddomoticzserver.key
         shell: bash
         env:
           HTTPDDOMOTICZSERVER_CERT : ${{ secrets.HTTPDDOMOTICZSERVER_CERT }}
