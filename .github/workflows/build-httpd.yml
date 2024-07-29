@@ -24,7 +24,7 @@ jobs:
       DOCKER_IMAGE: vzwingmadomatic/httpd
       DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}  
-      DOCKER_TARGET_PLATFORM: linux/arm/v7
+      DOCKER_TARGET_PLATFORM: linux/arm/v7, linux/amd64
 
     permissions:
       contents: read
