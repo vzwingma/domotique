@@ -67,6 +67,7 @@ jobs:
       - name: Build ARM image
         run: |
           cd _docker/build_httpd
+          sed -i 's/__SERVER_NAME__/${{ secrets.SERVER_NAME }}/g' httpd.conf
           sed -i 's/__RULES_ACCESS_1__/${{ secrets.RULES_ACCESS_1 }}/g' httpd.conf
           sed -i 's/__RULES_ACCESS_2__/${{ secrets.RULES_ACCESS_2 }}/g' httpd.conf 
           sed -i 's/__RULES_ACCESS_3__/${{ secrets.RULES_ACCESS_3 }}/g' httpd.conf
