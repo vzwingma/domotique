@@ -2,7 +2,10 @@ return
 {
     on =
     {
-        scenes = { 'PreparationChauffage' },
+        scenes = { 'PreparationChauffage' }
+    },
+    data = {
+        uuid = { initial = "" }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -10,8 +13,9 @@ return
     },
     execute = function(domoticz, scene)
         -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
-        
+        domoticz.data.uuid = domoticz.helpers.uuid()
+        domoticz.emitEvent('Scene Phase', { idx = 0, data = scene.name, uuid = domoticz.data.uuid })
+
         -- Recherche de la température à appliquer suivant la présence
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
         local tempMatin = domoticz.variables(domoticz.helpers.VAR_TEMPERATURE_MATIN .. presenceDomicile).value
