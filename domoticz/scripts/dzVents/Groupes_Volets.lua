@@ -35,7 +35,7 @@ return
         -- Alignement des groupes de volets
         -- Vérification de la valeur du groupe // à ses items (les autres groupes)
         function verifyGroupeFromItem(groupe, items, domoticz)
-            domoticz.log("[" .. domoticz.data.uuid .. "] Vérification des groupes du groupe [" .. groupe .. "]", domoticz.LOG_DEBUG )
+            domoticz.log("[" .. domoticz.data.uuid .. "] Vérification des items du groupe [" .. groupe .. "]", domoticz.LOG_DEBUG )
             local valeur = nil
             local sameLevel = false
             for _, pair in pairs(items) do
@@ -58,8 +58,9 @@ return
     -- ### Lancement du scénario du Groupe ###
         domoticz.data.uuid = domoticz.helpers.uuid()
         local voletsName = getVoletsNameFromGroup(group.name)
-        domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture " .. group.name .. " : " .. group.state, domoticz.LOG_INFO)
         local levelSet = domoticz.helpers.getLevelFromState(group)
+        domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture " .. group.name .. " : " .. group.state .. " : " .. levelSet .. "%", domoticz.LOG_INFO)
+        
         for i, voletName in ipairs(voletsName) do 
             domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture du volet " .. voletName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(voletName).setLevel(levelSet)
