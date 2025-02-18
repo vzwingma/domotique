@@ -35,6 +35,8 @@ return
             elseif(item == domoticz.helpers.DEVICE_VOLET_BEBE or item == domoticz.helpers.DEVICE_VOLET_NOUS) then
                 verifyGroupeFromItem(domoticz.helpers.GROUPE_VOLETS_CHAMBRES, { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS} , domoticz)
             end
+            -- 
+            verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS, domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D} , domoticz)
         end
 
         -- Vérification de la valeur du groupe // à ses items
@@ -47,16 +49,15 @@ return
                 
                 level = domoticz.helpers.getLevelFromState(domoticz.devices(pair))
                 domoticz.log("[" .. domoticz.data.uuid .. "]  > " .. pair .. " : " .. level .. "%", domoticz.LOG_DEBUG )
-                if(valeur == nil or valeur == level ) then
+                if(valeur == nil) then
                     sameLevel = true
-                elseif(valeur ~= level) then
-                    sameLevel = false
+                else
+                    sameLevel = sameLevel and (valeur == level)
                 end
                 valeur = level 
             end
             -- Réalignement du groupe si les volets du groupe ont la même valeur et différentes de celle du groupe
             local levelGroupe = domoticz.helpers.getLevelFromState(domoticz.devices(groupe))
-
             if(sameLevel == true and levelGroupe ~= valeur) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Réalignement des volets du groupe [" .. groupe .. "] " .. levelGroupe .. " > " .. valeur .. "%", domoticz.LOG_INFO) 
                 domoticz.devices(groupe).setLevel(valeur).silent()
