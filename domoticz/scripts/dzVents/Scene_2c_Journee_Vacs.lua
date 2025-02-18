@@ -33,7 +33,7 @@ return
         end
 
         -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
+        domoticz.emitEvent('Scene Phase', {idx = 2,  data = scene.name, uuid = domoticz.data.uuid })
         
         local presenceDomicile = domoticz.helpers.getPresenceDomicile(domoticz)
         -- Présence, surcharge de l'ouverture comme le mode normal

@@ -60,7 +60,6 @@ jobs:
         run: |
           echo "${{ env.HTTPDDOMOTICZSERVER_CERT }}" >> _docker/build_httpd/httpddomoticzserver.crt
           echo "${{ env.HTTPDDOMOTICZSERVER_KEY }}" >> _docker/build_httpd/httpddomoticzserver.key
-          cat _docker/build_httpd/httpddomoticzserver.crt
         shell: bash
         env:
           HTTPDDOMOTICZSERVER_CERT : ${{ secrets.HTTPDDOMOTICZSERVER_CERT }}
@@ -68,7 +67,9 @@ jobs:
       - name: Build ARM image
         run: |
           cd _docker/build_httpd
+          sed -i 's/__SERVER_NAME__/${{ secrets.SERVER_NAME }}/g' httpd.conf
           sed -i 's/__RULES_ACCESS_1__/${{ secrets.RULES_ACCESS_1 }}/g' httpd.conf
           sed -i 's/__RULES_ACCESS_2__/${{ secrets.RULES_ACCESS_2 }}/g' httpd.conf 
           sed -i 's/__RULES_ACCESS_3__/${{ secrets.RULES_ACCESS_3 }}/g' httpd.conf
+          sed -i 's/__RULES_ACCESS_4__/${{ secrets.RULES_ACCESS_4 }}/g' httpd.conf
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .

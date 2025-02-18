@@ -5,6 +5,7 @@ services:
     image: vzwingmadomatic/httpd:latest
     ports:
       - 8243:8243  
+      - 8280:8280      
     volumes:
       - /home/pi/appli/httpd_logs:/usr/local/apache2/logs
       - /etc/timezone:/etc/timezone:ro

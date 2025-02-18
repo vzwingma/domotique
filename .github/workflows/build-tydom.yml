@@ -22,7 +22,7 @@ jobs:
     steps:
       - 
         name: Checkout the code  
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # Setup Node.js (for Sonar)
       - 
         name: Setup Node.js
@@ -31,7 +31,7 @@ jobs:
           node-version: '12' 
       # Run the Sonar scan
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5
         with:
           projectBaseDir: tydom-bridge
           args: >
