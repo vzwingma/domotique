@@ -39,6 +39,13 @@ return
         for _, lumiereName in pairs(lumieresName) do 
             domoticz.log("[" .. domoticz.data.uuid .. "] Allumage de la lumière " .. lumiereName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(lumiereName).setLevel(levelSet)
+
+            -- Cas particulier de la veilleuse de bébé à éteindre
+            if(lumiereName == domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE && levelSet == 0) then
+                domoticz.log("[" .. domoticz.data.uuid .. "] Extinction de la veilleuse de bébé", domoticz.LOG_INFO)
+                domoticz.devices(domoticz.helpers.DEVICE_VEILLEUSE_BEBE).switchOff()
+            end
+
         end
     end       
 }

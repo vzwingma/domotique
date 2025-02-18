@@ -28,7 +28,7 @@ return {
         
         -- # Supervision des datas : mise à jour aujourd'hui ? sauf pour les devices devicesNoDataAllowed
         function supervisionData(device)
-            domoticz.data.devicesNoDataAllowed =  { 69, 70, 114, 119, 125, 130 }
+            domoticz.data.devicesNoDataAllowed =  { 69, 70, 110, 114, 119, 125, 130 }
 
             local deviceToIgnore = domoticz.helpers.tabContainsItem(domoticz.data.devicesNoDataAllowed, device.id, domoticz)
             domoticz.log('[' .. domoticz.data.uuid .. '] Device [' .. device.id .. '/' .. device.name .. '] - Dernière mise à jour, il y a ' .. device.lastUpdate.minutesAgo .. ' mins', domoticz.INFO)
