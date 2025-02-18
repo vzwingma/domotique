@@ -53,7 +53,7 @@ return
         -- Mode soirée, activation suivant le mode domicile.
         domoticz.data.uuid = domoticz.helpers.uuid()
         -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
+        domoticz.emitEvent('Scene Phase', { idx = 3, data = scene.name, uuid = domoticz.data.uuid })
 
         -- Récupération des paramètres et activation suivant le mode de domicile
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)

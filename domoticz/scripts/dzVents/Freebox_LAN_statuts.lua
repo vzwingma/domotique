@@ -40,9 +40,9 @@ return {
         
         -- #### Fonctions de lecture des statuts
         function freeboxLanStatut(statut, mapStatutsTV, mapStatutsDomotique, mapStatutsNas, mapStatutsWifi)
-            domoticz.log("[" .. domoticz.data.uuid .. "]      device " .. statut.primary_name .. ", active=".. tostring(statut.active) .. ", reachable=".. tostring(statut.reachable), domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "]      " .. statut.host_type .. "  " .. statut.primary_name .. ", active=".. tostring(statut.active) .. ", reachable=".. tostring(statut.reachable), domoticz.LOG_DEBUG)
             
-            if(statut.default_name == 'Freebox Player POP' or statut.default_name == 'LGwebOSTV' ) then
+            if(statut.default_name == 'Freebox Player POP' or statut.default_name == 'TV LG' ) then
                 mapStatutsTV[statut.primary_name]= statut.active
             elseif(statut.default_name == 'domatique' or statut.default_name == 'TYDOM-04B041' ) then
                 mapStatutsDomotique[statut.primary_name]= statut.active

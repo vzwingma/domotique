@@ -14,8 +14,8 @@ return
     execute = function(domoticz, scene)
         
         -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
         domoticz.data.uuid = domoticz.helpers.uuid()
+        domoticz.emitEvent('Scene Phase', { idx = 0, data = scene.name, uuid = domoticz.data.uuid })
         
         -- Récupération des paramètres et activation suivant le mode de domicile
         local modeDomicile = domoticz.helpers.getModeDomicile(domoticz)
