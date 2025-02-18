@@ -38,6 +38,7 @@ return {
         DEVICE_LAMPE_SALON = 'Lumière Salon',
         DEVICE_LAMPE_CUISINE = 'Lumière Cuisine',
         DEVICE_LAMPE_BEBE = 'Lumière Bébé',
+        DEVICE_LAMPE_VEILLEUSE_BEBE = 'Prise Veilleuse Bébé',
         DEVICE_LAMPE_NOUS = 'Lumière Nous',
         -- Mode
         DEVICE_PRESENCE = 'Présence',
@@ -48,6 +49,7 @@ return {
         DEVICE_STATUT_TV = 'TV',
         DEVICE_STATUT_NAS = 'NAS',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
+        DEVICE_STATUT_PHASE = 'Phase',
 
         -- # Groupes #
         GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
@@ -148,7 +150,7 @@ return {
         -- si Off : c'est 0
         getLevelFromState = function(device)
             if(device.state == 'On') then
-                -- Ouverture du volet suivant la valeur du niveau
+                -- Ouverture de l'équipement suivant la valeur du niveau
                return device.level
             else
                 -- Si état=Off, le niveau est 0
