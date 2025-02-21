@@ -43,7 +43,7 @@ return
             -- Cas particulier de la veilleuse de bébé à éteindre
             if(lumiereName == domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE and levelSet == 0) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Extinction de la veilleuse de bébé", domoticz.LOG_INFO)
-                domoticz.devices(domoticz.helpers.DEVICE_VEILLEUSE_BEBE).switchOff()
+                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE).switchOff()
             end
 
         end
