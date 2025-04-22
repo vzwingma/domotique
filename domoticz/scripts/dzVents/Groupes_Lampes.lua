@@ -16,7 +16,7 @@ return
     -- Activation du groupe de lumières
     execute = function(domoticz, group)
     -- ### Fonctions internes ###
-        -- Recherche des volets du groupe
+        -- Recherche des lumières du groupe
         function getLumieresNameFromGroup(group)
 
             -- Groupe lumières du salon
@@ -41,7 +41,7 @@ return
             domoticz.devices(lumiereName).setLevel(levelSet)
 
             -- Cas particulier de la veilleuse de bébé à éteindre
-            if(lumiereName == domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE and levelSet == 0) then
+            if(lumiereName == domoticz.helpers.DEVICE_LAMPE_BEBE and levelSet == 0) then
                 domoticz.log("[" .. domoticz.data.uuid .. "] Extinction de la veilleuse de bébé", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE).switchOff()
             end
