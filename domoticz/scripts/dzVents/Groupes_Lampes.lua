@@ -10,7 +10,7 @@ return
         uuid = { initial = "" }
     },
     logging = {
-        level = domoticz.LOG_INFO,
+        level = domoticz.LOG_DEBUG,
         marker = "[Groupe Lumières] "
     },
     -- Activation du groupe de lumières
@@ -32,6 +32,7 @@ return
             end
         end
 
+
     -- ### Lancement du scénario du Groupe ###
         domoticz.data.uuid = domoticz.helpers.uuid()
         local lumieresName = getLumieresNameFromGroup(group)
@@ -47,5 +48,6 @@ return
             end
 
         end
+
     end       
 }
