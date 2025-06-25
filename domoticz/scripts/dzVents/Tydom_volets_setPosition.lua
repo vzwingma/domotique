@@ -12,8 +12,7 @@ return
         marker = "[TYDOM Volets] "
     },
     execute = function(domoticz, item)
-        
-        -- Commande de volets
+        -- # Commande de volets #
         function updateVoletPosition(item, domoticz)
             -- Recherche du bon volet
             local voletName = item.name

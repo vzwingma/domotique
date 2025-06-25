@@ -40,7 +40,9 @@ return {
     
             domoticz.log("[" .. domoticz.data.uuid .. "] Calcul du mot de passe", domoticz.LOG_DEBUG) 
             local apptoken_freebox = domoticz.variables(domoticz.helpers.VAR_FREEBOX_APP_TOKEN).value
-            local fullcmd = "echo -n '" .. challenge .. "' | openssl dgst -sha1 -hmac '" .. apptoken_freebox .. "' | cut -c10-200"
+            domoticz.log("[" .. domoticz.data.uuid .. "] - challenge = [" .. challenge .. "]", domoticz.LOG_DEBUG)
+            domoticz.log("[" .. domoticz.data.uuid .. "] - app_token = [" .. apptoken_freebox .. "]", domoticz.LOG_DEBUG)
+            local fullcmd = "echo -n '" .. challenge .. "' | openssl dgst -sha1 -hmac '" .. apptoken_freebox .. "' | cut -d '=' -f2 | sed 's/ //g'"
             -- Appel de la session
             domoticz.executeShellCommand({ 
         	            command = fullcmd, 
@@ -61,7 +63,7 @@ return {
                 method = 'POST',
                 headers = { ['Content-Type'] = 'application/json',  ['X-CorrId'] = corrId },
                 postData = {
-                            app_id = 'fr.freebox.domoticz',
+                            app_id = 'fr.freebox.domoticz.app',
                             password = passHmacSha1
                             },
                 callback = 'freebox_session'
@@ -98,7 +100,9 @@ return {
     -- ## Call back après login
     elseif(item.isHTTPResponse and item.callback == 'freebox_login') then 
 
-        domoticz.log("[" .. domoticz.data.uuid .. "] Login callback : " .. item.statusCode .. " - logged_in:" .. tostring(item.json.result.logged_in) , domoticz.LOG_DEBUG)
+        domoticz.log("[" .. domoticz.data.uuid .. "] Login callback : " .. item.statusCode .. " - logged_in:" .. tostring(item.json.result.logged_in) .. " - result:" .. tostring(item.json.result) , domoticz.LOG_DEBUG)
+        domoticz.log("[" .. domoticz.data.uuid .. "] Login callback : challenge " .. item.json.result.challenge , domoticz.LOG_DEBUG)
+        
         if(item.statusCode == 200) then
             freeboxGetPassword(item.json.result.challenge, domoticz)
         else 
@@ -107,7 +111,7 @@ return {
     -- ## Callback après calcul du HMAc SHA1
     elseif(item.isShellCommandResponse and item.callback == 'freebox_pwd') then 
 
-        domoticz.log("[" .. domoticz.data.uuid .. "] Pwd callback : " .. item.statusCode .. " - HMAC Sha1:" .. item.data , domoticz.LOG_DEBUG)
+        domoticz.log("[" .. domoticz.data.uuid .. "] Pwd callback : [" .. item.statusCode .. "] - HMAC Sha1: [" .. item.data .."]" , domoticz.LOG_DEBUG)
         if(item.statusCode == 0) then
             freeboxOpenSession(item.data, domoticz)
         else 

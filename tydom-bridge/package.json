@@ -10,7 +10,6 @@
     "morgan-body": "^2.6.9",
     "tydom-client": "^0.13.4"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
