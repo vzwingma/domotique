@@ -24,7 +24,7 @@ return
             local valeur = nil
             local sameLevel = false
             for _, pair in pairs(items) do
-                domoticz.log("[" .. domoticz.data.uuid .. "]  > " .. pair .. ":" .. domoticz.devices(pair).state .."/" .. domoticz.devices(pair).level, domoticz.LOG_DEBUG )
+                domoticz.log("[" .. domoticz.data.uuid .. "]  > " .. pair .. ":" .. tostring(domoticz.devices(pair).state) .."/" .. tostring(domoticz.devices(pair).level), domoticz.LOG_DEBUG )
                 local deviceValeur = domoticz.devices(pair).level
                 if(domoticz.devices(pair).state == 'Off') then 
                     deviceValeur = 0
