@@ -28,7 +28,7 @@ jobs:
         name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '12' 
+          node-version: '22' 
       # Run the Sonar scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
