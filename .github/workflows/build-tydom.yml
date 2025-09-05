@@ -22,7 +22,7 @@ jobs:
     steps:
       - 
         name: Checkout the code  
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       # Setup Node.js (for Sonar)
       - 
         name: Setup Node.js
@@ -63,7 +63,7 @@ jobs:
     steps:
       - 
         name: Checkout the code  
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
