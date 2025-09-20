@@ -1,4 +1,4 @@
-FROM httpd:latest
+FROM httpd:2.4-alpine
 # Construit à partir de httpd:latest
 LABEL vzwingma.domatic.httpd.image.authors="vincent.zwingmann@github.com"
 
