@@ -1,6 +1,6 @@
 FROM httpd:latest
 # Construit à partir de httpd:latest
-LABEL maintainer="vincent.zwingmann@github.com"
+LABEL vzwingma.domatic.httpd.image.authors="vincent.zwingmann@github.com"
 
 # Intégration du certificat
 RUN mkdir -p /usr/local/apache2/conf/ssl_conf/
