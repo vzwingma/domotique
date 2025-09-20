@@ -22,16 +22,16 @@ jobs:
     steps:
       - 
         name: Checkout the code  
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       # Setup Node.js (for Sonar)
       - 
         name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '12' 
+          node-version: '22' 
       # Run the Sonar scan
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: tydom-bridge
           args: >
@@ -63,7 +63,7 @@ jobs:
     steps:
       - 
         name: Checkout the code  
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3

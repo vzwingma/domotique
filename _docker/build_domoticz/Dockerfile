@@ -1,11 +1,13 @@
 FROM domoticz/domoticz:latest
 # Construit à partir de domoticz/domoticz:latest
-MAINTAINER vincent.zwingmann@github.com
+
+LABEL vzwingma.domatic.domoticz.image.authors="vincent.zwingmann@github.com"
 
 RUN apt-get update && \
 	apt-get upgrade -y && \
 	apt-get install -y python3-dev && \
-	apt-get install -y curl
+	apt-get install -y curl && \
+	apt-get clean
 
 # Intégration des scripts dzVents
 RUN mkdir -p /opt/domoticz/userdata/scripts/dzVents/data/
