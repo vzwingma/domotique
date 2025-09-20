@@ -26,6 +26,7 @@ return
                 local prcent_lumiere = domoticz.variables(domoticz.helpers.VAR_PRCENT_LUMIERE_SALON_SOIR).value
                 domoticz.log("[" .. domoticz.data.uuid .. "] Allumage de la lampe du salon " .. prcent_lumiere .. "%", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV).setLevel(prcent_lumiere)
+                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV_2).setLevel(prcent_lumiere)
             else
                 domoticz.log("[" .. domoticz.data.uuid .. "] Personne à la maison, pas d'allumage des lampes", domoticz.LOG_INFO)
             end

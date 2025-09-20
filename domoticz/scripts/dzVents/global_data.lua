@@ -35,6 +35,7 @@ return {
         DEVICE_TYDOM_THERMOSTAT = 'Tydom Thermostat',
         --   Lumières
         DEVICE_LAMPE_TV = 'Lumière TV',
+        DEVICE_LAMPE_TV_2 = 'Prise TV',
         DEVICE_LAMPE_SALON = 'Lumière Salon',
         DEVICE_LAMPE_CUISINE = 'Lumière Cuisine',
         DEVICE_LAMPE_BEBE = 'Lumière Bébé',
