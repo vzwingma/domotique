@@ -47,6 +47,6 @@ return
     -- ### Lancement du scénario du Groupe ###
         domoticz.data.uuid = domoticz.helpers.uuid()
         -- Alignement du groupe de lumières
-        verifyGroupeFromItem(domoticz.helpers.GROUPE_LUMIERES_SALON, { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE } , domoticz)
+        verifyGroupeFromItem(domoticz.helpers.GROUPE_LUMIERES_SALON, { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE } , domoticz)
     end       
 }
