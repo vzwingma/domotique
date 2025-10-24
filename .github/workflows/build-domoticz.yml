@@ -29,7 +29,7 @@ jobs:
             repository: guillaumezin/DomoticzLinky
             ref: refs/heads/master
       # Upload plugin Linky
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         name: Upload Python script
         with:
             name: linky-plugin
@@ -47,7 +47,7 @@ jobs:
             repository: Smanar/Domoticz-deCONZ
             ref: refs/heads/master
       # Upload plugin deCONZ
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         name: Upload Python scripts
         with:
             name: deconz-plugin
@@ -97,13 +97,13 @@ jobs:
 
           echo "DOCKER_IMAGE_TAG=$DOCKER_IMAGE:$VERSION" >> $GITHUB_ENV
       - 
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         name: Download Script Linky
         with:
           name: linky-plugin
           path: _docker/build_domoticz/linky
       - 
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         name: Download Script deCONZ
         with:
           name: deconz-plugin
