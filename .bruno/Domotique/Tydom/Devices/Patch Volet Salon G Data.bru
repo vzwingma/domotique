@@ -7,16 +7,11 @@ meta {
 put {
   url: http://{{tydom-url}}/device/1612171343/endpoints/1612171343
   body: json
-  auth: digest
+  auth: inherit
 }
 
 headers {
   Content-Type: application/json
-}
-
-auth:digest {
-  username: 04B041
-  password: idee1234
 }
 
 body:json {

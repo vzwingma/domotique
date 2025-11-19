@@ -7,16 +7,11 @@ meta {
 put {
   url: http://{{tydom-url}}/device/1612171197/endpoints/1612171197
   body: json
-  auth: basic
+  auth: inherit
 }
 
 headers {
   Content-Type: application/json
-}
-
-auth:basic {
-  username: bridge
-  password: 42apiTydomBridge
 }
 
 body:json {

@@ -7,16 +7,11 @@ meta {
 post {
   url: http://{{tydom-url}}/refresh/all
   body: json
-  auth: digest
+  auth: inherit
 }
 
 headers {
   Content-Type: application/json
-}
-
-auth:digest {
-  username: 04B041
-  password: idee1234
 }
 
 settings {
