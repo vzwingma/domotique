@@ -1,0 +1,27 @@
+meta {
+  name: Patch Thermostat
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://{{tydom-url}}/device/1612171197/endpoints/1612171197
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "name": "setpoint",
+      "value": 15.50
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

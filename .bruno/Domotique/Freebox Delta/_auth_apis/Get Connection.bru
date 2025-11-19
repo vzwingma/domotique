@@ -1,0 +1,16 @@
+meta {
+  name: Get Connection
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://mafreebox.freebox.fr/api/v15/connection
+  body: text
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

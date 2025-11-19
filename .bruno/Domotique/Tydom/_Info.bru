@@ -1,0 +1,20 @@
+meta {
+  name: _Info
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://{{tydom-url}}/_info
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

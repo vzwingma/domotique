@@ -1,0 +1,25 @@
+meta {
+  name: 01 - Authorize
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://mafreebox.freebox.fr/api/v15/login/authorize/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+     "app_id": "fr.freebox.domoticz.app",
+     "app_name": "Domoticz",
+     "app_version": "2025.1",
+     "device_name": "Domoticz App"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
