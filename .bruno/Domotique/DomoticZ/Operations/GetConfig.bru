@@ -1,0 +1,34 @@
+meta {
+  name: GetConfig
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{domoticz-url}}/json.htm?type=command&param=getconfig
+  body: none
+  auth: none
+}
+
+params:query {
+  type: command
+  param: getconfig
+}
+
+headers {
+  host: 192.168.1.88:8080
+  proxy-connection: keep-alive
+  accept: application/json, text/javascript, */*; q=0.01
+  dnt: 1
+  x-requested-with: XMLHttpRequest
+  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
+  referer: http://192.168.1.88:8080/
+  accept-encoding: gzip, deflate
+  accept-language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+  ~cookie: DMZSID=e59144eb030364efd5e0870ab3c2b10a_NzU1MDI1NjktNDEwMC00ZWUwLThiOWQtZDc0NmVkMDRiZTY4.1662486517
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,16 @@
+meta {
+  name: Get LAN Interface Pub
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://mafreebox.freebox.fr/api/v15/lan/browser/pub/
+  body: text
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Get LAN Interfaces
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://mafreebox.freebox.fr/api/v15/lan/browser/interfaces/
+  body: text
+  auth: inherit
+}
+
+headers {
+  X-Fbx-App-Auth: yuM0bzXi3cOcpSc7n6qdxnb/Q4qD+ptqQExBArBWBCucUATBSobr8Evhpnw25Yd2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

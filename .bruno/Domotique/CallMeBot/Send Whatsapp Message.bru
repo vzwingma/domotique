@@ -1,0 +1,25 @@
+meta {
+  name: Send Whatsapp Message
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.callmebot.com/whatsapp.php?phone=+33661063076&text=This+is+a+test&apikey=608561
+  body: none
+  auth: inherit
+}
+
+params:query {
+  phone: +33661063076
+  text: This+is+a+test
+  apikey: 608561
+}
+
+headers {
+  Content-Type: application/json
+}
+
+settings {
+  encodeUrl: true
+}

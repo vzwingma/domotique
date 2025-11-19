@@ -1,0 +1,23 @@
+meta {
+  name: 04 - Session
+  type: http
+  seq: 4
+}
+
+post {
+  url: https://mafreebox.freebox.fr/api/v15/login/session
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+     "app_id": "fr.freebox.domoticz.app",
+     "password": "1d0b13306392ef41daeb7f9b3aff692c76c63477"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

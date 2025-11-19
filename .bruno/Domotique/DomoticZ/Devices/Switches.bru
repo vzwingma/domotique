@@ -1,0 +1,21 @@
+meta {
+  name: Switches
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://{{domoticz-url}}/json.htm?type=command&param=getlightswitches
+  body: none
+  auth: inherit
+}
+
+params:query {
+  type: command
+  param: getlightswitches
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

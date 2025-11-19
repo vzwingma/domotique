@@ -1,0 +1,20 @@
+meta {
+  name: Groups
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://{{tydom-url}}/groups/file
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

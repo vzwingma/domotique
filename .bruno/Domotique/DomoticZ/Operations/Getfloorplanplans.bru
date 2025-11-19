@@ -1,0 +1,34 @@
+meta {
+  name: Getfloorplanplans
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://{{domoticz-url}}/json.htm?type=command&param=getfloorplanplans&idx=6
+  body: none
+  auth: inherit
+}
+
+params:query {
+  type: command
+  param: getfloorplanplans
+  idx: 6
+}
+
+headers {
+  host: 192.168.1.88:8080
+  proxy-connection: keep-alive
+  accept: application/json, text/plain, */*
+  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
+  dnt: 1
+  referer: http://192.168.1.88:8080/
+  accept-encoding: gzip, deflate
+  accept-language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+  cookie: DMZSID=45e30a029b956008bc487e6ed9369f55_NTVmOGQwODMtNDAxMS00NWM5LTg4NGUtNmZlYWYzOTFkMWU1.1721987401
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

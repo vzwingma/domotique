@@ -1,0 +1,27 @@
+meta {
+  name: Update Thermostat
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://{{domoticz-url}}/json.htm?type=command&param=udevice&idx=44&svalue=20
+  body: none
+  auth: inherit
+}
+
+params:query {
+  type: command
+  param: udevice
+  idx: 44
+  svalue: 20
+}
+
+headers {
+  ~Authorization: Basic c2NyaXB0OnNjcmlwdA==
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Device Thermostat Data
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://{{tydom-bridge-url}}/device/1612171197/endpoints/1612171197
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

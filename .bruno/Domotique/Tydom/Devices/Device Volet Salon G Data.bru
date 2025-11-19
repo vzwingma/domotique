@@ -1,0 +1,21 @@
+meta {
+  name: Device Volet Salon G Data
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://{{tydom-url}}/device/1612171343/endpoints/1612171343
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  X-CorrId: 123123
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

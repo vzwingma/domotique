@@ -1,0 +1,20 @@
+meta {
+  name: Get Connection
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://mafreebox.freebox.fr/api/v15/connection
+  body: text
+  auth: inherit
+}
+
+headers {
+  X-Fbx-App-Auth: mG7DTjH1iCOgkyyeMD1l5B+qo/OI0+iO2BHW35J7f7QfZKSxXCRifPe2cS2VZwrZ
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

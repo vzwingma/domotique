@@ -1,0 +1,25 @@
+meta {
+  name: Send Signal Message
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://api.callmebot.com/signal/send.php?phone=+33661063076&apikey=519370&text=Message
+  body: none
+  auth: inherit
+}
+
+params:query {
+  phone: +33661063076
+  apikey: 519370
+  text: Message
+}
+
+headers {
+  Content-Type: application/json
+}
+
+settings {
+  encodeUrl: true
+}
