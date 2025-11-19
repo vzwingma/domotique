@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: https://api.openweathermap.org/data/3.0/onecall?lat=48.7907915&lon=2.272293&appid=31bb2163168bb398fd360363e06096b7
+  url: https://api.openweathermap.org/data/3.0/onecall?lat=48.7907915&lon=2.272293&appid={{getweather-apikey}}
   body: none
   auth: none
 }
@@ -13,10 +13,11 @@ get {
 params:query {
   lat: 48.7907915
   lon: 2.272293
-  appid: 31bb2163168bb398fd360363e06096b7
+  appid: {{getweather-apikey}}
   ~exclude: {part}
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

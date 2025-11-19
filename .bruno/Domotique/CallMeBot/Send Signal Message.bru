@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: https://api.callmebot.com/signal/send.php?phone=+33661063076&apikey=519370&text=Message
+  url: https://api.callmebot.com/signal/send.php?phone={{callmebot-phone}}&apikey={{callmebot-apikey}}&text=Message
   body: none
   auth: inherit
 }
 
 params:query {
-  phone: +33661063076
-  apikey: 519370
+  phone: {{callmebot-phone}}
+  apikey: {{callmebot-apikey}}
   text: Message
 }
 
@@ -22,4 +22,5 @@ headers {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
