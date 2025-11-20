@@ -24,7 +24,7 @@ jobs:
     steps:
       - 
         name: Checkout the code Linky
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
             repository: guillaumezin/DomoticzLinky
             ref: refs/heads/master
@@ -42,7 +42,7 @@ jobs:
     steps:
       - 
         name: Checkout the code DeCONZ
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
             repository: Smanar/Domoticz-deCONZ
             ref: refs/heads/master
@@ -72,7 +72,7 @@ jobs:
     steps:
       - 
         name: Checkout the code  
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
