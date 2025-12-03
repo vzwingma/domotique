@@ -1,20 +1,19 @@
 meta {
-  name: Devices
+  name: Text devices
   type: http
-  seq: 2
+  seq: 6
 }
 
 get {
-  url: https://{{domoticz-url}}/json.htm?type=command&param=getdevices&used=true&displayhidden=1
+  url: https://{{domoticz-url}}/json.htm?type=command&param=gettextlog&idx=147
   body: none
   auth: inherit
 }
 
 params:query {
   type: command
-  param: getdevices
-  used: true
-  displayhidden: 1
+  param: gettextlog
+  idx: 147
 }
 
 headers {

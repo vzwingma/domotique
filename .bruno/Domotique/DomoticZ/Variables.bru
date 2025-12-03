@@ -1,20 +1,18 @@
 meta {
-  name: Devices
+  name: Variables
   type: http
-  seq: 2
+  seq: 6
 }
 
 get {
-  url: https://{{domoticz-url}}/json.htm?type=command&param=getdevices&used=true&displayhidden=1
+  url: https://{{domoticz-url}}/json.htm?type=command&param=getuservariables
   body: none
   auth: inherit
 }
 
 params:query {
   type: command
-  param: getdevices
-  used: true
-  displayhidden: 1
+  param: getuservariables
 }
 
 headers {

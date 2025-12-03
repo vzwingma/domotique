@@ -1,20 +1,18 @@
 meta {
-  name: Devices
+  name: Devices List
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
-  url: https://{{domoticz-url}}/json.htm?type=command&param=getdevices&used=true&displayhidden=1
+  url: https://{{domoticz-url}}/json.htm?type=command&param=devices_list
   body: none
   auth: inherit
 }
 
 params:query {
   type: command
-  param: getdevices
-  used: true
-  displayhidden: 1
+  param: devices_list
 }
 
 headers {
