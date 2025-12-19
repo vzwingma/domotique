@@ -48,66 +48,66 @@ const client = createClient({ username, password, hostname });
 // Connexion
 await client.connect();
 
-// Si OK, on expose l'API express
-const app = express();
-// must parse body before morganBody as body will be logged
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// Basic Auth
-console.log("Activation de l'authentification sur les API de la passerelle")
-app.use(basicAuth({ authorizer: apiBasicAuthorizer }))
-// hook morganBody to express app
-morganbody(app);
+    // Si OK, on expose l'API express
+    const app = express();
+    // must parse body before morganBody as body will be logged
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    // Basic Auth
+    console.log("Activation de l'authentification sur les API de la passerelle")
+    app.use(basicAuth({ authorizer: apiBasicAuthorizer }))
+    // hook morganBody to express app
+    morganbody(app);
 
-// Info
-app.get('/_info', function (req, res) {
-    updateHeaders(req, res);
-    const tydomOK = { resultat: 'Le bridge Tydom [ ' + username + ' ] est opérationnel' };
-    res.send(JSON.stringify(tydomOK));
-})
-// INFO Tydom
-app.get('/info', async function (req, res) {
-    const info = await client.get('/info');
-    updateHeaders(req, res);
-    res.end(JSON.stringify(info));
-})
-    // Liste des devices
-    .get('/devices/data', async function (req, res) {
-        const devices = await client.get('/devices/data');
+    // Info
+    app.get('/_info', function (req, res) {
         updateHeaders(req, res);
-        res.end(JSON.stringify(devices));
+        const tydomOK = { resultat: 'Le bridge Tydom [ ' + username + ' ] est opérationnel' };
+        res.send(JSON.stringify(tydomOK));
     })
-    // Etat d'un device
-    .get('/device/:devicenum/endpoints/:endpointnum', async function (req, res) {
-        const info = await client.get('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data');
+    // INFO Tydom
+    app.get('/info', async function (req, res) {
+        const info = await client.get('/info');
         updateHeaders(req, res);
-        res.setHeader('X-Request-DeviceId', req.params.devicenum);
-        res.setHeader('X-Request-EndpointId', req.params.endpointnum);
         res.end(JSON.stringify(info));
     })
-    // Mise à jour d'un état d'un device
-    .put('/device/:devicenum/endpoints/:endpointnum', async function (req, res) {
-        await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
-        updateHeaders(req, res);
-        res.setHeader('X-Request-DeviceId', req.params.devicenum);
-        res.setHeader('X-Request-EndpointId', req.params.endpointnum);
-        res.end(JSON.stringify(resultatOK));
-    })
-    // Refresh des valeurs du jumeau numérique par rapport aux équipements physiques
-    .post('/refresh/all', async function (req, res) {
-        await client.post('/refresh/all');
-        updateHeaders(req, res);
-        res.end(JSON.stringify(resultatOK));
-    })
-    // Erreur
-    .use(function (req, res) {
-        updateHeaders(req, res);
-        res.status(404).send('{"message" : "Page introuvable !"}');
-    });
+        // Liste des devices
+        .get('/devices/data', async function (req, res) {
+            const devices = await client.get('/devices/data');
+            updateHeaders(req, res);
+            res.end(JSON.stringify(devices));
+        })
+        // Etat d'un device
+        .get('/device/:devicenum/endpoints/:endpointnum', async function (req, res) {
+            const info = await client.get('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data');
+            updateHeaders(req, res);
+            res.setHeader('X-Request-DeviceId', req.params.devicenum);
+            res.setHeader('X-Request-EndpointId', req.params.endpointnum);
+            res.end(JSON.stringify(info));
+        })
+        // Mise à jour d'un état d'un device
+        .put('/device/:devicenum/endpoints/:endpointnum', async function (req, res) {
+            await client.put('/devices/' + req.params.devicenum + '/endpoints/' + req.params.endpointnum + '/data', [req.body]);
+            updateHeaders(req, res);
+            res.setHeader('X-Request-DeviceId', req.params.devicenum);
+            res.setHeader('X-Request-EndpointId', req.params.endpointnum);
+            res.end(JSON.stringify(resultatOK));
+        })
+        // Refresh des valeurs du jumeau numérique par rapport aux équipements physiques
+        .post('/refresh/all', async function (req, res) {
+            await client.post('/refresh/all');
+            updateHeaders(req, res);
+            res.end(JSON.stringify(resultatOK));
+        })
+        // Erreur
+        .use(function (req, res) {
+            updateHeaders(req, res);
+            res.status(404).send('{"message" : "Page introuvable !"}');
+        });
 
-webServer = app.listen(port, function () {
-    console.log("Bridge Tydom démarré sur " + port);
-});
+    webServer = app.listen(port, function () {
+        console.log("Bridge Tydom démarré sur " + port);
+    });
 
 
 process.on("SIGINT", async () => {
