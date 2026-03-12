@@ -4,7 +4,7 @@ return {
         -- Tydom
         VAR_TYDOM_BRIDGE = 'tydom_bridge_host',
         VAR_TYDOM_BRIDGE_AUTH = 'tydom_bridge_auth',
-        -- Livebox
+        -- Freebox
         VAR_FREEBOX_HOST = 'freebox_host',
         VAR_FREEBOX_APP_TOKEN = 'freebox_apptoken',
         -- Connected Devices sur Livebox
