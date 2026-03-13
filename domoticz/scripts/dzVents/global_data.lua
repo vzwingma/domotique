@@ -169,11 +169,14 @@ return {
         -- si On  : c'est le level du device
         -- si Off : c'est 0
         getLevelFromState = function(device)
+            if(device == nil) then
+                return nil
+            end
             if(device.state == 'On') then
-                -- Ouverture de l'équipement suivant la valeur du niveau
-               return device.level
+                 -- Ouverture de l'équipement suivant la valeur du niveau
+                return device.level
             else
-                -- Si état=Off, le niveau est 0
+                 -- Si état=Off, le niveau est 0
                return 0
             end
         end,
@@ -229,20 +232,39 @@ return {
             domoticz.log("[" .. uuid .. "] Vérification groupe [" .. groupe .. "]", domoticz.LOG_DEBUG)
             local valeur    = nil
             local sameLevel = true
+            local missingItem = false
             for _, itemName in ipairs(items) do
-                local itemLevel = domoticz.helpers.getLevelFromState(domoticz.devices(itemName))
-                domoticz.log("[" .. uuid .. "]  > " .. itemName .. " : " .. itemLevel .. "%", domoticz.LOG_DEBUG)
-                if valeur == nil then
-                    valeur = itemLevel
+                local okItem, itemDevice = pcall(function()
+                    return domoticz.devices(itemName)
+                end)
+                local itemLevel = domoticz.helpers.getLevelFromState(itemDevice)
+
+                if not okItem or itemDevice == nil or itemLevel == nil then
+                    domoticz.log("[" .. uuid .. "] Item introuvable pour réalignement groupe [" .. groupe .. "] : " .. itemName, domoticz.LOG_ERROR)
+                    missingItem = true
                 else
-                    sameLevel = sameLevel and (valeur == itemLevel)
+                    domoticz.log("[" .. uuid .. "]  > " .. itemName .. " : " .. itemLevel .. "%", domoticz.LOG_DEBUG)
+                    if valeur == nil then
+                        valeur = itemLevel
+                    else
+                        sameLevel = sameLevel and (valeur == itemLevel)
+                    end
                 end
             end
-            if valeur == nil then return end
-            local groupeLevel = domoticz.helpers.getLevelFromState(domoticz.devices(groupe))
+            if valeur == nil or missingItem then return end
+
+            local okGroup, groupDevice = pcall(function()
+                return domoticz.devices(groupe)
+            end)
+            local groupeLevel = domoticz.helpers.getLevelFromState(groupDevice)
+            if not okGroup or groupDevice == nil or groupeLevel == nil then
+                domoticz.log("[" .. uuid .. "] Groupe introuvable pour réalignement : " .. groupe, domoticz.LOG_ERROR)
+                return
+            end
+
             if sameLevel and groupeLevel ~= valeur then
                 domoticz.log("[" .. uuid .. "] Réalignement groupe [" .. groupe .. "] " .. groupeLevel .. " -> " .. valeur .. "%", domoticz.LOG_INFO)
-                domoticz.devices(groupe).setLevel(valeur).silent()
+                groupDevice.setLevel(valeur).silent()
             end
         end,
         -- # Fonction de génération d'UUID
