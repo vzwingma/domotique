@@ -33,6 +33,8 @@ return {
             if(modeDomicile == 'Normal') then
                replaySceneInNormal(domoticz.data.uuid, domoticz)
             end
+            -- Mise à jour de l'état précédent après traitement
+            domoticz.data.previousMode = modeDomicile
             
         end
     end

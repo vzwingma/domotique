@@ -1,5 +1,5 @@
 -- ## Scripts de commande des groupes de Lumières
--- Script déclenché pour chaque groupe de lumières : lance les niveaux et statuts des lumières constituant le groupe (ou le groupe de groupe)
+-- Script déclenché pour chaque groupe de lumières : applique le niveau aux lumières du groupe
 return
 {
     on =
@@ -16,44 +16,33 @@ return
     -- Activation du groupe de lumières
     execute = function(domoticz, group)
     -- ### Fonctions internes ###
-        -- Recherche des lumières du groupe
-        function getLumieresNameFromGroup(group)
-
-            -- Groupe lumières du salon
-            if(group.name == domoticz.helpers.GROUPE_LUMIERES_SALON) then
-                domoticz.log("[" .. domoticz.data.uuid .. "] Activation toutes lumières salon : " .. group.state, domoticz.LOG_INFO)
-                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE }
-            -- Groupe toutes les lumières
-            elseif(group.name == domoticz.helpers.GROUPE_LUMIERES_TOUTES) then
-                domoticz.log("[" .. domoticz.data.uuid .. "] Activation toutes lumières : " .. group.state, domoticz.LOG_INFO)
-                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON , domoticz.helpers.DEVICE_LAMPE_CUISINE, domoticz.helpers.DEVICE_LAMPE_BEBE, domoticz.helpers.DEVICE_LAMPE_NOUS }
+        -- Retourne la liste des lumières à commander pour un groupe donné
+        local function getLumieresNameFromGroup(groupName)
+            if(groupName == domoticz.helpers.GROUPE_LUMIERES_SALON) then
+                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON, domoticz.helpers.DEVICE_LAMPE_CUISINE }
+            elseif(groupName == domoticz.helpers.GROUPE_LUMIERES_TOUTES) then
+                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON, domoticz.helpers.DEVICE_LAMPE_CUISINE, domoticz.helpers.DEVICE_LAMPE_BEBE, domoticz.helpers.DEVICE_LAMPE_NOUS }
             else
                 return {}
             end
         end
 
-
     -- ### Lancement du scénario du Groupe ###
         domoticz.data.uuid = domoticz.helpers.uuid()
-        local lumieresName = getLumieresNameFromGroup(group)
-        local levelSet = domoticz.helpers.getLevelFromState(group)
-        for _, lumiereName in pairs(lumieresName) do 
-            domoticz.log("[" .. domoticz.data.uuid .. "] Allumage de la lumière " .. lumiereName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
+        local uuid       = domoticz.data.uuid
+        local lumieresName = getLumieresNameFromGroup(group.name)
+        local levelSet     = domoticz.helpers.getLevelFromState(group)
+        domoticz.log("[" .. uuid .. "] Groupe [" .. group.name .. "] -> " .. group.state .. " : " .. levelSet .. "%", domoticz.LOG_INFO)
+
+        for _, lumiereName in pairs(lumieresName) do
+            domoticz.log("[" .. uuid .. "] Lumière [" .. lumiereName .. "] -> " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(lumiereName).setLevel(levelSet)
 
-            -- Cas particulier de la veilleuse de bébé à éteindre
+            -- Cas particulier : veilleuse bébé à éteindre
             if(lumiereName == domoticz.helpers.DEVICE_LAMPE_BEBE and levelSet == 0) then
-                domoticz.log("[" .. domoticz.data.uuid .. "] Extinction de la veilleuse de bébé", domoticz.LOG_INFO)
+                domoticz.log("[" .. uuid .. "] Extinction veilleuse bébé", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE).switchOff()
             end
-
-            -- Cas particulier de la prise TV à éteindre
-            if(lumiereName == domoticz.helpers.DEVICE_LAMPE_TV_2 and levelSet == 0) then
-                domoticz.log("[" .. domoticz.data.uuid .. "] Extinction de la prise TV", domoticz.LOG_INFO)
-                domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV_2).switchOff()
-            end
-
         end
-
-    end       
+    end
 }

@@ -25,10 +25,10 @@ commandArray = {}
 
 return {
     on = {
-        systemStart = true,
+        system = { 'start' },
     },
     logging = {
-        level    = 2, -- domoticz.LOG_INFO (constante numérique : domoticz n'est pas disponible au chargement)
+        level    = 3, -- domoticz.LOG_INFO (constante numérique : domoticz n'est pas disponible au chargement)
         marker   = '[CONFIG CHECK] ',
     },
     execute = function(domoticz, item)

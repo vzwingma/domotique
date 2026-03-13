@@ -17,12 +17,12 @@ return
         local putData
         if(item.state == "0.00") then
             domoticz.log("[" .. domoticz.data.uuid .. "] Réglage du thermostat à Hors Gel", domoticz.LOG_INFO)
-            putData = {{ ['name'] = 'setpoint', ['value'] = null }, { ['name'] = 'antifrostOn', ['value'] = true }}
+            putData = {{ ['name'] = 'setpoint', ['value'] = nil }, { ['name'] = 'antifrostOn', ['value'] = true }}
         else
             domoticz.log("[" .. domoticz.data.uuid .. "] Réglage du thermostat à T=" .. item.state .. "°C", domoticz.LOG_INFO)
             putData = { ['name'] = 'setpoint', ['value'] = item.state }
             
         end
-        domoticz.helpers.callTydomBridgePUT('/device/1612171197/endpoints/1612171197', putData, domoticz.data.uuid, nil, domoticz)
+        domoticz.helpers.callTydomBridgePUT(domoticz.helpers.getTydomHeatURI(domoticz), putData, domoticz.data.uuid, nil, domoticz)
     end       
 }

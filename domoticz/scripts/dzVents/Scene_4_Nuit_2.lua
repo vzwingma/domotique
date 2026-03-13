@@ -13,9 +13,9 @@ return
     },
     execute = function(domoticz, scene)
 
-        -- Suivi de la phase du jour
-        domoticz.globalData.scenePhase = scene.name
+        -- Suivi de la phase du jour (via événement, comme les autres scènes)
         domoticz.data.uuid = domoticz.helpers.uuid()
+        domoticz.emitEvent('Scene Phase', { idx = 4, data = scene.name, uuid = domoticz.data.uuid })
         -- Extinction des lampes
         domoticz.emitEvent('Scenario Nuit', { data = false, uuid = domoticz.data.uuid }) -- event vers les devices lampes
     end       

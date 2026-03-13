@@ -5,8 +5,9 @@ return {
         httpResponses = { 'freebox_lan_statuts' },
     },
     data = {
-        uuid = { initial = "" },
-        session_token = { initial = "" }
+        uuid          = { initial = "" },
+        session_token = { initial = "" },
+        retryCount    = { initial = 0  }
     },
     logging = {
         level = domoticz.LOG_INFO,
@@ -108,19 +109,30 @@ return {
         
     -- ## Call back après session
     if(item.isCustomEvent) then
-        domoticz.data.uuid = item.json.uuid
-        local session_token = item.json.data
+        domoticz.data.uuid          = item.json.uuid
+        local session_token         = item.json.data
         domoticz.data.session_token = session_token
+        domoticz.data.retryCount    = 0
         domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : " .. session_token, domoticz.LOG_DEBUG)
         domoticz.helpers.callFreeboxGET('/lan/browser/pub', session_token, domoticz.data.uuid , 'freebox_lan_statuts', domoticz)
     -- ## Call back après get connection
     elseif(item.isHTTPResponse and  item.callback == 'freebox_lan_statuts') then 
             
         if(item.statusCode == 200) then
+            domoticz.data.retryCount = 0
             domoticz.log("[" .. domoticz.data.uuid .. "] LAN callback : " .. item.statusCode .. " - Data :" .. tostring(item.json.success) , domoticz.LOG_DEBUG)
             getFreeboxLanStatuts(item.json.result, domoticz)
-        else 
-            domoticz.log("[" .. domoticz.data.uuid .. "] Erreur de connexion à la Freebox " .. item.statusCode .. " - " .. item.json.msg , domoticz.LOG_ERROR)
+        else
+            local MAX_RETRIES = 3
+            local errorClass = domoticz.helpers.httpErrorClass(item.statusCode)
+            domoticz.data.retryCount = domoticz.data.retryCount + 1
+            local attempt = domoticz.data.retryCount
+            if attempt <= MAX_RETRIES then
+                domoticz.log("[" .. domoticz.data.uuid .. "] Erreur GET Freebox LAN statuts (" .. errorClass .. " " .. tostring(item.statusCode) .. ") — tentative " .. attempt .. "/" .. MAX_RETRIES .. ", retry en cours...", domoticz.LOG_ERROR)
+                domoticz.helpers.callFreeboxGET('/lan/browser/pub', domoticz.data.session_token, domoticz.data.uuid, 'freebox_lan_statuts', domoticz)
+            else
+                domoticz.log("[" .. domoticz.data.uuid .. "] Erreur GET Freebox LAN statuts (" .. errorClass .. " " .. tostring(item.statusCode) .. ") — " .. MAX_RETRIES .. " tentatives épuisées, abandon.", domoticz.LOG_ERROR)
+            end
         end
     end    
 end

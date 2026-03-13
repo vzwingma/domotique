@@ -17,14 +17,12 @@ return
     execute = function(domoticz, group)
     -- ### Fonctions internes ###
         -- Recherche des volets du groupe
-        function getVoletsNameFromGroup(groupName)
-            domoticz.log("[" .. domoticz.data.uuid .. "] Recherche des volets du groupe " .. groupName, domoticz.LOG_DEBUG)
+        local function getVoletsNameFromGroup(groupName)
+            domoticz.log("[" .. domoticz.data.uuid .. "] Recherche des volets du groupe [" .. groupName .. "]", domoticz.LOG_DEBUG)
             if(groupName == domoticz.helpers.GROUPE_TOUS_VOLETS) then
                 return { domoticz.helpers.DEVICE_VOLET_NOUS, domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D }
-            
             elseif(groupName == domoticz.helpers.GROUPE_VOLETS_CHAMBRES) then
                 return { domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_NOUS }
-                
             elseif(groupName == domoticz.helpers.GROUPE_VOLETS_SALON) then
                 return { domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D }
             else
@@ -32,40 +30,18 @@ return
             end
         end
 
-        -- Alignement des groupes de volets
-        -- Vérification de la valeur du groupe // à ses items (les autres groupes)
-        function verifyGroupeFromItem(groupe, items, domoticz)
-            domoticz.log("[" .. domoticz.data.uuid .. "] Vérification des items du groupe [" .. groupe .. "]", domoticz.LOG_DEBUG )
-            local valeur = nil
-            local sameLevel = false
-            for _, pair in pairs(items) do
-                domoticz.log("[" .. domoticz.data.uuid .. "]  > " .. pair .. ":" .. domoticz.devices(pair).level, domoticz.LOG_DEBUG )
-                if(valeur == nil or valeur == domoticz.devices(pair).level ) then
-                    sameLevel = true
-                elseif(valeur ~= domoticz.devices(pair).level) then
-                    sameLevel = false
-                end
-                valeur = domoticz.devices(pair).level 
-            end
-            -- Réalignement du groupe si les volets du groupe ont la même valeur et différentes de celle du groupe
-            if(sameLevel == true and domoticz.devices(groupe).level ~= valeur) then
-                domoticz.log("[" .. domoticz.data.uuid .. "] Réalignement des items du groupe [" .. groupe .. "] " .. domoticz.devices(groupe).level .. " > " .. valeur .. "%", domoticz.LOG_INFO) 
-                domoticz.devices(groupe).setLevel(valeur).silent()
-            end
-        end
-
-
     -- ### Lancement du scénario du Groupe ###
         domoticz.data.uuid = domoticz.helpers.uuid()
+        local uuid     = domoticz.data.uuid
         local voletsName = getVoletsNameFromGroup(group.name)
-        local levelSet = domoticz.helpers.getLevelFromState(group)
-        domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture " .. group.name .. " : " .. group.state .. " : " .. levelSet .. "%", domoticz.LOG_INFO)
-        
-        for i, voletName in ipairs(voletsName) do 
-            domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture du volet " .. voletName .. " à " .. levelSet .. "%", domoticz.LOG_INFO)
+        local levelSet   = domoticz.helpers.getLevelFromState(group)
+        domoticz.log("[" .. uuid .. "] Groupe [" .. group.name .. "] -> " .. group.state .. " : " .. levelSet .. "%", domoticz.LOG_INFO)
+
+        for _, voletName in ipairs(voletsName) do
+            domoticz.log("[" .. uuid .. "] Volet [" .. voletName .. "] -> " .. levelSet .. "%", domoticz.LOG_INFO)
             domoticz.devices(voletName).setLevel(levelSet)
         end
-        -- Alignement du groupe de groupe
-        verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, { domoticz.helpers.GROUPE_VOLETS_CHAMBRES, domoticz.helpers.GROUPE_VOLETS_SALON } , domoticz)
-    end       
+        -- Alignement du groupe de groupe depuis les devices directs (source unique, cohérente avec Tydom_volets_setPosition)
+        domoticz.helpers.verifyGroupeFromItem(domoticz.helpers.GROUPE_TOUS_VOLETS, { domoticz.helpers.DEVICE_VOLET_NOUS, domoticz.helpers.DEVICE_VOLET_BEBE, domoticz.helpers.DEVICE_VOLET_SALON_G, domoticz.helpers.DEVICE_VOLET_SALON_D }, uuid, domoticz)
+    end
 }
