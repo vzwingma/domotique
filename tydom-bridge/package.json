@@ -8,7 +8,7 @@
     "express-basic-auth": "^1.2.1",
     "morgan": "^1.10.0",
     "morgan-body": "^2.6.9",
-    "tydom-client": "^0.13.4"
+    "tydom-client": "^0.15.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
