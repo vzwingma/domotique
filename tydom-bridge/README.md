@@ -8,8 +8,8 @@ Le bridge expose une API REST locale protégée par Basic Auth et traduit les ap
 
 ## Prérequis
 
-- **Node.js** : `>=18` (testé sur v22)
-- **tydom-client** : `0.13.4` (baseline figée — voir note de migration ci-dessous)
+- **Node.js** : `>=20` (testé sur v22 — `tydom-client@0.15.x` utilise `fetch` natif, disponible stablement depuis Node 20)
+- **tydom-client** : `0.15.1`
 
 ---
 
@@ -80,6 +80,7 @@ Le serveur HTTP démarre **immédiatement**, indépendamment de la connexion Tyd
 | Méthode | Route | Description |
 |---|---|---|
 | `GET` | `/_info` | Statut interne du bridge et état de connexion Tydom |
+| `POST` | `/reconnect` | Force une reconnexion immédiate au boîtier Tydom (retour immédiat, reconnexion en arrière-plan) |
 | `GET` | `/info` | Proxy `GET /info` vers Tydom |
 | `GET` | `/devices/data` | Liste de tous les devices Tydom |
 | `GET` | `/device/:devicenum/endpoints/:endpointnum` | État d'un endpoint d'un device |
@@ -111,9 +112,11 @@ Le bridge écoute `SIGINT` et `SIGTERM` :
 
 ## Dépendance critique — `tydom-client`
 
-La baseline retenue est **`tydom-client@0.13.4`**.
+La baseline retenue est **`tydom-client@0.15.1`**.
 
-La version `0.15.x` introduit des changements de comportement (protocole distant, gestion des timeouts) non encore qualifiés dans ce contexte. La migration vers `0.15.x` fera l'objet d'un chantier dédié après validation en environnement contrôlé.
+La montée de version depuis `0.13.4` a été qualifiée en sandbox isolé. Le bridge est structurellement compatible avec `0.15.1` sur Node.js ≥ 20. Une validation complète en environnement réel (connexion effective à la box Tydom) est nécessaire avant toute mise en production.
+
+> **Note :** `tydom-client@0.15.x` remplace `got` par `fetch` natif et exige Node.js ≥ 20. L'image Docker officielle utilise `node:22-slim`. Vérifier la version du runtime avant tout déploiement hors conteneur.
 
 ---
 
