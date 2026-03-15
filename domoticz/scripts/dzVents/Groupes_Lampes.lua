@@ -38,7 +38,7 @@ return
             if(lumiereName == domoticz.helpers.DEVICE_LAMPE_BEBE and levelSet == 0) then
                 domoticz.log("[" .. uuid .. "] Extinction veilleuse bébé", domoticz.LOG_INFO)
                 domoticz.devices(lumiereName).switchOff()
-            -- Cas particulier : prise TV
+            -- Cas particulier : prise TV 2
             elseif(lumiereName == domoticz.helpers.DEVICE_LAMPE_TV_2) then
                 domoticz.log("[" .. uuid .. "] Activation prise TV", domoticz.LOG_INFO)
                 if(levelSet == 0) then
