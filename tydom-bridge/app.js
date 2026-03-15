@@ -46,18 +46,54 @@ function setState(status, err) {
 // ─── Client Tydom ─────────────────────────────────────────────────────────────
 let client = null;
 
+// Délais de retry pour le login initial (en ms)
+const RETRY_BASE_DELAY = 5000;   // 5 s
+const RETRY_MAX_DELAY  = 60000;  // 60 s max
+
+/**
+ * Connecte le client Tydom avec retry exponentiel.
+ * En cas d'échec du login (ex: fetch failed, boîtier indisponible au démarrage),
+ * le bridge retente indéfiniment jusqu'à réussir, sans bloquer le serveur HTTP.
+ */
 async function connectTydom() {
-    setState('connecting');
-    console.log(`[INFO] Connexion à la box Tydom [${username}] @ [${hostname}]`);
-    try {
-        client = createClient({ username, password, hostname });
-        await client.connect();
-        setState('connected');
-        console.log('[INFO] Connexion Tydom établie.');
-    } catch (err) {
-        setState('degraded', err);
-        console.error('[ERROR] Connexion Tydom échouée :', err.message || err);
-        // Le bridge reste opérationnel en mode dégradé — le serveur HTTP est déjà démarré.
+    let attempt = 0;
+
+    while (true) {
+        attempt++;
+        setState('connecting');
+        console.log(`[INFO] Connexion à la box Tydom [${username}] @ [${hostname}] (tentative ${attempt})`);
+        try {
+            // Fermer proprement l'ancien client s'il existe
+            if (client) {
+                try { client.close(); } catch (_) {}
+                client = null;
+            }
+
+            client = createClient({ username, password, hostname });
+
+            // Synchroniser backendState sur les events internes du client (reconnexion auto)
+            client.on('connect', () => {
+                setState('connected');
+                console.log('[INFO] [event] Connexion Tydom rétablie.');
+            });
+            client.on('disconnect', () => {
+                // retryOnClose=true dans tydom-client 0.15 — reconnexion automatique
+                setState('connecting');
+                console.warn('[WARN] [event] Connexion Tydom perdue. Reconnexion automatique en cours...');
+            });
+
+            await client.connect();
+            setState('connected');
+            console.log('[INFO] Connexion Tydom établie.');
+            return; // succès — sortir de la boucle
+
+        } catch (err) {
+            setState('degraded', err);
+            console.error(`[ERROR] Connexion Tydom échouée (tentative ${attempt}) :`, err.message || err);
+            const delay = Math.min(RETRY_BASE_DELAY * Math.pow(1.5, attempt - 1), RETRY_MAX_DELAY);
+            console.log(`[INFO] Nouvelle tentative dans ${Math.round(delay / 1000)}s...`);
+            await new Promise(r => setTimeout(r, delay));
+        }
     }
 }
 
@@ -158,6 +194,16 @@ app.get('/_info', (req, res) => {
     });
 });
 
+/** Force une reconnexion au boîtier Tydom */
+app.post('/reconnect', (req, res) => {
+    setCommonHeaders(req, res);
+    console.log('[INFO] Reconnexion Tydom forcée via API.');
+    connectTydom().catch(err => {
+        console.error('[ERROR] Erreur inattendue dans reconnect :', err.message || err);
+    });
+    res.json({ resultat: true, message: 'Reconnexion en cours.' });
+});
+
 /** Info Tydom */
 app.get('/info', asyncRoute(async (req, res) => {
     setCommonHeaders(req, res);
@@ -217,9 +263,9 @@ async function shutdown(signal) {
         await new Promise(resolve => webServer.close(resolve));
         console.log('[INFO] Serveur HTTP fermé.');
     }
-    if (client && typeof client.disconnect === 'function') {
+    if (client && typeof client.close === 'function') {
         try {
-            await client.disconnect();
+            client.close();
             console.log('[INFO] Client Tydom déconnecté.');
         } catch (err) {
             console.warn('[WARN] Erreur à la déconnexion Tydom :', err.message || err);
