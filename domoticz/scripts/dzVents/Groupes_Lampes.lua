@@ -33,15 +33,23 @@ return
         local lumieresName = getLumieresNameFromGroup(group.name)
         local levelSet     = domoticz.helpers.getLevelFromState(group)
         domoticz.log("[" .. uuid .. "] Groupe [" .. group.name .. "] -> " .. group.state .. " : " .. levelSet .. "%", domoticz.LOG_INFO)
-
         for _, lumiereName in pairs(lumieresName) do
-            domoticz.log("[" .. uuid .. "] Lumière [" .. lumiereName .. "] -> " .. levelSet .. "%", domoticz.LOG_INFO)
-            domoticz.devices(lumiereName).setLevel(levelSet)
-
             -- Cas particulier : veilleuse bébé à éteindre
             if(lumiereName == domoticz.helpers.DEVICE_LAMPE_BEBE and levelSet == 0) then
                 domoticz.log("[" .. uuid .. "] Extinction veilleuse bébé", domoticz.LOG_INFO)
                 domoticz.devices(domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE).switchOff()
+            -- Cas particulier : prise TV
+            else if(lumiereName == domoticz.helpers.DEVICE_LAMPE_TV) then
+                domoticz.log("[" .. uuid .. "] Activation prise TV", domoticz.LOG_INFO)
+                if(levelSet == 0) then
+                    domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV).switchOff()
+                else
+                    domoticz.devices(domoticz.helpers.DEVICE_LAMPE_TV).switchOn()
+                end
+            -- Cas général : lampe à commander
+            else
+                domoticz.log("[" .. uuid .. "] Lumière [" .. lumiereName .. "] -> " .. levelSet .. "%", domoticz.LOG_INFO)
+                domoticz.devices(lumiereName).setLevel(levelSet)
             end
         end
     end
