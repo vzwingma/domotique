@@ -8,5 +8,5 @@ docker-compose -f $DOCKER_PATH/domotique-compose.yml pull
 echo ""
 echo "## (Re)création des conteneurs ## "
 
-docker-compose -f $DOCKER_PATH/domotique-compose.yml down
+docker-compose -f $DOCKER_PATH/domotique-compose.yml down --remove-orphans
 docker-compose -f $DOCKER_PATH/domotique-compose.yml up -d

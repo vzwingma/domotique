@@ -1,0 +1,20 @@
+meta {
+  name: Refresh
+  type: http
+  seq: 10
+}
+
+post {
+  url: http://{{tydom-bridge-url}}/refresh/all
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

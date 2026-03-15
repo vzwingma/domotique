@@ -1,0 +1,27 @@
+meta {
+  name: Patch Volet Salon G Data
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://{{tydom-url}}/device/1612171343/endpoints/1612171343
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "name": "position",
+      "value": 3
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

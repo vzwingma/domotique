@@ -31,13 +31,13 @@ function apiBasicAuthorizer(calledUsername, calledPassword) {
 }
 // Mise à jour des entêtes
 function updateHeaders(req, res) {
-	res.setHeader('Content-Type', 'text/plain');
-	let corrId = req.get('X-CorrId');
-	if (corrId != undefined) { 
-		res.setHeader('X-CorrId', corrId); 
-	} else {
-		res.setHeader('X-CorrId', "undefined"); 
-	}
+    res.setHeader('Content-Type', 'text/plain');
+    let corrId = req.get('X-CorrId');
+    if (corrId) { 
+        res.setHeader('X-CorrId', corrId); 
+    } else {
+        res.setHeader('X-CorrId', "undefined"); 
+    }
 }
 
 (async () => {
@@ -100,7 +100,7 @@ function updateHeaders(req, res) {
         res.end(JSON.stringify(resultatOK));
     })	
     // Erreur
-    .use(function(req, res, next){
+    .use(function(req, res){
 		updateHeaders(req, res);
         res.status(404).send('{"message" : "Page introuvable !"}');
     });

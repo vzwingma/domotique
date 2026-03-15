@@ -1,4 +1,4 @@
-## Domotique
+# Domotique
 
 Gestion domotique de la maison
 

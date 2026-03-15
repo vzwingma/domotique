@@ -1,6 +1,6 @@
 FROM node:16.20.2-slim
 # Construit à partir de Node
-LABEL MAINTAINER="vincent.zwingmann@github.com"
+LABEL vzwingma.domatic.tydom.image.authors="vincent.zwingmann@github.com"
 
 WORKDIR /usr/app
 

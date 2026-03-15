@@ -1,0 +1,27 @@
+meta {
+  name: Thermostat
+  type: http
+  seq: 8
+}
+
+put {
+  url: http://{{tydom-bridge-url}}/device/1612171197/endpoints/1612171197
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "name": "setpoint",
+      "value": 19
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

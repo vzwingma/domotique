@@ -1,0 +1,27 @@
+meta {
+  name: Update interrupteur
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{domoticz-url}}/json.htm?type=command&param=switchlight&idx=30&switchcmd=On
+  body: none
+  auth: inherit
+}
+
+params:query {
+  type: command
+  param: switchlight
+  idx: 30
+  switchcmd: On
+}
+
+headers {
+  ~Authorization: Basic c2NyaXB0OnNjcmlwdA==
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

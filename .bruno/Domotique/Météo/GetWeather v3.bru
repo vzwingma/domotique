@@ -1,0 +1,23 @@
+meta {
+  name: GetWeather v3
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.openweathermap.org/data/3.0/onecall?lat=48.7907915&lon=2.272293&appid={{getweather-apikey}}
+  body: none
+  auth: none
+}
+
+params:query {
+  lat: 48.7907915
+  lon: 2.272293
+  appid: {{getweather-apikey}}
+  ~exclude: {part}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
