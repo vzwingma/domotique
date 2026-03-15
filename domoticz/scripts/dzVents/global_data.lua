@@ -34,8 +34,8 @@ return {
         DEVICE_TYDOM_TEMPERATURE = 'Tydom Temperature',
         DEVICE_TYDOM_THERMOSTAT = 'Tydom Thermostat',
         --   Lumières
-        DEVICE_LAMPE_TV = 'Lumière TV',
-        DEVICE_LAMPE_TV_2 = 'Prise TV',
+        DEVICE_LAMPE_TV = 'Prise Lumière TV D.',
+        DEVICE_LAMPE_TV_2 = 'Lumière TV G.',
         DEVICE_LAMPE_SALON = 'Lumière Salon',
         DEVICE_LAMPE_CUISINE = 'Lumière Cuisine',
         DEVICE_LAMPE_BEBE = 'Lumière Bébé',
@@ -166,18 +166,21 @@ return {
             return moment
         end,
         -- # Fonction pour identifier le niveau, suivant l'état du device
-        -- si On  : c'est le level du device
+        -- si On  : c'est le level du device, ou 100 pour un simple switch On/Off
         -- si Off : c'est 0
         getLevelFromState = function(device)
             if(device == nil) then
                 return nil
             end
             if(device.state == 'On') then
-                 -- Ouverture de l'équipement suivant la valeur du niveau
+                 -- Un switch On/Off n'expose pas de "level" : l'état On est assimilé à 100%
+                if(device.level == nil) then
+                    return 100
+                end
                 return device.level
             else
                  -- Si état=Off, le niveau est 0
-               return 0
+                return 0
             end
         end,
         

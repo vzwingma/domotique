@@ -4,7 +4,7 @@ return
 {
     on =
     {
-        devices = { 'Lumière TV', 'Prise TV', 'Lumière Salon', 'Lumière Cuisine' }
+        devices = { 'Prise Lumière TV D.', 'Prise Lumière TV G.', 'Lumière Salon', 'Lumière Cuisine' }
     },
     data = {
         uuid = { initial = "" }
