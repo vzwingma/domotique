@@ -1,4 +1,4 @@
-FROM node:24-slim
+FROM --platform=linux/amd64 node:24-slim
 # Construit à partir de Node
 LABEL vzwingma.domatic.tydom.image.authors="vincent.zwingmann@github.com"
 
