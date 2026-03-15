@@ -4,7 +4,7 @@ return {
         -- Tydom
         VAR_TYDOM_BRIDGE = 'tydom_bridge_host',
         VAR_TYDOM_BRIDGE_AUTH = 'tydom_bridge_auth',
-        -- Livebox
+        -- Freebox
         VAR_FREEBOX_HOST = 'freebox_host',
         VAR_FREEBOX_APP_TOKEN = 'freebox_apptoken',
         -- Connected Devices sur Livebox
@@ -59,41 +59,59 @@ return {
         GROUPE_LUMIERES_SALON = '[Grp] Lumières Salon',
         GROUPE_LUMIERES_TOUTES = '[Grp] Toutes lumières',
         -- ###############################################
+        -- #         SOURCE DE VÉRITÉ TYDOM IDs         #
+        -- ###############################################
+        -- Table centralisée des identifiants Tydom (deviceId / endpointId).
+        -- TOUTE référence à un ID Tydom dans les scripts doit passer par cette table.
+        -- En cas de remplacement matériel, seule cette table est à modifier.
+        --
+        -- Structure :
+        --   TYDOM_DEVICES.thermostat   → chauffage (Tydom_heat_*)
+        --   TYDOM_DEVICES.volets[nom]  → volets (Tydom_volets_*), clé = nom du device Domoticz
+        TYDOM_DEVICES = {
+            thermostat = {
+                deviceId   = 1612171197,
+                endpointId = 1612171197,
+            },
+            volets = {
+                ['Volet Salon G'] = { deviceId = 1612171343, endpointId = 1612171343 },
+                ['Volet Salon D'] = { deviceId = 1612171455, endpointId = 1612171455 },
+                ['Volet Bebe']    = { deviceId = 1612171345, endpointId = 1612171343 },
+                ['Volet Nous']    = { deviceId = 1612171344, endpointId = 1612171343 },
+            },
+        },
+
+        -- ###############################################
         -- #                Tydom DATA                   #
         -- ###############################################
-        -- n° devices Tydom à partir des n° domoticz
-        getTydomDeviceNumberFromDzItem = function(itemName, domoticz)
-            local tydomIds = {}   
-
-            if(itemName == domoticz.helpers.DEVICE_VOLET_SALON_G) then
-                tydomIds.deviceId=1612171343
-                tydomIds.endpointId=1612171343
-            elseif(itemName == domoticz.helpers.DEVICE_VOLET_SALON_D) then
-                tydomIds.deviceId=1612171455
-                tydomIds.endpointId=1612171455
-            elseif(itemName == domoticz.helpers.DEVICE_VOLET_BEBE) then
-                tydomIds.deviceId=1612171345
-                tydomIds.endpointId=1612171343
-            elseif(itemName == domoticz.helpers.DEVICE_VOLET_NOUS) then
-                tydomIds.deviceId=1612171344
-                tydomIds.endpointId=1612171343
-            end
-            return tydomIds
+        -- Retourne l'URI REST du thermostat Tydom (chauffage).
+        -- Usage : domoticz.helpers.getTydomHeatURI(domoticz)
+        getTydomHeatURI = function(domoticz)
+            local ids = domoticz.helpers.TYDOM_DEVICES.thermostat
+            return '/device/' .. ids.deviceId .. '/endpoints/' .. ids.endpointId
         end,
-        -- n° devices domoticz à partir des n° Tydom
-        getDzItemFromTydomDeviceId = function(deviceId, endpointId, domoticz)
-            local dzItemId = nil
-            if(deviceId == '1612171343' and endpointId == '1612171343') then
-                dzItemId = domoticz.helpers.DEVICE_VOLET_SALON_G
-            elseif(deviceId == '1612171455' and endpointId == '1612171455') then
-                dzItemId = domoticz.helpers.DEVICE_VOLET_SALON_D
-            elseif(deviceId == '1612171345' and endpointId == '1612171343') then
-                dzItemId = domoticz.helpers.DEVICE_VOLET_BEBE
-            elseif(deviceId == '1612171344' and endpointId == '1612171343') then
-                dzItemId = domoticz.helpers.DEVICE_VOLET_NOUS
+
+        -- n° devices Tydom à partir des n° domoticz
+        -- Retourne { deviceId, endpointId } ou {} si le nom n'est pas reconnu.
+        getTydomDeviceNumberFromDzItem = function(itemName, domoticz)
+            local mapping = domoticz.helpers.TYDOM_DEVICES.volets[itemName]
+            if mapping ~= nil then
+                return { deviceId = mapping.deviceId, endpointId = mapping.endpointId }
             end
-            return dzItemId
-        end,        
+            return {}
+        end,
+
+        -- n° devices domoticz à partir des n° Tydom
+        -- Retourne le nom du device Domoticz, ou nil si non trouvé.
+        -- Les IDs reçus en paramètre sont des chaînes (issus des headers HTTP).
+        getDzItemFromTydomDeviceId = function(deviceId, endpointId, domoticz)
+            for dzName, ids in pairs(domoticz.helpers.TYDOM_DEVICES.volets) do
+                if tostring(ids.deviceId) == deviceId and tostring(ids.endpointId) == endpointId then
+                    return dzName
+                end
+            end
+            return nil
+        end,
         -- ###############################################
         -- ###           Fonctions utilitaires         ###
         -- ###############################################
@@ -122,6 +140,7 @@ return {
         getModeDomicile = function(domoticz)
             local modeDomicile = domoticz.devices(domoticz.helpers.DEVICE_MODE_DOMICILE).levelName
             domoticz.log("Mode Domicile : [" .. modeDomicile .. "]", domoticz.LOG_INFO)
+            local suffixeMode = ''
             if(modeDomicile == 'Normal') then
                 suffixeMode = ''
             elseif(modeDomicile == 'Vacances') then
@@ -143,19 +162,25 @@ return {
             else
                 moment = nil
             end
-            domoticz.log("  moment de la Journee : [" .. moment .. "]",  domoticz.LOG_DEBUG)
+            domoticz.log("  moment de la Journee : [" .. tostring(moment) .. "]",  domoticz.LOG_DEBUG)
             return moment
         end,
         -- # Fonction pour identifier le niveau, suivant l'état du device
-        -- si On  : c'est le level du device
+        -- si On  : c'est le level du device, ou 100 pour un simple switch On/Off
         -- si Off : c'est 0
         getLevelFromState = function(device)
+            if(device == nil) then
+                return nil
+            end
             if(device.state == 'On') then
-                -- Ouverture de l'équipement suivant la valeur du niveau
-               return device.level
+                 -- Un switch On/Off n'expose pas de "level" : l'état On est assimilé à 100%
+                if(device.level == nil) then
+                    return 100
+                end
+                return device.level
             else
-                -- Si état=Off, le niveau est 0
-               return 0
+                 -- Si état=Off, le niveau est 0
+                return 0
             end
         end,
         
@@ -198,6 +223,53 @@ return {
             end
             return false
         end,
+        -- # Vérification et réalignement silencieux d'un groupe Domoticz à partir de ses items.
+        -- # Si tous les items partagent le même niveau et que le groupe est à un niveau différent,
+        -- # le groupe est réaligné silencieusement (.silent()) sans déclencher de nouvel événement.
+        -- # Applicable aux volets comme aux lampes (getLevelFromState gère l'état Off).
+        -- # @param groupe   : nom du groupe Domoticz (device ou groupe Domoticz)
+        -- # @param items    : liste ordonnée des noms d'items (devices ou groupes)
+        -- # @param uuid     : uuid de traçabilité
+        -- # @param domoticz : contexte domoticz
+        verifyGroupeFromItem = function(groupe, items, uuid, domoticz)
+            domoticz.log("[" .. uuid .. "] Vérification groupe [" .. groupe .. "]", domoticz.LOG_DEBUG)
+            local valeur    = nil
+            local sameLevel = true
+            local missingItem = false
+            for _, itemName in ipairs(items) do
+                local okItem, itemDevice = pcall(function()
+                    return domoticz.devices(itemName)
+                end)
+                local itemLevel = domoticz.helpers.getLevelFromState(itemDevice)
+
+                if not okItem or itemDevice == nil or itemLevel == nil then
+                    domoticz.log("[" .. uuid .. "] Item introuvable pour réalignement groupe [" .. groupe .. "] : " .. itemName, domoticz.LOG_ERROR)
+                    missingItem = true
+                else
+                    domoticz.log("[" .. uuid .. "]  > " .. itemName .. " : " .. itemLevel .. "%", domoticz.LOG_DEBUG)
+                    if valeur == nil then
+                        valeur = itemLevel
+                    else
+                        sameLevel = sameLevel and (valeur == itemLevel)
+                    end
+                end
+            end
+            if valeur == nil or missingItem then return end
+
+            local okGroup, groupDevice = pcall(function()
+                return domoticz.devices(groupe)
+            end)
+            local groupeLevel = domoticz.helpers.getLevelFromState(groupDevice)
+            if not okGroup or groupDevice == nil or groupeLevel == nil then
+                domoticz.log("[" .. uuid .. "] Groupe introuvable pour réalignement : " .. groupe, domoticz.LOG_ERROR)
+                return
+            end
+
+            if sameLevel and groupeLevel ~= valeur then
+                domoticz.log("[" .. uuid .. "] Réalignement groupe [" .. groupe .. "] " .. groupeLevel .. " -> " .. valeur .. "%", domoticz.LOG_INFO)
+                groupDevice.setLevel(valeur).silent()
+            end
+        end,
         -- # Fonction de génération d'UUID
         uuid = function()
             local random = math.random
@@ -208,10 +280,28 @@ return {
                 end)
         end,
         -- ###############################################
+        -- ###  FONCTIONS HTTP — HELPERS COMMUNS       ###
+        -- ###############################################
+
+        -- # Classifie un code HTTP en catégorie lisible.
+        -- # Utilisable par les scripts appelants pour enrichir leur journalisation d'erreur.
+        -- # @return string : 'OK' | 'TIMEOUT/CONNEXION' | 'ERREUR_CLIENT' | 'ERREUR_SERVEUR' | 'INCONNU'
+        httpErrorClass = function(statusCode)
+            local code = statusCode or 0
+            if code >= 200 and code <= 299     then return 'OK'
+            elseif code == 0                   then return 'TIMEOUT/CONNEXION'
+            elseif code >= 400 and code <= 499 then return 'ERREUR_CLIENT'
+            elseif code >= 500                 then return 'ERREUR_SERVEUR'
+            else                               return 'INCONNU'
+            end
+        end,
+
+        -- ###############################################
         -- ###  FONCTIONS HTTP VERS LE BRIDGE TYDOM    ###
         -- ###############################################        
         
         -- # Fonction d'appel GET de la passerelle Tydom
+        -- # IDEMPOTENT — peut être rejoué par l'appelant en cas d'échec transitoire.
         callTydomBridgeGET = function (uriToCall, corrId, callbackName, domoticz)
             domoticz.log("[".. corrId .. "] Appel Tydom GET [" .. uriToCall .. "]", domoticz.LOG_DEBUG)
             local host_tydom_bridge = domoticz.variables(domoticz.helpers.VAR_TYDOM_BRIDGE).value
@@ -230,6 +320,7 @@ return {
         end,
         
         -- # Fonction d'appel POST de la passerelle Tydom
+        -- # NON IDEMPOTENT — ne pas rejouer sans précaution (commande d'actionnement).
         callTydomBridgePOST = function (uriToCall, corrId, domoticz)
             domoticz.log("[".. corrId .. "] Appel Tydom POST [" .. uriToCall .. "]", domoticz.LOG_DEBUG)
             
@@ -245,6 +336,7 @@ return {
         end,
         
         -- # Fonction d'appel PUT de la passerelle Tydom
+        -- # NON IDEMPOTENT — ne pas rejouer sans précaution (commande de positionnement).
         callTydomBridgePUT = function (uriToCall, putData, corrId, callbackName, domoticz)
             domoticz.log("[".. corrId .. "] Appel Tydom PUT [" .. uriToCall .. "]", domoticz.LOG_DEBUG)
             
@@ -268,7 +360,7 @@ return {
         -- ###############################################
         -- ###     FONCTIONS HTTP VERS LA FREEBOX      ###
         -- ###############################################
-        -- Appel GET
+        -- # IDEMPOTENT — peut être rejoué par l'appelant en cas d'échec transitoire.
         callFreeboxGET = function (uriToCall, sessionToken, corrId, callbackName, domoticz)
             
             local host_freebox = domoticz.variables(domoticz.helpers.VAR_FREEBOX_HOST).value

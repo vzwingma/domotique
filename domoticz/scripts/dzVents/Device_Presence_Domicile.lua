@@ -54,12 +54,12 @@ return {
             domoticz.data.uuid = domoticz.helpers.uuid()
             -- Notification lors du changement de présence, si changement
             local presenceDomDevice = domoticz.devices(domoticz.helpers.DEVICE_PRESENCE)
-            if(presenceDomDevice ~= domoticz.data.previousMode) then
+            if(presenceDomDevice.levelName ~= domoticz.data.previousMode) then
                 domoticz.log('[' .. domoticz.data.uuid .. '][' .. domoticz.globalData.scenePhase .. '] Changement Domicile : ' .. item.levelName, domoticz.LOG_INFO)
                 domoticz.helpers.notify('[' .. domoticz.globalData.scenePhase .. '] Changement Domicile : ' .. item.levelName, domoticz.data.uuid, domoticz)
                 replayScene(domoticz.data.uuid, domoticz)
             end
-            domoticz.data.previousMode = presenceDomDevice
+            domoticz.data.previousMode = presenceDomDevice.levelName
         end
     end
 }
