@@ -116,6 +116,6 @@ jobs:
 
       - name: Build ARM image
         run: |
-          cp tydom-bridge/* _docker/build_tydom
+          cp tydom-bridge/*.* _docker/build_tydom
           cd _docker/build_tydom
           docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
