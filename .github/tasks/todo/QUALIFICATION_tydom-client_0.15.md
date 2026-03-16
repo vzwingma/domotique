@@ -1,5 +1,7 @@
 # Qualification de `tydom-client@0.15.1`
 
+> ⛔ **MIGRATION ANNULÉE** — `tydom-client@0.15.1` a été qualifié comme incompatible. La baseline reste `0.13.4`. Ce document est conservé à titre historique.
+
 ## 1. Objet
 
 Ce document consigne la qualification menée après le durcissement de `tydom-bridge`, afin d'évaluer si une migration de `tydom-client` `0.13.4` vers `0.15.1` est envisageable à court terme.
@@ -188,26 +190,19 @@ Les changements suivants ont été appliqués pour rendre `0.15.1` aussi robuste
 
 ### 7.4 Décision
 
-**✅ Migration vers `tydom-client@0.15.1` appliquée.**
+**⛔ Migration vers `tydom-client@0.15.1` — No-Go définitif.**
 
-Le bridge est désormais en `0.15.1` avec les correctifs de robustesse intégrés.
-La migration est considérée comme **terminée sur le plan du code**.
+La migration vers `0.15.1` a été tentée en production sur la branche `feat/upgrade_tydom`.
+Elle a provoqué une **incompatibilité fonctionnelle confirmée** avec le backend Tydom réel.
+
+Un **rollback complet** vers `tydom-client@0.13.4` a été réalisé. La baseline est rétablie et pinned en exact dans `package.json`.
+
+La décision est **définitive** : le bridge restera sur `0.13.4` jusqu'à la qualification complète d'une future version de `tydom-client`. La migration vers `0.15.x` n'est pas prévue dans le backlog courant.
 
 ---
 
 ## 8. Validation restante en production
 
-La validation fonctionnelle complète doit être réalisée sur un backend Tydom réel :
+~~La validation fonctionnelle complète doit être réalisée sur un backend Tydom réel.~~
 
-| Scénario | Attendu |
-|----------|---------|
-| Connexion locale effective | `backendState.status = 'connected'` |
-| `GET /info` | Réponse JSON du boîtier |
-| `GET /devices/data` | Liste des devices |
-| `GET /device/:id/endpoints/:ep` | État d'un endpoint |
-| `PUT /device/:id/endpoints/:ep` | Retour `{ resultat: true }` |
-| `POST /refresh/all` | Retour `{ resultat: true }` |
-| Coupure réseau puis rétablissement | Reconnexion automatique, `connected` rétabli |
-| `POST /reconnect` | Reconnexion forcée opérationnelle |
-
-Jusqu'à la validation sur backend réel, la migration est en **Go conditionnel**.
+> ⛔ **Non applicable** — La migration ayant été annulée suite au No-Go définitif, aucune validation en production sur `0.15.1` n'est prévue. La baseline `0.13.4` est en production.

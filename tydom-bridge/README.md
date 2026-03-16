@@ -8,8 +8,8 @@ Le bridge expose une API REST locale protégée par Basic Auth et traduit les ap
 
 ## Prérequis
 
-- **Node.js** : `>=20` (testé sur v22 — `tydom-client@0.15.x` utilise `fetch` natif, disponible stablement depuis Node 20)
-- **tydom-client** : `0.15.1`
+- **Node.js** : `>=18` (compatible avec `tydom-client@0.13.4`)
+- **tydom-client** : `0.13.4`
 
 ---
 
@@ -102,6 +102,34 @@ Toutes les réponses sont en `application/json`. Les en-têtes `X-CorrId`, `X-Re
 
 ---
 
+## Comportement de robustesse
+
+- **Retry exponentiel** : si la box Tydom est indisponible au démarrage ou en cours de fonctionnement, `connectTydom()` relance automatiquement la connexion avec un backoff exponentiel (départ 5 s, max 60 s, tentatives illimitées).
+- **Mode dégradé 503** : toutes les routes métier retournent une réponse `503 application/json` structurée tant que la connexion Tydom n'est pas établie — le bridge reste toujours joignable.
+- **Health endpoints** : `/health/live` et `/health/ready` permettent de distinguer la vivacité du process de la disponibilité effective du backend Tydom.
+
+---
+
+## Tests
+
+```bash
+cd tydom-bridge
+npm test
+```
+
+La suite Jest + supertest couvre les cas nominaux et dégradés :
+
+- validation de configuration (variables manquantes → refus de démarrage) ;
+- health endpoints sans authentification ;
+- Basic Auth valide / invalide ;
+- routes métier avec backend simulé connecté ;
+- routes métier avec backend déconnecté → `503` ;
+- gestion d'erreur async → `500` ;
+- headers de corrélation `X-CorrId` ;
+- route inconnue → `404`.
+
+---
+
 ## Arrêt propre
 
 Le bridge écoute `SIGINT` et `SIGTERM` :
@@ -112,11 +140,13 @@ Le bridge écoute `SIGINT` et `SIGTERM` :
 
 ## Dépendance critique — `tydom-client`
 
-La baseline retenue est **`tydom-client@0.15.1`**.
+La baseline retenue est **`tydom-client@0.13.4`**, pinned en exact dans `package.json`.
 
-La montée de version depuis `0.13.4` a été qualifiée en sandbox isolé. Le bridge est structurellement compatible avec `0.15.1` sur Node.js ≥ 20. Une validation complète en environnement réel (connexion effective à la box Tydom) est nécessaire avant toute mise en production.
+Une migration vers `0.15.1` a été tentée et qualifiée en sandbox isolé. Elle a été **annulée (No-Go définitif)** en raison d'une incompatibilité fonctionnelle confirmée avec le backend Tydom réel. Un rollback complet vers `0.13.4` a été réalisé.
 
-> **Note :** `tydom-client@0.15.x` remplace `got` par `fetch` natif et exige Node.js ≥ 20. L'image Docker officielle utilise `node:22-slim`. Vérifier la version du runtime avant tout déploiement hors conteneur.
+La migration vers une version supérieure de `tydom-client` n'est pas prévue dans le backlog courant.
+
+> **Note :** `tydom-client@0.13.4` utilise `got` pour les appels HTTP et est compatible Node.js ≥ 18. L'image Docker officielle utilise `node:22-slim`. Vérifier la version du runtime avant tout déploiement hors conteneur.
 
 ---
 

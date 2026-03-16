@@ -188,6 +188,37 @@ Valider ou invalider proprement la montée de version de `tydom-client`.
   - contribuer upstream ;
   - remplacer la dépendance.
 
+### Résultat de la qualification 0.15.1
+
+La migration vers `tydom-client@0.15.1` a été tentée. Elle a été **annulée (No-Go définitif)** en raison d'une incompatibilité fonctionnelle confirmée.
+
+La baseline reste `tydom-client@0.13.4`, pinned en exact dans `package.json`.
+
+La migration vers une version supérieure de `tydom-client` n'est pas prévue dans le backlog courant.
+
+---
+
+## Phase 5 — Tests unitaires et non-régression
+
+### Objectif
+
+Garantir la non-régression du bridge hardened via une suite de tests automatisés.
+
+### Travaux
+
+- Installation Jest + supertest en devDependencies
+- Configuration Jest avec variables d'environnement de test
+- Suite de tests couvrant :
+  - Validation de configuration (variables manquantes)
+  - Health endpoints sans authentification
+  - Authentification Basic Auth (valide / invalide)
+  - Routes métier avec backend simulé connecté
+  - Routes métier avec backend déconnecté → 503
+  - Gestion d'erreur async → 500
+  - Headers de corrélation X-CorrId
+  - Route inconnue → 404
+- Module app.js exportable et testable (`module.exports` conditionnel)
+
 ---
 
 ## 6. Répartition des travaux par agent
@@ -231,7 +262,9 @@ Le plan sera considéré comme exécuté avec succès lorsque :
 - les erreurs backend seront traduites en réponses HTTP propres ;
 - la politique de sécurité et de logs sera clarifiée ;
 - la documentation reflétera l'état réel du bridge ;
-- une décision formelle sera prise sur `tydom-client@0.15.x`.
+- une décision formelle sera prise sur `tydom-client@0.15.x` ;
+- `npm test` passe sans erreur avec l'ensemble des tests de la suite automatisée ;
+- la couverture des cas nominaux et dégradés est assurée par la suite automatisée.
 
 ---
 

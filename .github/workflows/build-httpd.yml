@@ -17,6 +17,7 @@ on:
 jobs:
   # Push image to DockerHub
   build-push-httpdomoticz:
+    name: Build and Push ARM Docker Image
     environment: PROD
     runs-on: ubuntu-latest
     env:      
