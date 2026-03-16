@@ -72,7 +72,7 @@ async function connectTydom() {
         try {
             // Fermer le client précédent s'il existe
             if (client) {
-                try { client.close(); } catch (_) { /* ignore */ }
+                try { client.close(); } catch (err) { console.error('[tydom] Erreur lors de la fermeture du client :', err); }
                 client = null;
             }
             client = createClient({ username, password, hostname: HOST });
@@ -82,7 +82,7 @@ async function connectTydom() {
             return; // succès → on sort de la boucle
         } catch (err) {
             const delay = Math.min(RETRY_BASE_MS * Math.pow(2, attempt - 1), RETRY_MAX_MS);
-            const msg   = err && err.message ? err.message : String(err);
+            const msg   = err?.message ?? String(err);
             setState('degraded', msg);
             console.error('[tydom] Échec tentative #' + attempt + ' : ' + msg
                 + ' — nouvelle tentative dans ' + (delay / 1000) + 's');
@@ -113,7 +113,7 @@ function asyncRoute(fn) {
             console.error('[route] Erreur non gérée :', err);
             res.status(500).json({
                 error:     'internal_error',
-                message:   err && err.message ? err.message : 'Erreur interne',
+                message:   err?.message ?? 'Erreur interne',
                 status:    backendState.status,
                 lastError: backendState.lastError
             });
@@ -282,7 +282,7 @@ function shutdown() {
     }
 
     if (client) {
-        try { client.close(); } catch (_) { /* ignore */ }
+        try { client.close(); } catch (err) { console.error('[bridge] Erreur lors de la fermeture du client :', err); }
         client = null;
     }
 
