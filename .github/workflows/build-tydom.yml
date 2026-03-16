@@ -17,8 +17,8 @@ on:
 jobs:
   # Run unit tests
   test:
+    name: Tests unitaires
     runs-on: ubuntu-latest
-
     steps:
       - 
         name: Checkout the code  
@@ -41,6 +41,7 @@ jobs:
 
   # Scan to Sonar
   scan-sonar:
+    name: SonarCloud Scan
     runs-on: ubuntu-latest
     needs: [ test ]
 
@@ -70,7 +71,7 @@ jobs:
 
   # Push image to DockerHub
   build-push-tydom:
-
+    name: Build and Push ARM Docker Image
     runs-on: ubuntu-latest
     environment: PROD
     needs: 

@@ -17,7 +17,7 @@ on:
 jobs:
   # Download Linky Script
   download-linky:
-
+    name: Download Linky Script
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,6 +36,7 @@ jobs:
             path: /home/runner/work/domotique/domotique/*.py
   # Download DeCONZ Script
   download-deconz:
+    name: Download DeCONZ Script
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,7 +55,7 @@ jobs:
             path: /home/runner/work/domotique/domotique/*.py
   # Push image to DockerHub
   build-push-domoticz:
-
+    name: Build and Push ARM Docker Image
     runs-on: ubuntu-latest
     environment: PROD
     needs: 
@@ -108,7 +109,7 @@ jobs:
         with:
           name: deconz-plugin
           path: _docker/build_domoticz/deconz          
-      - name: Build ARM image
+      - name: Build and Push ARM Docker Image
         run: |
           cp domoticz/scripts/dzVents/*.lua _docker/build_domoticz
           cd _docker/build_domoticz
