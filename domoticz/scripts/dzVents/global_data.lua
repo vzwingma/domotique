@@ -145,7 +145,7 @@ return {
                 suffixeMode = ''
             elseif(modeDomicile == 'Vacances') then
                 suffixeMode = '_vacs'
-            elseif(modeDomicile == 'Eté') then
+            elseif(modeDomicile == 'Summer') then
                 suffixeMode = '_ete'
             end
             domoticz.log("  suffixeMode Domicile : [" .. suffixeMode .. "]",  domoticz.LOG_DEBUG)

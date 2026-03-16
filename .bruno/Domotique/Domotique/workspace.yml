@@ -1,0 +1,12 @@
+opencollection: 1.0.0
+info:
+  name: "Domotique"
+  type: workspace
+
+collections:
+  - name: "Domotique - API"
+    path: ".."
+
+specs:
+
+docs: ''
