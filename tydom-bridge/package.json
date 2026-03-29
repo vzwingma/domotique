@@ -14,7 +14,7 @@
     "test": "jest --runInBand --forceExit"
   },
   "devDependencies": {
-    "jest": "^29",
+    "jest": "^30.0.0",
     "supertest": "^7"
   },
   "author": "vzwingmann"
