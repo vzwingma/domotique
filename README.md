@@ -5,33 +5,33 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
 ## Architecture globale
 
 ```
-        ┌────────────────────────────────────────────────────────┐
-        │                      Domoticz                          │
-        │           (moteur central d'automatisation)            │
-        │    scripts dzVents (Lua)  ←→  BDD SQLite               │
-        └──────────────┬─────────────────┬────────────────────────┘
+        ┌───────────────────────────────────────────────────┐
+        │                      Domoticz                     │
+        │           (moteur central d'automatisation)       │
+        │    scripts dzVents (Lua)  ←→  BDD SQLite          │
+        └──────────────┬─────────────────┬──────────────────┘
                        │                 │
        ┌───────────────▼──────┐   ┌──────▼──────────────────┐
-       │    tydom-bridge      │   │  domoticz-ext-bridge     │
-       │    (Node.js 22)      │   │  (Node.js)               │
-       │    port 9001 / 9101  │   │  port 80                 │
-       └──────────┬───────────┘   └──────────────────────────┘
+       │    tydom-bridge      │   │  domoticz-ext-bridge    │
+       │    (Node.js 22)      │   │  (Node.js)              │
+       │    port 9001 / 9101  │   │  port 80                │
+       └──────────┬───────────┘   └─────────────────────────┘
                   │
        ┌──────────▼───────────┐
-       │    Box Tydom          │
-       │    (Delta Dore)       │
-       │  volets + chauffage   │
+       │    Box Tydom         │
+       │    (Delta Dore)      │
+       │  volets + chauffage  │
        └──────────────────────┘
 
        ┌──────────────────────┐
-       │       deCONZ          │
-       │  (passerelle Zigbee)  │
-       │  port 9102 / 9143     │
-       └──────────┬────────────┘
+       │       deCONZ         │
+       │  (passerelle Zigbee) │
+       │  port 9102 / 9143    │
+       └──────────┬───────────┘
                   │ plugin Domoticz-deCONZ
-       ┌──────────▼────────────┐
-       │       Domoticz         │
-       │   (capteurs Zigbee)    │
+       ┌──────────▼───────────┐
+       │       Domoticz       │
+       │   (capteurs Zigbee)  │
        └──────────────────────┘
 ```
 
