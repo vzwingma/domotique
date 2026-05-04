@@ -57,7 +57,7 @@ jobs:
           node-version: '22' 
       # Run the Sonar scan
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v7
+        uses: SonarSource/sonarqube-scan-action@v8
         with:
           projectBaseDir: tydom-bridge
           args: >
