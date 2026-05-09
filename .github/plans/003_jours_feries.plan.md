@@ -1,6 +1,6 @@
 # Plan d'Action 003 — Jours fériés dans l'orchestration des scènes
 
-**Statut :** EN_COURS  
+**Statut :** COMPLÉTÉ  
 **Date :** 2026-05-09
 
 ---

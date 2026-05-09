@@ -7,7 +7,7 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 ## Plans actifs / en cours
 
-- [`003_jours_feries.plan.md`](./003_jours_feries.plan.md) — **EN_COURS**
+- [`003_jours_feries.plan.md`](./003_jours_feries.plan.md) — **COMPLÉTÉ**
 
 ## Plans archivés / complétés
 
