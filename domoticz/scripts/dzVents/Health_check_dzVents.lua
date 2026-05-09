@@ -107,6 +107,19 @@ return {
         end
 
         -- -----------------------------------------------
+        -- 5. Jours fériés : liste présente et non-vide
+        -- -----------------------------------------------
+        local jf = domoticz.globalData.joursFeries
+        if jf == nil or next(jf) == nil then
+            warn('Jours fériés : liste absente ou vide — émission JoursFeries Refresh')
+            domoticz.emitEvent('JoursFeries Refresh')
+        else
+            local nbJf = 0
+            for _ in pairs(jf) do nbJf = nbJf + 1 end
+            domoticz.log('[' .. uuid .. '] Jours fériés — OK (' .. nbJf .. ' entrée(s))', domoticz.LOG_DEBUG)
+        end
+
+        -- -----------------------------------------------
         -- Résumé
         -- -----------------------------------------------
         if nbWarnings == 0 then
