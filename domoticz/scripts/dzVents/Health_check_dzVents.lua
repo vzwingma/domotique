@@ -26,7 +26,6 @@ return {
     logging = {
         level  = 2, -- domoticz.LOG_INFO (constante numérique : plus sûr lors du chargement du module)
         marker = '[HEALTH CHECK] ',
-        uuid = { initial = "" }
     },
     execute = function(domoticz, item)
         local uuid       = domoticz.helpers.uuid()

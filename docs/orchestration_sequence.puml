@@ -25,12 +25,13 @@ note right of DLSP : Restauration de scenePhase\ndepuis le device texte Phase
 
 == Chargement jours fériés ==
 
-group Timer annuel (1er janvier 00:05) ou mensuel (1er du mois 00:10)
-    Scheduler -> JF : déclenchement timer
+group Timer quotidien 00:05 — exécution réelle uniquement le 1er du mois\n(filtre interne : domoticz.time.day == 1)
+    Scheduler -> JF : déclenchement timer quotidien (00:05)
+    JF -> JF : day == 1 ?\n(sinon : return immédiat)
     JF -> API : GET /jours-feries/metropole/{année}.json
     API --> JF : 200 OK — { "2025-01-01": "1er janvier", ... }
     JF -> GDB : globalData.joursFeries = { ['2025-01-01']=true, ... }
-    note right of JF : N jours fériés chargés pour l'année
+    note right of JF : N jours fériés chargés pour l'année\ncustomEvent "JoursFeries Refresh" → même flux, sans filtre jour
 end
 
 == Health check (08:00) ==

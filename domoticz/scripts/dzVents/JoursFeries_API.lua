@@ -16,8 +16,7 @@ return {
         -- Constante numérique : domoticz.LOG_* peut être nil lors de l'évaluation du module
         -- (cf. Config_check.lua, même convention).
         level  = 2, -- domoticz.LOG_INFO
-        marker = '[JoursFeries] ',
-        uuid = { initial = "" }
+        marker = '[JoursFeries] '
     },
     execute = function(domoticz, item)
 

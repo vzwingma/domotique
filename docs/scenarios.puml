@@ -9,14 +9,22 @@ Title "Scénarios Domoticz"
 partition "**Scénario 0** - Préparation Chauffage" {
 
   note right 
-    7h en semaine.
-    8h le week-end
+    <b>Semaine (sauf jours fériés)</b> : 7h00
+    <b>Week-end et jours fériés</b> : 8h00
   end note
 
-  if (Présence domicile) then (présent)
-    :<b>T°</b>=<i><font:monospaced>param_temp_matin</font></i>;
-  else (absent)
-    :<b>T°</b>=<i><font:monospaced>param_temp_matin_abs</font></i>;
+  if (Jour Férié ou Week-End ?) then (oui — slot tardif 8h)
+    if (Présence domicile) then (présent)
+      :<b>T°</b>=<i><font:monospaced>param_temp_matin</font></i>;
+    else (absent)
+      :<b>T°</b>=<i><font:monospaced>param_temp_matin_abs</font></i>;
+    endif
+  else (non — slot tôt 7h)
+    if (Présence domicile) then (présent)
+      :<b>T°</b>=<i><font:monospaced>param_temp_matin</font></i>;
+    else (absent)
+      :<b>T°</b>=<i><font:monospaced>param_temp_matin_abs</font></i>;
+    endif
   endif
  :Réglage du thermostat à <b>T°</b>;
 }
@@ -25,21 +33,30 @@ partition "**Scénario 0** - Préparation Chauffage" {
 partition "**Scénario 1** - Réveil" {
 
   note right 
-    8h15 en semaine.
-    9h50 le week-end
+    <b>Semaine (sauf jours fériés)</b> : 7h45
+    <b>Week-end et jours fériés</b> : 9h50
   end note
 
   if (Présence domicile) then (présent)
-    switch (Mode domicile?)
-    case ( Normal ou Eté )
-
-      :<b>%Volet</b>=<i><font:monospaced>param_volet_reveil</font></i>;
-
-      :Ouverture du volet 
-      <i>Chambre Nous</i>
-      <u> au minimum</u> à <b><i>%Volet</i></b> %;
-    case ( Vacances )
-    endswitch
+    if (Jour Férié ou Week-End ?) then (oui — slot tardif 9h50)
+      switch (Mode domicile?)
+      case ( Normal ou Eté )
+        :<b>%Volet</b>=<i><font:monospaced>param_volet_reveil</font></i>;
+        :Ouverture du volet 
+        <i>Chambre Nous</i>
+        <u> au minimum</u> à <b><i>%Volet</i></b> %;
+      case ( Vacances )
+      endswitch
+    else (non — slot tôt 7h45)
+      switch (Mode domicile?)
+      case ( Normal ou Eté )
+        :<b>%Volet</b>=<i><font:monospaced>param_volet_reveil</font></i>;
+        :Ouverture du volet 
+        <i>Chambre Nous</i>
+        <u> au minimum</u> à <b><i>%Volet</i></b> %;
+      case ( Vacances )
+      endswitch
+    endif
   else (absent)
   endif
 }
@@ -52,16 +69,25 @@ switch (Mode domicile?)
       partition "**Scénario 2a** - Normal" {
 
         note right 
-          8h30 en semaine
-          10h00 en week-end
+          <b>Semaine (sauf jours fériés)</b> : 8h05
+          <b>Week-end et jours fériés</b> : 10h00
         end note
 
-      if (Présence domicile) then (présent)
-          :<b>%Volet</b>=<i><font:monospaced>param_volet_matin</font></i>;
-        else (absent)
-          :<b>%Volet</b>=<i><font:monospaced>param_volet_matin_abs</font></i>;
-        endif
+      if (Jour Férié ou Week-End ?) then (oui — slot tardif 10h)
+        if (Présence domicile) then (présent)
+            :<b>%Volet</b>=<i><font:monospaced>param_volet_matin</font></i>;
+          else (absent)
+            :<b>%Volet</b>=<i><font:monospaced>param_volet_matin_abs</font></i>;
+          endif
         :Ouverture des volets à <b><i>%Volet</i></b>;
+      else (non — slot tôt 8h05)
+        if (Présence domicile) then (présent)
+            :<b>%Volet</b>=<i><font:monospaced>param_volet_matin</font></i>;
+          else (absent)
+            :<b>%Volet</b>=<i><font:monospaced>param_volet_matin_abs</font></i>;
+          endif
+          :Ouverture des volets à <b><i>%Volet</i></b>;
+      endif
       }
       
     case ( Eté ) 
