@@ -1,0 +1,132 @@
+@startuml "OrchestrationsSequence"
+!theme lightgray
+title Orchestration des scènes Domoticz — Journée type
+
+actor "Planificateur\nDomoticz" as Scheduler
+participant "JoursFeries_API" as JF
+participant "global_data\n(isJourFerie)" as GD
+participant "Scene_0\nPreparationChauffage" as S0
+participant "Scene_1\nReveil" as S1
+participant "Scene_2a\nJournee" as S2a
+participant "Scene_3\nSoiree" as S3
+participant "Scene_4\nNuit_2" as S4
+participant "Device_Label\nScene_Phase" as DLSP
+participant "Health_check\ndzVents" as HC
+participant "Tydom Bridge" as Tydom
+database "globalData" as GDB
+collections "API Jours Fériés\ncalendrier.api.gouv.fr" as API
+
+== Démarrage Domoticz (systemStart) ==
+
+DLSP -> GDB : Lecture device texte "Phase"
+GDB --> DLSP : valeur précédente (ex: "Nuit 2")
+DLSP -> GDB : globalData.scenePhase = "Nuit 2"
+note right of DLSP : Restauration de scenePhase\ndepuis le device texte Phase
+
+== Chargement jours fériés ==
+
+group Timer quotidien 00:05 — exécution réelle uniquement le 1er du mois\n(filtre interne : domoticz.time.day == 1)
+    Scheduler -> JF : déclenchement timer quotidien (00:05)
+    JF -> JF : day == 1 ?\n(sinon : return immédiat)
+    JF -> API : GET /jours-feries/metropole/{année}.json
+    API --> JF : 200 OK — { "2025-01-01": "1er janvier", ... }
+    JF -> GDB : globalData.joursFeries = { ['2025-01-01']=true, ... }
+    note right of JF : N jours fériés chargés pour l'année\ncustomEvent "JoursFeries Refresh" → même flux, sans filtre jour
+end
+
+== Health check (08:00) ==
+
+Scheduler -> HC : timer at 08:00
+HC -> GDB : scenePhase exploitable ?
+HC -> GDB : device Phase < 25h ?
+HC -> GDB : device Freebox < 10 min ?
+HC -> GDB : device Tydom Temperature < 90 min ?
+HC -> GDB : joursFeries non vide ?
+alt joursFeries vide
+    HC -> JF : emitEvent("JoursFeries Refresh")
+    JF -> API : GET /jours-feries/metropole/{année}.json
+    API --> JF : 200 OK
+    JF -> GDB : globalData.joursFeries rechargé
+end
+alt indicateur(s) dégradé(s)
+    HC -> HC : LOG_ERROR + notification Signal
+else tous nominaux
+    HC -> HC : LOG_INFO synthèse OK
+end
+
+== Scene 0 — Préparation Chauffage ==
+
+group Slot tôt (07:00) — semaine uniquement
+    Scheduler -> S0 : timer 07:00 (lun–ven)
+    S0 -> GD : isJourFerie(domoticz)
+    GD -> GDB : lookup joursFeries[date_du_jour]
+    GDB --> GD : true / false
+    alt jour férié
+        GD --> S0 : true → slot ignoré
+        note right of S0 : Jour férié détecté — slot 07:00 skippé
+    else jour ouvré
+        GD --> S0 : false → exécution
+        S0 -> Tydom : setPoint thermostat = param_temp_matin
+        S0 -> DLSP : emitEvent("Scene Phase", "PreparationChauffage")
+        DLSP -> GDB : globalData.scenePhase = "PreparationChauffage"
+    end
+end
+
+group Slot tardif (08:00) — week-end et jours fériés (lun–ven)
+    Scheduler -> S0 : timer 08:00 (sam–dim) ou 08:00 (lun–ven, 3e slot)
+    S0 -> GD : isWeekEnd or isJourFerie ?
+    alt week-end ou jour férié
+        S0 -> Tydom : setPoint thermostat = param_temp_matin
+        S0 -> DLSP : emitEvent("Scene Phase", "PreparationChauffage")
+        DLSP -> GDB : globalData.scenePhase = "PreparationChauffage"
+    else jour ouvré (slot déjà traité à 07:00)
+        note right of S0 : Exécution ignorée (slot tôt déjà traité)
+    end
+end
+
+== Scene 1 — Réveil ==
+
+group 07:45 (sem) / 09:50 (WE+férié)
+    Scheduler -> S1 : timer 07:45 ou 09:50
+    S1 -> GD : isJourFerie(domoticz)
+    alt slot tôt ET jour férié
+        note right of S1 : Slot 07:45 ignoré si jour férié
+    else exécution
+        S1 -> Tydom : ouverture volet chambre à param_volet_reveil %
+        S1 -> DLSP : emitEvent("Scene Phase", "Reveil")
+        DLSP -> GDB : globalData.scenePhase = "Reveil"
+    end
+end
+
+== Scene 2a — Journée (mode Normal) ==
+
+group 08:05 (sem) / 10:00 (WE+férié)
+    Scheduler -> S2a : timer 08:05 ou 10:00
+    S2a -> GD : isJourFerie(domoticz)
+    alt slot tôt ET jour férié
+        note right of S2a : Slot 08:05 ignoré si jour férié
+    else exécution
+        S2a -> Tydom : ouverture tous volets à param_volet_matin %
+        S2a -> Tydom : setPoint thermostat matin
+        S2a -> DLSP : emitEvent("Scene Phase", "Journee")
+        DLSP -> GDB : globalData.scenePhase = "Journee"
+    end
+end
+
+== Scene 3 — Soirée (coucher du soleil +45 min) ==
+
+Scheduler -> S3 : 45 min après crépuscule
+S3 -> Tydom : fermeture volets (individuelle, au max param_volet_soir)
+S3 -> S3 : allumage lampe salon si présence
+S3 -> DLSP : emitEvent("Scene Phase", "Soiree")
+DLSP -> GDB : globalData.scenePhase = "Soiree"
+
+== Scene 4 — Nuit 2 (01:00 sem / 03:00 WE) ==
+
+Scheduler -> S4 : timer 01:00 ou 03:00
+S4 -> Tydom : setPoint thermostat nuit
+S4 -> S4 : extinction toutes lumières
+S4 -> DLSP : emitEvent("Scene Phase", "Nuit 2")
+DLSP -> GDB : globalData.scenePhase = "Nuit 2"
+
+@enduml

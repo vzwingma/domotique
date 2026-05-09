@@ -15,6 +15,26 @@ return
         
         -- Suivi de la phase du jour
         domoticz.data.uuid = domoticz.helpers.uuid()
+
+        -- Guard : déduction du type de déclenchement (tôt = 7h45 semaine, tardif = 9h50 weekend)
+        local isTardif     = (domoticz.time.hour >= 9)
+        local isJourFerie  = domoticz.helpers.isJourFerie(domoticz)
+        local isWeekEnd    = domoticz.helpers.isWeekEnd(domoticz)
+
+        if isTardif then
+            -- Déclenchement tardif : exécuter SEULEMENT si weekend OU jour férié
+            if not isWeekEnd and not isJourFerie then
+                domoticz.log('[' .. tostring(domoticz.data.uuid) .. '] Déclenchement tardif ignoré (semaine non-fériée)', domoticz.LOG_INFO)
+                return
+            end
+        else
+            -- Déclenchement tôt : ignorer si jour férié (le slot tardif prendra le relais)
+            if isJourFerie then
+                domoticz.log('[' .. tostring(domoticz.data.uuid) .. '] Déclenchement matinal ignoré (jour férié)', domoticz.LOG_INFO)
+                return
+            end
+        end
+
         domoticz.emitEvent('Scene Phase', { idx = 0, data = scene.name, uuid = domoticz.data.uuid })
         
         -- Récupération des paramètres et activation suivant le mode de domicile

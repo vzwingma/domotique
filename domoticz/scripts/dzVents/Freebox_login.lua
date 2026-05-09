@@ -49,7 +49,7 @@ return {
     -- #### Fonctions de communication avec la Freebox
 
         -- Authentification/ Login sur Freebox pour obtenir le challenge
-        function freeboxLogin(domoticz)
+        local function freeboxLogin(domoticz)
     
             domoticz.log("[" .. domoticz.data.uuid .. "] Authentification à la Freebox Delta", domoticz.LOG_DEBUG) 
 
@@ -63,7 +63,7 @@ return {
         end
     
         -- Calcul du challenge pour avoir le password
-        function freeboxGetPassword(challenge, domoticz)
+        local function freeboxGetPassword(challenge, domoticz)
     
             domoticz.log("[" .. domoticz.data.uuid .. "] Calcul du mot de passe", domoticz.LOG_DEBUG) 
             local apptoken_freebox = domoticz.variables(domoticz.helpers.VAR_FREEBOX_APP_TOKEN).value
@@ -90,7 +90,7 @@ return {
         end
 
         -- Ouverture de session
-        freeboxOpenSession = function(passHmacSha1, domoticz)
+        local freeboxOpenSession = function(passHmacSha1, domoticz)
     
             domoticz.log("[" .. domoticz.data.uuid .. "] Ouverture de session à la Freebox Delta", domoticz.LOG_DEBUG) 
     
@@ -111,12 +111,12 @@ return {
         end
 
         -- Session ouverte sur la Freebox
-        function freeboxAuthenticated(session_token, domoticz)
+        local function freeboxAuthenticated(session_token, domoticz)
             domoticz.emitEvent('freebox_session', { data = session_token, uuid = domoticz.data.uuid })
         end
 
 
-        freeboxCloseSession = function(uuid, sessionToken, domoticz)
+        local freeboxCloseSession = function(uuid, sessionToken, domoticz)
             domoticz.log("[" .. uuid .. "][sessionToken=" .. sessionToken .. "] Clôture de la session", domoticz.LOG_DEBUG)
             local host_freebox = domoticz.variables(domoticz.helpers.VAR_FREEBOX_HOST).value
             -- Appel de la session
@@ -177,7 +177,11 @@ return {
             domoticz.log("[" .. domoticz.data.uuid .. "] Erreur de connexion à la Freebox " .. item.statusCode .. " - " .. tostring(errMsg) , domoticz.LOG_ERROR)
         end
     elseif(item.isCustomEvent and item.customEvent == 'freebox_endsession') then 
-        freeboxCloseSession(item.json.uuid, item.json.sessionToken, domoticz)
+        if item.json == nil or item.json.uuid == nil or item.json.sessionToken == nil then
+            domoticz.log("[n/a] freebox_endsession : événement mal formé (json, uuid ou sessionToken absent) — clôture de session ignorée", domoticz.LOG_ERROR)
+        else
+            freeboxCloseSession(item.json.uuid, item.json.sessionToken, domoticz)
+        end
     end
 end
 }

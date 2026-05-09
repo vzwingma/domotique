@@ -115,10 +115,36 @@ return {
         -- ###############################################
         -- ###           Fonctions utilitaires         ###
         -- ###############################################
+        -- #### URL de l'API jours fériés (data.gouv.fr) ####
+        -- Usage : domoticz.helpers.JOURS_FERIES_API_URL .. annee .. '.json'
+        JOURS_FERIES_API_URL = 'https://calendrier.api.gouv.fr/jours-feries/metropole/',
+
+        -- # Fonction si le jour courant est un jour férié
+        -- # Vérifie dans domoticz.globalData.joursFeries (chargé par JoursFeries_API.lua).
+        -- # Si la liste est vide/nil → émet 'JoursFeries Refresh' et retourne false (conservatif).
+        -- # @return boolean : true si jour férié, false sinon
+        isJourFerie = function(domoticz)
+            local jf = domoticz.globalData.joursFeries
+            -- Nil guard + empty guard : si la table est absente ou vide, déclencher le refresh
+            if jf == nil or next(jf) == nil then
+                domoticz.log('[isJourFerie] Liste des jours fériés vide ou nil — déclenchement du refresh', domoticz.LOG_INFO)
+                domoticz.emitEvent('JoursFeries Refresh')
+                return false
+            end
+            -- Construire la clé YYYY-MM-DD du jour courant
+            local dateKey = string.format('%04d-%02d-%02d',
+                domoticz.time.year,
+                domoticz.time.month,
+                domoticz.time.day)
+            local result = jf[dateKey] == true
+            domoticz.log('[isJourFerie] ' .. dateKey .. ' -> ' .. tostring(result), domoticz.LOG_DEBUG)
+            return result
+        end,
+
         -- # Fonction si le jour courant est dans le week end
         isWeekEnd = function(domoticz)
             local weekDay = domoticz.time.wday
-            domoticz.log("weekDay = " .. weekDay, domoticz.LOG_INFO)
+            domoticz.log("[isWeekEnd] = " .. weekDay, domoticz.LOG_INFO)
             return (weekDay == 1 or weekDay == 7)
         end,
         -- # Fonction de recherche du suffixe suivant la présence au domicile
@@ -378,6 +404,9 @@ return {
         end
     },
     data = {
-            scenePhase = { initial = nil }
+            scenePhase  = { initial = nil },
+            -- Table de lookup des jours fériés français : { ['YYYY-MM-DD'] = true, ... }
+            -- Alimentée par JoursFeries_API.lua, consultée via domoticz.helpers.isJourFerie(domoticz).
+            joursFeries = { initial = {} }
     }
 }

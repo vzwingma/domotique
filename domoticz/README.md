@@ -35,19 +35,17 @@ L'architecture est organisée implicitement par familles de scripts.
   - émet un `LOG_ERROR` pour chaque prérequis absent, puis un résumé global ;
   - n'interrompt aucun flux : les erreurs sont purement informatives.
 
-- `Health_check_dzVents.lua`
-  - déclenché chaque matin à 08:00 par timer ;
-  - contrôle quotidien de quatre indicateurs de santé :
-    1. `scenePhase` : valeur exploitable (pas `nil` ni `'Inconnue'`) ;
-       si `'Inconnue'` mais device `Phase` < 25h → état transitoire probable après redémarrage (LOG_INFO) ;
-       si `'Inconnue'` et device `Phase` >= 25h → panne avérée (LOG_ERROR) ;
-    2. device `Phase` : dernière mise à jour < 25 heures (preuve qu'une scène a tourné) ;
-    3. device `Freebox` : dernière mise à jour < 10 minutes (polling Freebox ~1 min) ;
-       seuil relevé de 5 à 10 min pour absorber les délais de polling après redémarrage nocturne ;
-    4. device `Tydom Temperature` : dernière mise à jour < 90 minutes (polling Tydom ~60 min) ;
-  - chaque indicateur dégradé produit un `LOG_ERROR` corrélé à un `uuid` et déclenche une notification Signal ;
-  - si tous les indicateurs sont nominaux, un `LOG_INFO` de synthèse est émis ;
-  - n'interrompt ni ne modifie aucun flux existant.
+| `Health_check_dzVents.lua` décrit ci-dessus, 5 indicateurs sont contrôlés quotidiennement (à 08:00) :
+1. `scenePhase` : valeur exploitable (pas `nil` ni `'Inconnue'`) ;
+   si `'Inconnue'` mais device `Phase` < 25h → état transitoire probable après redémarrage (LOG_INFO) ;
+   si `'Inconnue'` et device `Phase` >= 25h → panne avérée (LOG_ERROR) ;
+2. device `Phase` : dernière mise à jour < 25 heures (preuve qu'une scène a tourné) ;
+3. device `Freebox` : dernière mise à jour < 10 minutes (polling Freebox ~1 min) ;
+   seuil relevé de 5 à 10 min pour absorber les délais de polling après redémarrage nocturne ;
+4. device `Tydom Temperature` : dernière mise à jour < 90 minutes (polling Tydom ~60 min) ;
+5. `globalData.joursFeries` : liste non vide ; si vide, émission de l'événement `JoursFeries Refresh` pour forcer le rechargement.
+
+Chaque indicateur dégradé produit un `LOG_ERROR` corrélé à un `uuid` et déclenche une notification Signal.
 
 ### 2.2 Couche d'intégration externe
 
@@ -59,6 +57,10 @@ L'architecture est organisée implicitement par familles de scripts.
 - `Tydom_volets_getPosition.lua`
 - `Tydom_volets_setPosition.lua`
 - `Tydom_refresh_values.lua`
+- `JoursFeries_API.lua`
+  - charge les jours fériés français depuis l'API officielle `calendrier.api.gouv.fr` ;
+  - persiste la table de lookup `{ ['YYYY-MM-DD'] = true }` dans `domoticz.globalData.joursFeries` ;
+  - déclenché annuellement (1er janvier 00:05), mensuellement en failsafe (1er du mois 00:10) et à la demande via l'événement `JoursFeries Refresh`.
 
 Cette couche traduit les objets Domoticz en appels HTTP et inversement.
 
@@ -103,7 +105,8 @@ Ces scripts jouent la partition temporelle de la maison et diffusent la phase co
 | `global_data.lua` | Référentiel de constantes, helpers, table `TYDOM_DEVICES` et wrappers HTTP | Chargement global | Fonctions partagées, `globalData.scenePhase`, IDs Tydom centralisés |
 | `global_HTTP_response.lua` | Callback HTTP générique | `httpResponses` | Logs succès/erreur |
 | `Config_check.lua` | Contrôle de prérequis Domoticz au démarrage | `systemStart` | `LOG_ERROR` par prérequis absent, résumé global |
-| `Health_check_dzVents.lua` | Contrôle quotidien de santé des automatismes (scenePhase, scènes, Freebox, Tydom) | timer `at 08:00` | `LOG_ERROR` + notification Signal si indicateur dégradé ; `LOG_INFO` résumé si tout est nominal |
+| `Health_check_dzVents.lua` | Contrôle quotidien de santé des automatismes (scenePhase, scènes, Freebox, Tydom, jours fériés) — 5 indicateurs | timer `at 08:00` | `LOG_ERROR` + notification Signal si indicateur dégradé ; `LOG_INFO` résumé si tout est nominal |
+| `JoursFeries_API.lua` | Chargement des jours fériés français depuis l'API officielle `calendrier.api.gouv.fr` | timer annuel (1/1 00:05), timer mensuel (1er du mois 00:10), customEvent `JoursFeries Refresh` | `globalData.joursFeries` = table de lookup `{ ['YYYY-MM-DD'] = true }` |
 | `Freebox_login.lua` | Authentification Freebox et gestion de session | timer minute, custom events, callbacks HTTP/shell | Événement `freebox_session`, logout |
 | `Freebox_statut.lua` | Supervision du WAN Freebox | custom event `freebox_session`, callback HTTP | mise à jour capteur Freebox |
 | `Freebox_LAN_statuts.lua` | Supervision LAN et détection téléphones | custom event `freebox_session`, callback HTTP | statuts TV/NAS/Domotique, nb téléphones |
@@ -143,6 +146,7 @@ Ces scripts jouent la partition temporelle de la maison et diffusent la phase co
 - `Devices_Lampes.lua` : `30 minutes after sunrise`
 - `Supervision_IoT_devices.lua` : contrôle quotidien
 - `Health_check_dzVents.lua` : `at 08:00` (contrôle quotidien de santé des automatismes)
+- `JoursFeries_API.lua` : `at 00:05 on 1/1` (chargement annuel) + `at 00:10 on 1` (failsafe mensuel)
 
 Le système mélange donc automation événementielle et polling régulier.
 
@@ -174,6 +178,7 @@ Les principaux événements internes sont :
 - `freebox_initsession`
 - `freebox_session`
 - `freebox_endsession`
+- `JoursFeries Refresh`
 
 Ils constituent le bus d'intégration interne entre scripts.
 
@@ -464,5 +469,64 @@ Tous les helpers sont accessibles via `domoticz.helpers.*` dans n'importe quel s
 | `callTydomBridgeGET` | `callTydomBridgeGET(path, uuid, domoticz)` | Effectue un GET authentifié vers le bridge Tydom (`/path`) avec propagation du `X-CorrId` |
 | `callTydomBridgePUT` | `callTydomBridgePUT(path, data, uuid, cb, domoticz)` | Effectue un PUT authentifié vers le bridge Tydom avec body JSON et callback de résultat |
 | `getTydomDeviceNumberFromDzItem` | `getTydomDeviceNumberFromDzItem(name, domoticz)` | Retourne `{ deviceId, endpointId }` Tydom à partir du nom du device Domoticz (depuis `TYDOM_DEVICES`) |
+| `isJourFerie` | `isJourFerie(domoticz)` | Retourne `true` si la date du jour est un jour férié français (lookup dans `globalData.joursFeries`) ; déclenche `JoursFeries Refresh` si la liste est vide |
+| `JOURS_FERIES_API_URL` | constante | URL de base de l'API officielle des jours fériés : `https://calendrier.api.gouv.fr/jours-feries/metropole/` |
 
 > **Note :** Les helpers `callTydomBridge*` lisent `tydom_bridge_host` et `tydom_bridge_auth` depuis les variables utilisateur Domoticz pour construire l'URL et l'en-tête `Authorization`.
+
+---
+
+## 12. Planification des scènes
+
+### 12.1 Horaires et comportement jour férié
+
+Les scènes dzVents s'exécutent selon deux horaires : un slot **semaine** (tôt) et un slot **week-end / jour férié** (tardif).
+
+| Scène | Script dzVents | Heure semaine | Heure week-end / férié | Comportement jour férié |
+|---|---|---|---|---|
+| Scene 0 | `Scene_0_PreparationChauffage.lua` | 7h00 | 8h00 | Slot 7h ignoré → slot 8h exécuté |
+| Scene 1 | `Scene_1_Reveil.lua` | 7h45 | 9h50 | Slot 7h45 ignoré → slot 9h50 exécuté |
+| Scene 2a | `Scene_2a_Journee.lua` | 8h05 | 10h00 | Slot 8h05 ignoré → slot 10h exécuté |
+| Scene 2b | `Scene_2b_Journee_Ete.lua` | 10h00 | 10h00 | Non impactée |
+| Scene 2c | `Scene_2c_Journee_Vacs.lua` | 10h00 | 10h00 | Non impactée |
+| Scene 3 | `Scene_3_Soiree.lua` | Coucher du soleil | Coucher du soleil | Non impactée |
+| Scene 4 | `Scene_4_Nuit.lua` / `Scene_4_Nuit_2.lua` | 1h00 | 1h00 / 3h00 | Non impactée |
+
+### 12.2 Logique guards dans les scripts
+
+Les scènes 0, 1 et 2a appliquent la logique suivante :
+
+```lua
+local isWeekEnd   = domoticz.time.matchesRule('at xx:xx on sat,sun')
+local isJourFerie = domoticz.helpers.isJourFerie(domoticz)
+
+-- Slot tôt : ignoré si week-end ou jour férié
+if not isWeekEnd and not isJourFerie then
+    -- exécution slot semaine (7h00 / 7h45 / 8h05)
+end
+
+-- Slot tardif : exécuté si week-end OU jour férié
+if isWeekEnd or isJourFerie then
+    -- exécution slot tardif (8h00 / 9h50 / 10h00)
+end
+```
+
+### 12.3 Composants de la feature jours fériés
+
+- **`JoursFeries_API.lua`** : script dzVents qui charge les jours fériés depuis l'API officielle française `calendrier.api.gouv.fr` et persiste le résultat dans `domoticz.globalData.joursFeries`. Déclencheurs : timer annuel (1er janvier 00:05), timer mensuel failsafe (1er du mois 00:10), customEvent `JoursFeries Refresh` (on-demand si liste vide).
+
+- **`isJourFerie(domoticz)`** : helper défini dans `global_data.lua`, accessible via `domoticz.helpers.isJourFerie(domoticz)`. Effectue un lookup dans `globalData.joursFeries` pour la date courante. Si la liste est vide ou absente, déclenche automatiquement un rechargement via `emitEvent('JoursFeries Refresh')`.
+
+### 12.4 Action manuelle requise dans Domoticz
+
+> ⚠️ **Cette étape ne peut pas être automatisée par code.** Elle doit être réalisée dans l'interface du planificateur Domoticz.
+
+Pour que les jours fériés tombant un jour de semaine déclenchent bien la version "tardive" des scènes, il faut ajouter un **3e déclenchement lun-ven** (à l'heure tardive) dans le planificateur Domoticz :
+
+| Scène Domoticz | Déclenchement à ajouter |
+|---|---|
+| PreparationChauffage | lun-ven à 08:00 |
+| Reveil | lun-ven à 09:50 |
+| Journee | lun-ven à 10:00 |
+
+Sans ce 3e slot, un jour férié en semaine ne déclenchera pas le slot tardif, car le planificateur ne l'a pas programmé pour ce créneau en semaine.

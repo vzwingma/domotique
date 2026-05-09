@@ -19,13 +19,12 @@
 --   - En cas d'indicateur dégradé : LOG_ERROR + notification Signal.
 --   - En cas de santé OK : LOG_INFO résumé.
 -- ###############################################
-
 return {
     on = {
         timer = { 'at 08:00' },
     },
     logging = {
-        level  = domoticz.LOG_INFO,
+        level  = 2, -- domoticz.LOG_INFO (constante numérique : plus sûr lors du chargement du module)
         marker = '[HEALTH CHECK] ',
     },
     execute = function(domoticz, item)
@@ -107,6 +106,19 @@ return {
         end
 
         -- -----------------------------------------------
+        -- 5. Jours fériés : liste présente et non-vide
+        -- -----------------------------------------------
+        local jf = domoticz.globalData.joursFeries
+        if jf == nil or next(jf) == nil then
+            warn('Jours fériés : liste absente ou vide — émission JoursFeries Refresh')
+            domoticz.emitEvent('JoursFeries Refresh')
+        else
+            local nbJf = 0
+            for _ in pairs(jf) do nbJf = nbJf + 1 end
+            domoticz.log('[' .. uuid .. '] Jours fériés — OK (' .. nbJf .. ' entrée(s))', domoticz.LOG_DEBUG)
+        end
+
+        -- -----------------------------------------------
         -- Résumé
         -- -----------------------------------------------
         if nbWarnings == 0 then
@@ -116,5 +128,5 @@ return {
             domoticz.log('[' .. uuid .. '] ' .. msg, domoticz.LOG_ERROR)
             domoticz.helpers.notify(msg, uuid, domoticz)
         end
-    end,
+    end
 }

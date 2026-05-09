@@ -24,7 +24,26 @@ return
         end        
         
         domoticz.data.uuid = domoticz.helpers.uuid()
-        
+
+        -- Guard : déduction du type de déclenchement (tôt = 8h05 semaine, tardif = 10h00 weekend)
+        local isTardif     = (domoticz.time.hour >= 9)
+        local isJourFerie  = domoticz.helpers.isJourFerie(domoticz)
+        local isWeekEnd    = domoticz.helpers.isWeekEnd(domoticz)
+
+        if isTardif then
+            -- Déclenchement tardif : exécuter SEULEMENT si weekend OU jour férié
+            if not isWeekEnd and not isJourFerie then
+                domoticz.log('[' .. tostring(domoticz.data.uuid) .. '] Déclenchement tardif ignoré (semaine non-fériée)', domoticz.LOG_INFO)
+                return
+            end
+        else
+            -- Déclenchement tôt : ignorer si jour férié (le slot tardif prendra le relais)
+            if isJourFerie then
+                domoticz.log('[' .. tostring(domoticz.data.uuid) .. '] Déclenchement matinal ignoré (jour férié)', domoticz.LOG_INFO)
+                return
+            end
+        end
+
         -- Activation du groupe (le niveau est suivant la présence Domicile) 
         -- sauf si Eté : dans ce cas, il n'y a que le scénario 2B
         -- sauf si Vacances : dans ce cas, il n'y a que le scénario 2C

@@ -99,16 +99,27 @@ Instruction :
 
 - la phase 2 est terminée ; ne pas rouvrir ce chantier sans identifier un cas de régression précis.
 
-### Phase 3 - Robustesse des intégrations HTTP
+### Phase 3 - Robustesse des intégrations HTTP ✅ Couverte par le lot DEV-3
 
 Objectif : éviter les pannes silencieuses sur Freebox et Tydom.
 
+Livraisons :
+
+- `global_HTTP_response.lua` : journalisation enrichie corrélable via `corrId`, classification HTTP (`httpErrorClass`), compteur `consecutiveErrors` persistant, alerte `LOG_ERROR` dès 3 erreurs consécutives.
+- `Freebox_login.lua` : helpers `shellEscape` et `validateShellInput` pour sécuriser la construction shell ; nil guards sur les champs JSON critiques (`challenge`, `session_token`, payload `freebox_endsession`) ; fonctions internes déclarées `local` (conformité DEV-1).
+- Stratégie retry documentée : le handler `global_HTTP_response.lua` couvre les callbacks POST/PUT non idempotents sans retry ; le retry sur GET idempotents est à la charge de chaque script appelant.
+
+Vigilances à maintenir pour éviter la réintroduction de ces défauts :
+
+- **ne jamais accéder à `item.json.xxx` sans vérifier que `item.json` est non-nil** : utiliser un nil guard complet avant tout accès à un champ de réponse JSON ;
+- **distinguer idempotent / non-idempotent avant d'ajouter un retry** : les appels POST/PUT ne doivent jamais être rejoués automatiquement ;
+- **ne pas journaliser `app_token`** : le secret applicatif Freebox doit rester absent de tous les logs, même en `LOG_DEBUG` ;
+- toute nouvelle commande shell construite avec des valeurs externes doit passer par `shellEscape` et `validateShellInput` ;
+- tout nouveau callback HTTP doit propager le header `X-CorrId` pour la corrélation.
+
 Instruction :
 
-- enrichir d'abord la gestion d'erreur commune ;
-- ne pas ajouter de retry sans distinguer appels idempotents et non idempotents ;
-- journaliser toute erreur critique avec le contexte fonctionnel ;
-- prévoir une alerte opérateur sur erreurs répétées.
+- la phase 3 est terminée ; ne pas rouvrir ce chantier sans identifier un cas de régression ou une nouvelle intégration HTTP.
 
 ### Phase 4 - Réduction du couplage ✅ Couverte par le lot DEV-4
 
@@ -226,7 +237,7 @@ Le backlog initial doit être créé à partir des items suivants :
 
 1. ~~correction des anomalies certaines sur `nil`, `local`, `previousMode` et `scenePhase`~~ → **corrigé dans le lot DEV-1** ;
 2. ~~stratégie d'initialisation fiable de `scenePhase`~~ → **corrigé dans le lot DEV-2** ;
-3. gestion minimale des erreurs HTTP avec logs homogènes ;
+3. ~~gestion minimale des erreurs HTTP avec logs homogènes~~ → **livré dans le lot DEV-3** (`global_HTTP_response.lua`) ;
 4. ~~cartographie de configuration Domoticz attendue~~ → **livré dans le lot DEV-4** (`Config_check.lua`) ;
 5. ~~externalisation progressive des mappings Tydom~~ → **livré dans le lot DEV-4** (`TYDOM_DEVICES`) ;
 6. ~~factorisation de la logique de groupes~~ → **livré dans le lot DEV-5** (`verifyGroupeFromItem`) ;
