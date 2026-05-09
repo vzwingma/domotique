@@ -19,14 +19,14 @@
 --   - En cas d'indicateur dégradé : LOG_ERROR + notification Signal.
 --   - En cas de santé OK : LOG_INFO résumé.
 -- ###############################################
-
 return {
     on = {
         timer = { 'at 08:00' },
     },
     logging = {
-        level  = domoticz.LOG_INFO,
+        level  = 2, -- domoticz.LOG_INFO (constante numérique : plus sûr lors du chargement du module)
         marker = '[HEALTH CHECK] ',
+        uuid = { initial = "" }
     },
     execute = function(domoticz, item)
         local uuid       = domoticz.helpers.uuid()
@@ -129,5 +129,5 @@ return {
             domoticz.log('[' .. uuid .. '] ' .. msg, domoticz.LOG_ERROR)
             domoticz.helpers.notify(msg, uuid, domoticz)
         end
-    end,
+    end
 }

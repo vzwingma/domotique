@@ -1,22 +1,23 @@
 -- ## Script de chargement des jours fériés français depuis l'API officielle.
 -- ## API : https://calendrier.api.gouv.fr/jours-feries/metropole/{annee}.json
 -- ## Déclencheurs :
--- ##   - Timer  : 1er janvier 00:05 (chargement annuel)
--- ##   - Timer  : 1er du mois 00:10 (failsafe mensuel, redémarrage ou dérive)
+-- ##   - Timer  : quotidien à 00:05 — n'agit que le 1er du mois (filtre dans execute)
 -- ##   - customEvent 'JoursFeries Refresh' (on-demand si liste vide)
 -- ## Résultat : domoticz.globalData.joursFeries = { ['YYYY-MM-DD'] = true, ... }
 return {
     on = {
-        timer = {
-            'at 00:05 on 1/1',  -- chargement annuel (1er janvier)
-            'at 00:10 on 1',    -- failsafe mensuel  (1er de chaque mois)
-        },
+        -- Timer quotidien simple : la syntaxe 'at HH:MM on N' (jour du mois) n'est pas
+        -- portable en dzVents. On filtre dans execute() sur domoticz.time.day == 1.
+        timer         = { 'at 00:05' },
         customEvents  = { 'JoursFeries Refresh' },
         httpResponses = { 'jours_feries_response' },
     },
     logging = {
-        level  = domoticz.LOG_DEBUG,
-        marker = '[JoursFeries] '
+        -- Constante numérique : domoticz.LOG_* peut être nil lors de l'évaluation du module
+        -- (cf. Config_check.lua, même convention).
+        level  = 2, -- domoticz.LOG_INFO
+        marker = '[JoursFeries] ',
+        uuid = { initial = "" }
     },
     execute = function(domoticz, item)
 
@@ -24,7 +25,7 @@ return {
         local function chargerJoursFeries(uuid)
             local annee = tostring(domoticz.time.year)
             local url   = domoticz.helpers.JOURS_FERIES_API_URL .. annee .. '.json'
-            domoticz.log('[' .. uuid .. '] Appel API jours fériés : ' .. url, domoticz.LOG_DEBUG)
+            domoticz.log('[' .. uuid .. '] Appel API jours fériés : ' .. url, domoticz.LOG_INFO)
             domoticz.openURL({
                 url      = url,
                 method   = 'GET',
@@ -33,11 +34,15 @@ return {
             })
         end
 
-        -- ## Timer ou customEvent → déclencher le chargement
+        -- ## Timer quotidien → agir uniquement le 1er du mois
+        -- ## customEvent 'JoursFeries Refresh' → toujours agir (on-demand)
         if item.isTimer or (item.isCustomEvent and item.customEvent == 'JoursFeries Refresh') then
+            if item.isTimer and domoticz.time.day ~= 1 then
+                return  -- pas le 1er du mois : rien à faire
+            end
             local uuid = domoticz.helpers.uuid()
             domoticz.log('[' .. uuid .. '] Chargement des jours fériés déclenché ('
-                .. (item.isTimer and 'timer' or 'customEvent') .. ')', domoticz.LOG_INFO)
+                .. (item.isTimer and 'timer 1er du mois' or 'customEvent') .. ')', domoticz.LOG_INFO)
             chargerJoursFeries(uuid)
 
         -- ## Réponse HTTP de l'API jours fériés
