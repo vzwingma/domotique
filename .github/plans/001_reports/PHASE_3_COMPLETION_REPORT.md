@@ -218,12 +218,31 @@
 **Observations informatives :** 1 (ANOMALIE-3)
 
 ### T3.5 — DOCly : finalisation documentation post DEV-3
-**Statut :** 🔄 EN COURS
+**Statut :** ✅ DONE
 
-**Périmètre à documenter :**
-- `INSTRUCTIONS_TRAVAUX_dzVents.md` : Phase 3 → statut `✅ Couverte par le lot DEV-3` + vigilances
-- `ORCHESTRATION_dzVents.md` : si impacté
-- `README.md` : si exploitation visible (conventions HTTP, Freebox)
+**Fichiers Mis à Jour :**
+- `.github/tasks/todo/INSTRUCTIONS_TRAVAUX_dzVents.md` — Phase 3 marquée ✅, livraisons détaillées, vigilances et instruction finale ; backlog item 3 barré
+- `.github/tasks/todo/ORCHESTRATION_dzVents.md` — DEV-3 marqué ✅, livrables corrigés (pas de retry dans le handler, délégué aux appelants), définition de terminé mise à jour
+- `docs/Orchestration.md` — Section "Observabilité" enrichie avec `global_HTTP_response.lua` (httpErrorClass, consecutiveErrors, X-CorrId) ; 3 règles HTTP ajoutées dans "Règles de non-régression"
+- `README.md` — Aucun changement (pas de section exploitation dzVents/HTTP)
+
+**Sections Mises à Jour :**
+- INSTRUCTIONS_TRAVAUX_dzVents.md § Phase 3 : remplacement complet (instructions futures → livraisons + vigilances + instruction)
+- INSTRUCTIONS_TRAVAUX_dzVents.md § Backlog item 3 : barré + mention DEV-3
+- ORCHESTRATION_dzVents.md § DEV-3 : périmètre corrigé (wrappers HTTP global_data retirés — non livrés), livrables réels, définition de terminé
+- docs/Orchestration.md § Observabilité : +1 bullet global_HTTP_response.lua
+- docs/Orchestration.md § Règles de non-régression : +3 règles HTTP (X-CorrId, nil guard JSON, app_token)
+
+**Vérifications :**
+- ✅ Terminologie cohérente (corrId, consecutiveErrors, httpErrorClass, HTTP_ERROR_THRESHOLD) dans tous les docs mis à jour
+- ✅ Stratégie retry documentée de façon cohérente (pas de retry dans le handler ; retry GET délégué aux scripts appelants)
+- ✅ Aucune information contradictoire entre INSTRUCTIONS et ORCHESTRATION
+- ✅ docs/Orchestration.md reste le seul document public lié depuis README.md — mis à jour en priorité
+- ✅ Formatage Markdown vérifié, listes et titres cohérents
+
+**Notes :**
+- ANOMALIE-3 (session_token en LOG_DEBUG) non documentée comme règle d'interdiction — conservée intentionnellement (token éphémère) ; mention ajoutée dans la règle de non-régression de docs/Orchestration.md comme observation informative
+- Les wrappers HTTP dans global_data.lua mentionnés dans T3.2 n'ont pas été livrés (le rapport T3.2 ne les liste pas) ; la référence erronée dans ORCHESTRATION_dzVents.md a été corrigée
 
 ---
 
@@ -247,4 +266,4 @@ Trois anomalies identifiées lors de la validation statique de `Freebox_login.lu
 
 ## Décision de passage à la phase suivante
 
-🔄 **Phase 3 en attente de clôture** — T3.2 ✅, T3.3 ✅, T3.4 ✅. En attente de T3.5 (DOCly) pour clôture définitive.
+✅ **Phase 3 COMPLÉTÉE** — T3.1 ✅, T3.2 ✅, T3.3 ✅, T3.4 ✅, T3.5 ✅. Toutes les tâches closes. Plan 001 peut être basculé en **Complété** dans `.github/plans/README.md`.

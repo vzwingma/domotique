@@ -7,10 +7,11 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 ## Plans actifs / en cours
 
-- [`001_dzvents_stabilisation.plan.md`](./001_dzvents_stabilisation.plan.md) — **EN_COURS**
+*(aucun plan en cours)*
 
 ## Plans archivés / complétés
 
+- [`001_dzvents_stabilisation.plan.md`](./001_dzvents_stabilisation.plan.md) — **COMPLÉTÉ**
 - [`002_tydom_bridge_hardening.plan.md`](./002_tydom_bridge_hardening.plan.md) — **COMPLÉTÉ**
 
 

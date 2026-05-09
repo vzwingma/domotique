@@ -24,13 +24,13 @@
 
 ## 2) État historique et statut global
 
-Statut global du plan : **En cours (historique majoritairement complété, lot DEV-3 restant à clôturer)**.
+Statut global du plan : **Complété (tous les lots clos, documentation finalisée)**.
 
 | Lot | Intitulé | Statut |
 |---|---|---|
 | DEV-1 | Stabilisation immédiate (bugs avérés) | ✅ Complété |
 | DEV-2 | Initialisation fiable de `scenePhase` | ✅ Complété |
-| DEV-3 | Robustesse HTTP + sécurisation Freebox | 🟡 À finaliser |
+| DEV-3 | Robustesse HTTP + sécurisation Freebox | ✅ Complété |
 | DEV-4 | Réduction du couplage de configuration | ✅ Complété |
 | DEV-5 | Factorisation + observabilité | ✅ Complété |
 
@@ -110,7 +110,7 @@ Statut global du plan : **En cours (historique majoritairement complété, lot D
 
 ## Phase 3 — DEV-3 restant (à exécuter/valider)
 **Objectif :** terminer la robustesse des intégrations HTTP et durcir Freebox.
-**Statut :** 🟡 En attente de clôture
+**Statut :** ✅ Complétée
 
 ### T3.1
 - **Agent :** ARCos
