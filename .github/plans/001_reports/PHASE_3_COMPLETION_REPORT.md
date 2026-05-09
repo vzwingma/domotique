@@ -1,7 +1,7 @@
 # PHASE 3 COMPLETION REPORT — DEV-3 Robustesse HTTP + sécurisation Freebox
 
 **Plan :** [001_dzvents_stabilisation.plan.md](../001_dzvents_stabilisation.plan.md)  
-**Statut phase :** 🔄 IN_PROGRESS (T3.4 QA complétée — documentation T3.5 manquante)
+**Statut phase :** ✅ COMPLÉTÉE (T3.2 ✅ T3.3 ✅ T3.4 ✅ T3.5 ✅)
 
 ---
 
@@ -218,7 +218,7 @@
 **Observations informatives :** 1 (ANOMALIE-3)
 
 ### T3.5 — DOCly : finalisation documentation post DEV-3
-**Statut :** ❌ À EXÉCUTER
+**Statut :** 🔄 EN COURS
 
 **Périmètre à documenter :**
 - `INSTRUCTIONS_TRAVAUX_dzVents.md` : Phase 3 → statut `✅ Couverte par le lot DEV-3` + vigilances
@@ -233,16 +233,13 @@
 
 Trois anomalies identifiées lors de la validation statique de `Freebox_login.lua`. Aucune n'est bloquante pour la clôture fonctionnelle.
 
-| ID | Fichier | Ligne(s) | Nature | Sévérité |
-|---|---|---|---|---|
-| ANOMALIE-1 | `Freebox_login.lua` | 52, 66, 93, 114, 119 | 5 fonctions internes déclarées sans `local` (DEV-1) | Moyenne — correction dans lot futur |
-| ANOMALIE-2 | `Freebox_login.lua` | 179-180 | Nil guard absent sur payload `freebox_endsession` | Moyenne — risque crash si event mal formé |
-| ANOMALIE-3 | `Freebox_login.lua` | 120, 172 | `session_token` journalisé en LOG_DEBUG | Observation — à évaluer selon politique sécurité |
+| ID | Fichier | Ligne(s) | Nature | Sévérité | Correction |
+|---|---|---|---|---|---|
+| ANOMALIE-1 | `Freebox_login.lua` | 52, 66, 93, 114, 119 | 5 fonctions internes déclarées sans `local` (DEV-1) | Moyenne | ✅ Corrigé — `local` ajouté sur les 5 déclarations |
+| ANOMALIE-2 | `Freebox_login.lua` | 179-180 | Nil guard absent sur payload `freebox_endsession` | Moyenne | ✅ Corrigé — guard complet ajouté avec LOG_ERROR + abandon |
+| ANOMALIE-3 | `Freebox_login.lua` | 120, 172 | `session_token` journalisé en LOG_DEBUG | Observation | 🔵 Conservé intentionnellement (token éphémère, LOG_DEBUG uniquement) |
 
-**Décision :** Ces anomalies sont consignées pour correction dans un lot futur dédié. Elles ne bloquent pas la clôture de Phase 3 car :
-- ANOMALIE-1 : impact pratique faible (noms de fonctions uniques dans le repo)
-- ANOMALIE-2 : le chemin `freebox_endsession` est émis de façon contrôlée par le système
-- ANOMALIE-3 : le `session_token` est un token éphémère (non le `app_token` long-lived protégé)
+**Décision :** ANOMALIE-1 et ANOMALIE-2 ont été corrigées chirurgicalement immédiatement après la QA (aucun impact métier, comportement Freebox inchangé). ANOMALIE-3 conservée (token éphémère, non le `app_token` long-lived protégé).
 
 `global_HTTP_response.lua` est conforme sans réserve.
 

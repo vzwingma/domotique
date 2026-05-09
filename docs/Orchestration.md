@@ -104,6 +104,7 @@ Cycle de vie :
 
 - `Config_check.lua` (boot) verifie pre-requis Domoticz (devices, groupes, scenes, variables) et journalise les manques.
 - `Health_check_dzVents.lua` (08:00) controle l'etat global (`scenePhase`, `Phase`, Freebox, Tydom Temperature) et notifie en cas de degradation.
+- `global_HTTP_response.lua` (socle) surveille chaque callback HTTP : classification par `httpErrorClass()` (OK / TIMEOUT-CONNEXION / ERREUR_CLIENT / ERREUR_SERVEUR / INCONNU), compteur `consecutiveErrors` persistant, alerte `LOG_ERROR` declenchee au seuil de 3 erreurs consecutives (`HTTP_ERROR_THRESHOLD = 3`). Chaque callback est correle via le header `X-CorrId`.
 - Convention de logs attendue :
   - `marker` : `"[Domaine] "`
   - message : `"[" .. uuid .. "] " .. message`
@@ -116,4 +117,7 @@ Cycle de vie :
 - Ne jamais hardcoder un `deviceId`/`endpointId` Tydom dans un script metier.
 - Utiliser `getTydomHeatURI(domoticz)` pour le thermostat.
 - Utiliser `verifyGroupeFromItem(...)` pour tout realignement groupe <- items.
+- Tout nouveau callback HTTP doit propager le header `X-CorrId` pour permettre la correlation dans `global_HTTP_response.lua`.
+- Ne jamais acceder a `item.json.xxx` sans nil guard complet sur `item.json` (et sur `item.json.result` si applicable).
+- `app_token` Freebox ne doit figurer dans aucun log (meme en `LOG_DEBUG`) ; le `session_token` ephemere peut etre journalise en `LOG_DEBUG` selon la politique locale.
 

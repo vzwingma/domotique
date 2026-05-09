@@ -121,26 +121,25 @@ Definition de termine :
 - `getMomentJournee` retourne une valeur cohérente après redémarrage simulé
 - revue QA-2 validée
 
-### DEV-3 - Robustesse HTTP et sécurisation Freebox
+### DEV-3 - Robustesse HTTP et sécurisation Freebox ✅
 
 Perimetre :
 
 - `global_HTTP_response.lua`
-- wrappers HTTP dans `global_data.lua`
 - `Freebox_login.lua`
 
 Livrables :
 
-- journalisation enrichie
-- compteur d'erreurs consécutives
-- retry borné sur appels idempotents
-- pas de retry sur les appels non idempotents
-- sécurisation et isolement de la commande shell Freebox
+- journalisation enrichie et corrélable via `corrId` (header `X-CorrId`)
+- classification HTTP `httpErrorClass()` : OK / TIMEOUT-CONNEXION / ERREUR_CLIENT / ERREUR_SERVEUR / INCONNU
+- compteur `consecutiveErrors` persistant ; alerte `LOG_ERROR` dès 3 erreurs consécutives (`HTTP_ERROR_THRESHOLD`)
+- pas de retry dans le handler (callbacks POST/PUT non idempotents) ; retry sur GET idempotents délégué aux scripts appelants
+- `shellEscape` et `validateShellInput` dans `Freebox_login.lua` ; nil guards complets sur les champs JSON critiques (`challenge`, `session_token`, payload `freebox_endsession`) ; fonctions internes déclarées `local`
 
 Definition de termine :
 
-- erreurs HTTP visibles et corrélées
-- retries bornés
+- erreurs HTTP visibles avec `corrId` et classification `httpErrorClass`
+- pas de retry sur actions non idempotentes (documenté et commenté)
 - revue QA-3 validée
 
 ### DEV-4 - Réduction du couplage de configuration
