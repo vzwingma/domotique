@@ -1,8 +1,8 @@
 commandArray = {}
 
--- ###############################################
--- #           CONFIG CHECK — DEV-4              #
--- ###############################################
+-- #######################################
+-- #           CONFIG CHECK              #
+-- #######################################
 -- Contrôle de prérequis Domoticz au démarrage.
 --
 -- Ce script vérifie, une seule fois au boot, que tous les devices, groupes,
@@ -28,7 +28,7 @@ return {
         system = { 'start' },
     },
     logging = {
-        level    = 3, -- domoticz.LOG_INFO (constante numérique : domoticz n'est pas disponible au chargement)
+        level    = domoticz.LOG_INFO,
         marker   = '[CONFIG CHECK] ',
     },
     execute = function(domoticz, item)
@@ -137,7 +137,7 @@ return {
             -- Connexion Freebox
             domoticz.helpers.VAR_FREEBOX_HOST,
             domoticz.helpers.VAR_FREEBOX_APP_TOKEN,
-            domoticz.helpers.VAR_LIVEBOX_DEVICES,
+            domoticz.helpers.VAR_FREEBOX_DEVICES,
             -- Paramètres métier (mode Normal)
             domoticz.helpers.VAR_TEMPERATURE_MATIN,
             domoticz.helpers.VAR_TEMPERATURE_SOIR,

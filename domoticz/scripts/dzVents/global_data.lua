@@ -7,8 +7,8 @@ return {
         -- Freebox
         VAR_FREEBOX_HOST = 'freebox_host',
         VAR_FREEBOX_APP_TOKEN = 'freebox_apptoken',
-        -- Connected Devices sur Livebox
-        VAR_LIVEBOX_DEVICES = 'livebox_devices',
+        -- Connected Devices sur Freebox
+        VAR_FREEBOX_DEVICES = 'freebox_devices',
         
         -- #### Configuration d'usage ####
         -- ces variables sont ensuite suffixées par le mode Domicile

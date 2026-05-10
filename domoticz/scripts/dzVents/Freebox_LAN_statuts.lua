@@ -91,7 +91,7 @@ return {
         function updatePersonnalConnectedDevices(mapStatutsWifi, domoticz)
             local nbPersonnalDevicesUp = 0
             
-            local personnalDevicesTab = domoticz.utils.stringSplit(domoticz.variables(domoticz.helpers.VAR_LIVEBOX_DEVICES).value, ",")
+            local personnalDevicesTab = domoticz.utils.stringSplit(domoticz.variables(domoticz.helpers.VAR_FREEBOX_DEVICES).value, ",")
             for i, personnalDevice in ipairs(personnalDevicesTab) do 
                 if(mapStatutsWifi[personnalDevice]) then
                     domoticz.log("[" .. domoticz.data.uuid .. "] Wifi > tel [" .. personnalDevice .. "] connecté", domoticz.LOG_DEBUG)
