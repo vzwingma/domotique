@@ -1,6 +1,6 @@
--- ###############################################
--- #       HEALTH CHECK DZVENTS — DEV-5          #
--- ###############################################
+-- ########################################
+-- #       HEALTH CHECK DZVENTS           #
+-- ########################################
 -- Contrôle quotidien de santé des automatismes dzVents.
 --
 -- Indicateurs vérifiés (à 08:00 chaque matin) :
@@ -24,8 +24,9 @@ return {
         timer = { 'at 08:00' },
     },
     logging = {
-        level  = 2, -- domoticz.LOG_INFO (constante numérique : plus sûr lors du chargement du module)
+        level  = domoticz.LOG_INFO,
         marker = '[HEALTH CHECK] ',
+        uuid = { initial = "" }
     },
     execute = function(domoticz, item)
         local uuid       = domoticz.helpers.uuid()

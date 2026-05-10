@@ -15,8 +15,9 @@ return {
     logging = {
         -- Constante numérique : domoticz.LOG_* peut être nil lors de l'évaluation du module
         -- (cf. Config_check.lua, même convention).
-        level  = 2, -- domoticz.LOG_INFO
-        marker = '[JoursFeries] '
+        level  = domoticz.LOG_INFO,
+        marker = '[JoursFeries] ',
+        uuid = { initial = "" }
     },
     execute = function(domoticz, item)
 
@@ -35,10 +36,7 @@ return {
 
         -- ## Timer quotidien → agir uniquement le 1er du mois
         -- ## customEvent 'JoursFeries Refresh' → toujours agir (on-demand)
-        if item.isTimer or (item.isCustomEvent and item.customEvent == 'JoursFeries Refresh') then
-            if item.isTimer and domoticz.time.day ~= 1 then
-                return  -- pas le 1er du mois : rien à faire
-            end
+        if (item.isTimer and domoticz.time.day ~= 1) or (item.isCustomEvent and item.customEvent == 'JoursFeries Refresh') then
             local uuid = domoticz.helpers.uuid()
             domoticz.log('[' .. uuid .. '] Chargement des jours fériés déclenché ('
                 .. (item.isTimer and 'timer 1er du mois' or 'customEvent') .. ')', domoticz.LOG_INFO)
