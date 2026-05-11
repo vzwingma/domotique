@@ -5,10 +5,10 @@ Ces instructions s'appliquent en priorite quand vous travaillez dans domoticz/sc
 ## Agents et orchestration
 
 Le projet suit une orchestration multi-agents avec validation humaine a chaque etape:
-- ARCos [v2.3]: planification et decisions architecturales
-- DEVon [v2.1]: implementation
-- QUALvin [v2.3]: verification qualite
-- DOCly [v2.2]: documentation
+- ARCos [v2.7]: planification et decisions architecturales
+- DEVon [v2.3]: implementation
+- QUALvin [v2.5]: verification qualite
+- DOCly [v2.4]: documentation
 
 Les fichiers de specificites projet sont:
 - .github/instructions/architect.instructions.md
