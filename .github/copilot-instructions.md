@@ -27,9 +27,10 @@ Les fichiers de specificites projet sont:
 
 ## Etat documentaire du depot
 
-- Le depot ne contient pas de dossier docs/ a ce jour.
-- docs/ARCHITECTURE.md est donc absent: en fin d'initiative, deleguer a DOCly la creation de ce document.
+- docs/ existe et contient : ARCHITECTURE.md, scenarios.puml, orchestration_sequence.puml, Orchestration.md, Retroconception.md.
+- docs/adr/ existe et contient ADR-TEMPLATE.md + les ADRs numerotes (ex: 001-jours-feries-integration-api-gouv.md).
 - Les references BEST_PRACTICES.md, CODING_STANDARDS.md, CONTRIBUTING.md, CHANGELOG.md et configuration ESLint ne sont pas presentes au niveau du repo (hors dependances node_modules).
+- En cas d'ecart doc/code, corriger la doc dans le meme changement que le code.
 
 ## Architecture dzVents
 
@@ -80,11 +81,12 @@ Jusqu'a stabilisation:
 ### DEV-5 (groupes + health check)
 - Tout realignement groupe <- items passe par verifyGroupeFromItem(groupe, items, uuid, domoticz).
 - Mettre a jour les appels dans Groupes_Volets.lua, Tydom_volets_setPosition.lua, Devices_Lampes_Groupe.lua si la hierarchie change.
-- Health_check_dzVents.lua (08:00) controle:
+- Health_check_dzVents.lua (08:00) controle 5 indicateurs:
   - scenePhase exploitable
   - device Phase recemment mis a jour (< 25h)
   - Freebox recente (< 10 min)
   - Tydom Temperature recente (< 90 min)
+  - globalData.joursFeries non vide (emet JoursFeries Refresh si vide)
 
 ## Conventions de logs
 
@@ -103,6 +105,22 @@ Dans tous les scripts dzVents:
 - Conserver les noms d'evenements existants sauf migration explicite.
 - Ne pas renommer devices/groupes/scenes/variables Domoticz sans plan de migration valide.
 - Ne pas casser la tracabilite uuid.
+
+### Syntaxe timer dzVents (regles critiques)
+
+Formats valides pour le champ `timer` :
+- `'at HH:MM'` — quotidien a l'heure donnee
+- `'at HH:MM on weekdays'` / `'at HH:MM on weekends'`
+- `'at HH:MM on mon,tue,wed,thu,fri'`
+
+Formats INVALIDES (causent un crash au chargement du module) :
+- `'at HH:MM on N/M'` — la notation date N/M (ex: 1/1 pour 1er janvier) n'est PAS supportee
+- `'at HH:MM on N'` (N = jour du mois) — syntaxe incertaine, a eviter
+
+Pour un declenchement le 1er de chaque mois ou le 1er janvier : utiliser `'at HH:MM'` (quotidien) et filtrer dans execute() :
+```lua
+if item.isTimer and domoticz.time.day ~= 1 then return end
+```
 
 ## Regles par domaine
 
@@ -136,7 +154,7 @@ Pour toute modification dzVents, verifier au minimum:
 - qualite des logs (marker, uuid, niveau)
 - coherence des realignements de groupes
 - seuils/indicateurs Health_check_dzVents.lua si polling modifie
-- documentation impactee
+- documentation impactee : domoticz/README.md, docs/ARCHITECTURE.md, docs/scenarios.puml (diagramme d'activite des scenes), docs/adr/ si decision architecturale majeure
 
 ## Point faible ouvert
 
