@@ -115,11 +115,16 @@ docker build -t vzwingmadomatic/httpd:latest .
 
 Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 - la configuration Apache (`httpd.conf`) avec le placeholder `__SERVER_NAME__` substitué au build via CI/CD (secret `SERVER_NAME`)
-- **le certificat n'est plus embarqué** — il est monté via volume Docker depuis `/home/pi/appli/letsencrypt`
+- un **certificat TLS auto-signé** généré à build time via `openssl` (valide 10 ans, renouvelé à chaque rebuild CI/CD)
 
 ---
 
 ## Gestion du certificat TLS
+
+### Situation actuelle — Certificat auto-signé
+
+L'image embarque un certificat **auto-signé** généré à build time (`openssl req -x509`, 10 ans).  
+Impact : avertissement navigateur sur l'accès externe — attendu.
 
 ### Contraintes Let's Encrypt avec `freeboxos.fr`
 
@@ -129,15 +134,14 @@ Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 | TLS-ALPN-01 | port 443 public | ❌ même contrainte |
 | DNS-01 (automatique) | aucun | ❌ `freeboxos.fr` = DNS géré par Free, pas d'API pour ajouter des TXT |
 
-> **Let's Encrypt automatisé est impossible avec `domatique.freeboxos.fr`** dans la configuration actuelle.  
-> Le container `acme.sh` est en place et prêt — il fonctionnera dès qu'un **domaine personnel** avec une API DNS supportée sera utilisé.
+> **Let's Encrypt automatisé est impossible avec `domatique.freeboxos.fr`** dans la configuration actuelle.
 
 ---
 
-### Option A — Domaine personnel + Cloudflare DNS ✅ Recommandé
+### Option A — Domaine personnel + Cloudflare DNS ✅ Recommandé (quand disponible)
 
 Acheter un domaine (~1–10 €/an chez OVH, Namecheap…) et déléguer le DNS à Cloudflare (gratuit).  
-acme.sh dispose d'un hook `dns_cf` (Cloudflare) pleinement automatisé — aucun port entrant requis.
+Ajouter le container `acme.sh` (`neilpang/acme.sh`) à la stack avec le hook `dns_cf` — aucun port entrant requis.
 
 #### Pré-requis
 

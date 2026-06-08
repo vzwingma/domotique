@@ -10,19 +10,6 @@ services:
       - /home/pi/appli/httpd_logs:/usr/local/apache2/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - acme-data:/acme.sh:ro
-    restart: always
-# ACME.SH (Let's Encrypt auto-renewal via DNS-01 / Freebox DNS API)
-  acme.sh:
-    image: neilpang/acme.sh:latest
-    environment:
-      - FREEBOX_APP_ID=${FREEBOX_APP_ID}
-      - FREEBOX_API_KEY=${FREEBOX_API_KEY}
-    volumes:
-      - acme-data:/acme.sh
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    command: daemon
     restart: always
 # TYDOM
   tydom-bridge:
@@ -81,11 +68,3 @@ services:
       - WATCHTOWER_POLL_INTERVAL=60
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-
-volumes:
-  acme-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/pi/appli/acme.sh
