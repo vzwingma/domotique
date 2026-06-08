@@ -1,0 +1,94 @@
+{
+  "name": "Home-local",
+  "variables": [
+    {
+      "name": "tydom-bridge-url",
+      "value": "domatique:9101",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    },
+    {
+      "name": "tydom-url",
+      "value": "192.168.1.14",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    },
+    {
+      "name": "domoticz-url",
+      "value": "192.168.1.83:8443",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    },
+    {
+      "name": "tydom-bridge-login",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "tydom-bridge-pwd",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "tydom-mac",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "tydom-pwd",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "domoticz-login",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "domoticz-pwd",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "callmebot-phone",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "callmebot-apikey",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "name": "getweather-apikey",
+      "value": "",
+      "type": "text",
+      "enabled": true,
+      "secret": true
+    }
+  ],
+  "info": {
+    "type": "bruno-environment",
+    "exportedAt": "2026-05-17T16:43:54.922Z",
+    "exportedUsing": "Bruno/v3.3.0"
+  }
+}
