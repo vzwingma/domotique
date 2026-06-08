@@ -124,42 +124,62 @@ Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 | Propriété | Valeur |
 |---|---|
 | Type | **Let's Encrypt** (signé, 90 jours) |
-| Challenge | HTTP-01 (webroot, port 80) |
-| Emplacement sur le Pi | `/home/pi/appli/letsencrypt/` (bind-mount) |
-| Emplacement dans le container | `/etc/letsencrypt/live/<domaine>/fullchain.pem` + `privkey.pem` |
-| Renouvellement | Automatique — container `certbot` toutes les 12h |
-| NAT requis | Freebox port 80 public → Pi port 80 (en plus de 38243→8243) |
+| Challenge | DNS-01 (plugin `dns_freebox`, aucun port entrant requis) |
+| Emplacement sur le Pi | `/home/pi/appli/acme.sh/` (bind-mount) |
+| Emplacement dans le container httpd | `/acme.sh/<domaine>/fullchain.cer` + `<domaine>.key` |
+| Renouvellement | Automatique — container `acme.sh` en mode daemon toutes les 12h |
+| NAT requis | **Aucun port 80 nécessaire** — challenge DNS uniquement |
+
+### Pré-requis — Enregistrement de l'application Freebox (une seule fois)
+
+acme.sh utilise l'API Freebox pour créer le TXT record `_acme-challenge`. Il faut d'abord autoriser l'accès :
+
+```bash
+# 1. Déclarer l'application auprès de la Freebox
+curl -X POST http://mafreebox.freebox.fr/api/v9/login/authorize \
+  -H "Content-Type: application/json" \
+  -d '{"app_id":"acme_sh","app_name":"ACME.sh","app_version":"1.0","device_name":"Raspberry Pi"}'
+
+# → Appuyer sur le bouton physique de la Freebox pour autoriser l'accès
+# → La réponse contient { "app_token": "..." }
+```
+
+Conserver `app_id` (`acme_sh`) et `app_token` — ils constituent `FREEBOX_APP_ID` et `FREEBOX_API_KEY`.
+
+Les exposer comme variables d'environnement sur le Pi (fichier `.env` dans `_docker/` ou `~/.profile`) :
+
+```bash
+export FREEBOX_APP_ID=acme_sh
+export FREEBOX_API_KEY=<app_token obtenu ci-dessus>
+```
 
 ### Bootstrap — 1ère installation (procédure manuelle)
 
 À exécuter **une seule fois** avant le premier démarrage de la stack avec SSL :
 
 ```bash
-# 1. Créer les répertoires sur le Pi
-mkdir -p /home/pi/appli/letsencrypt /home/pi/appli/certbot-www
+# 1. Créer le répertoire sur le Pi
+mkdir -p /home/pi/appli/acme.sh
 
-# 2. Démarrer httpd-proxy seul (port 80 disponible pour ACME)
-docker compose -f domotique-compose.yml up -d httpd-proxy
-
-# 3. Obtenir le certificat initial
-docker compose -f domotique-compose.yml run --rm certbot \
-  certbot certonly --webroot \
-  -w /var/www/certbot \
+# 2. Émettre le certificat initial (DNS-01, sans port 80)
+docker compose -f domotique-compose.yml run --rm \
+  -e FREEBOX_APP_ID=${FREEBOX_APP_ID} \
+  -e FREEBOX_API_KEY=${FREEBOX_API_KEY} \
+  acme.sh --issue --dns dns_freebox \
   -d domatique.freeboxos.fr \
-  --email votre@email.com \
-  --agree-tos --no-eff-email
+  --server letsencrypt
 
-# 4. Démarrer la stack complète
+# 3. Démarrer la stack complète
 docker compose -f domotique-compose.yml up -d
 ```
 
-> ⚠️ Le NAT Freebox port 80 doit être ouvert **avant** l'étape 3.
+> ℹ️ Aucun NAT port 80 requis. Le challenge DNS-01 crée un enregistrement TXT via l'API Freebox.
 
 ### Renouvellement automatique
 
-Le container `certbot` tourne en boucle et tente un renouvellement toutes les 12h.
+Le container `acme.sh` tourne en mode daemon et tente un renouvellement toutes les 12h.
 Let's Encrypt renouvelle effectivement le certificat à partir de J-30 avant expiration.
-Apache relit les certificats à chaque nouvelle connexion TLS — aucun reload manuel requis.
+Apache relit les certificats au prochain redémarrage du container — aucun reload manuel requis pour les renouvellements courants (fenêtre de 30 jours).
 
 ---
 

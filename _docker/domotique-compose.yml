@@ -4,23 +4,25 @@ services:
   httpd-proxy:
     image: vzwingmadomatic/httpd:latest
     ports:
-      - 80:80
       - 8243:8243  
       - 8280:8280      
     volumes:
       - /home/pi/appli/httpd_logs:/usr/local/apache2/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - letsencrypt:/etc/letsencrypt:ro
-      - certbot-www:/var/www/certbot:ro
+      - acme-data:/acme.sh:ro
     restart: always
-# CERTBOT (Let's Encrypt auto-renewal)
-  certbot:
-    image: certbot/certbot:latest
+# ACME.SH (Let's Encrypt auto-renewal via DNS-01 / Freebox DNS API)
+  acme.sh:
+    image: neilpang/acme.sh:latest
+    environment:
+      - FREEBOX_APP_ID=${FREEBOX_APP_ID}
+      - FREEBOX_API_KEY=${FREEBOX_API_KEY}
     volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot-www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet --webroot -w /var/www/certbot; sleep 12h & wait $!; done'"
+      - acme-data:/acme.sh
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    command: daemon
     restart: always
 # TYDOM
   tydom-bridge:
@@ -81,15 +83,9 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-  letsencrypt:
+  acme-data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/pi/appli/letsencrypt
-  certbot-www:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/pi/appli/certbot-www
+      device: /home/pi/appli/acme.sh
