@@ -1,34 +1,33 @@
 ---
-description: "Skill — Guide de parallélisation avec /fleet pour tous les agents. Appliqué automatiquement."
-applyTo: "**"
+name: "fleet-guide"
+description: "Skill — Guide parallélisation `/fleet` pour tous agents. Appliqué automatiquement."
 ---
 
 # Skill : Parallélisation avec /fleet
 
-> `/fleet` est le mode d'exécution parallèle du CLI Copilot.
-> Il dispatche plusieurs sous-agents simultanément, réduisant le temps total d'exécution.
+> `/fleet` = mode exécution parallèle CLI Copilot. Dispatche plusieurs sous-agents simultanément, réduit temps total.
 
 ---
 
 ## Quand utiliser /fleet
 
-- **Tâches indépendantes du même agent** : Plusieurs composants / services / fichiers sans dépendance entre eux
-- **Délégation multi-agents en parallèle** : Deux agents peuvent démarrer en même temps (ex: QUALvin + DOCly sur la même feature après DEVon)
-- **Phases parallèles d'un Plan d'Action** : Quand deux phases peuvent s'exécuter simultanément
+- **Tâches indépendantes du même agent**: Plusieurs composants/services/fichiers sans dépendance
+- **Délégation multi-agents en parallèle**: Deux agents démarrent simultanément (ex: QUALvin + DOCly sur même feature après DEVon)
+- **Phases parallèles d'un Plan d'Action**: Deux phases s'exécutent simultanément
 
 ---
 
 ## Quand NE PAS utiliser /fleet
 
-- Quand la tâche B **dépend du résultat** de la tâche A
-- Quand deux sous-tâches **modifient le même fichier** (risque de conflit)
-- Quand un fichier de setup commun doit être créé d'abord
+- Tâche B **dépend du résultat** de tâche A
+- Deux sous-tâches **modifient le même fichier** (risque conflit)
+- Fichier setup commun doit être créé d'abord
 
 ---
 
 ## Comment indiquer l'usage de /fleet
 
-Dans ton plan ou ta délégation, signaler explicitement les tâches parallélisables :
+Dans plan ou délégation, signaler explicitement tâches parallélisables:
 
 ```
 💡 Ces tâches sont indépendantes → lancer en /fleet :
@@ -42,7 +41,7 @@ Dans ton plan ou ta délégation, signaler explicitement les tâches parallélis
 
 | Situation | Mode recommandé |
 |---|---|
-| Tâche B dépend de la tâche A | Séquentiel |
+| Tâche B dépend de tâche A | Séquentiel |
 | Tâches A et B sans lien | `/fleet` |
 | DEVon terminé → QUALvin + DOCly | `/fleet` pour QUALvin + DOCly |
-| Plusieurs éléments indépendants à traiter | `/fleet` |
+| Plusieurs éléments indépendants | `/fleet` |

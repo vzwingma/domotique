@@ -1,27 +1,27 @@
 ---
+name: "adr-writing"
 description: "Skill — Procédure de rédaction d'un Architecture Decision Record (ADR) après accord ARCos + humain. Appliqué automatiquement."
-applyTo: "**"
 ---
 
 # Skill : Rédaction d'un Architecture Decision Record (ADR)
 
-> Ce skill décrit la **procédure standard** pour créer un ADR après qu'une décision architecturale a été prise conjointement par 🟠 ARCos et le 👤 Développeur humain.
-> **Qui fait quoi :** ARCos prépare le contenu, 🟣 DOCly rédige toujours le fichier.
-> Modèle à utiliser : `docs/adr/ADR-TEMPLATE.md`
+> Skill describe standard procedure create ADR after architectural decision made by 🟠 ARCos + 👤 Developer human.
+> **Who do what:** ARCos prepare content, 🟣 DOCly always write file.
+> Template use: `docs/adr/ADR-TEMPLATE.md`
 
 ---
 
 ## Quand créer un ADR
 
-Un ADR **doit** être créé immédiatement après que le 👤 Développeur humain a validé la solution choisie (étape 3 de la méthodologie ARCos), pour les décisions qui :
+ADR **must** be created immediately after 👤 Developer human validate chosen solution (step 3 ARCos methodology), for decisions that:
 
-- Introduisent une **nouvelle technologie ou bibliothèque** dans le projet
-- Définissent un **nouveau pattern architectural** (couche, service, état global, routing…)
-- Modifient une **convention existante** de façon structurelle
-- Impliquent un **choix de sécurité** ou de conformité
-- Résultent d'une **comparaison explicite de solutions** (l'analyse est déjà produite par ARCos)
+- Introduce **new tech or library** in project
+- Define **new architectural pattern** (layer, service, global state, routing…)
+- Modify **existing convention** structurally
+- Involve **security choice** or compliance
+- Result from **explicit solution comparison** (analysis already produced by ARCos)
 
-> 💡 Si la décision est triviale ou locale (ex: renommer une variable, ajouter un champ), **ne pas créer d'ADR**.
+> 💡 If decision trivial or local (ex: rename variable, add field), **no ADR**.
 
 ---
 
@@ -31,10 +31,10 @@ Un ADR **doit** être créé immédiatement après que le 👤 Développeur huma
 |---|---|
 | **Dossier** | `docs/adr/` |
 | **Nom de fichier** | `NNN-titre-court.md` (ex: `003-choix-librairie-ui.md`) |
-| **Numéro** | Séquentiel à 3 chiffres, à partir du dernier ADR existant + 1 |
-| **Titre** | Kebab-case, court, décrivant la décision (pas le problème) |
+| **Numéro** | Sequential 3 digits, from last existing ADR + 1 |
+| **Titre** | Kebab-case, short, describe decision (not problem) |
 
-Pour trouver le prochain numéro : lister les fichiers dans `docs/adr/` et prendre le numéro suivant.
+Find next number: list files in `docs/adr/` take next number.
 
 ---
 
@@ -42,16 +42,16 @@ Pour trouver le prochain numéro : lister les fichiers dans `docs/adr/` et prend
 
 | Rôle | Responsabilité |
 |---|---|
-| 🟠 **ARCos** | Prépare le contenu de l'ADR : contexte, décision, alternatives (issues de l'analyse comparative), conséquences, mise en œuvre |
-| 🟣 **DOCly** | Rédige le fichier ADR dans `docs/adr/` à partir du contenu fourni par ARCos |
+| 🟠 **ARCos** | Prepare ADR content: context, decision, alternatives (from comparative analysis), consequences, implementation |
+| 🟣 **DOCly** | Write ADR file in `docs/adr/` from content provided by ARCos |
 
-**ARCos ne crée jamais le fichier ADR lui-même.** Il produit le contenu structuré et délègue à DOCly.
+**ARCos never create ADR file itself.** Produce structured content, delegate to DOCly.
 
 ---
 
 ## Procédure ARCos — Préparer le contenu de l'ADR
 
-Après la décision humaine, ARCos produit un bloc de délégation à DOCly structuré ainsi :
+After human decision, ARCos produce delegation block to DOCly structured thus:
 
 ```markdown
 ## 📋 Contenu ADR à rédiger
@@ -97,25 +97,25 @@ Nous avons décidé de [DÉCISION RETENUE, en une phrase directe].
 
 ## Procédure DOCly — Rédiger le fichier ADR
 
-Quand ARCos délègue la rédaction d'un ADR :
+When ARCos delegate ADR writing:
 
-1. **Lire le contenu fourni** par ARCos (bloc ci-dessus)
-2. **Déterminer le numéro** : lister `docs/adr/` et prendre le numéro suivant
-3. **Créer le fichier** `docs/adr/NNN-titre-court.md` à partir du template `docs/adr/ADR-TEMPLATE.md`
-4. **Remplir chaque section** avec le contenu fourni par ARCos
-5. **Ne pas interpréter** : recopier fidèlement les décisions et alternatives fournies
+1. **Read content provided** by ARCos (block above)
+2. **Determine number**: list `docs/adr/` take next number
+3. **Create file** `docs/adr/NNN-titre-court.md` from template `docs/adr/ADR-TEMPLATE.md`
+4. **Fill each section** with content provided by ARCos
+5. **No interpret**: copy faithfully decisions and alternatives provided
 
 ---
 
 ## Checklist qualité d'un bon ADR
 
-- [ ] Le contexte explique **pourquoi** une décision était nécessaire
-- [ ] La décision est énoncée en **une phrase directe** ("Nous avons décidé de…")
-- [ ] Au moins **2 alternatives** sont documentées avec raison de rejet
-- [ ] Les conséquences incluent des **points négatifs** (pas que positifs)
-- [ ] La mise en œuvre liste les **fichiers et tâches de suivi** concrètes
-- [ ] Le statut est `Acceptée` (jamais laissé vide ou `Proposée` sauf exception)
-- [ ] Le numéro est séquentiel et le nom en kebab-case
+- [ ] Context explain **why** decision needed
+- [ ] Decision stated in **one direct sentence** ("Nous avons décidé de…")
+- [ ] At least **2 alternatives** documented with rejection reason
+- [ ] Consequences include **negative points** (not only positive)
+- [ ] Implementation list **files and follow-up tasks** concrete
+- [ ] Status is `Acceptée` (never empty or `Proposée` except exception)
+- [ ] Number sequential and name kebab-case
 
 ---
 
