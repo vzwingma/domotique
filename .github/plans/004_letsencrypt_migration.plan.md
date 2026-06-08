@@ -1,8 +1,8 @@
 # Plan d'Action 004 — Migration certificat TLS vers Let's Encrypt
 
-**Statut :** COMPLÉTÉ  
+**Statut :** BLOQUÉ — En attente de domaine personnel  
 **Date :** 2026-06-08  
-**Amendé le :** 2026-06-08 (v2 — migration HTTP-01 → DNS-01)
+**Amendé le :** 2026-06-08 (v2 — contraintes réelles documentées)
 
 ---
 
@@ -26,13 +26,30 @@ Voir [ADR-002](`docs/adr/002-letsencrypt-certificat-proxy-httpd.md`).
 
 ---
 
-## ⚠️ Amendement v2 — Migration HTTP-01 → DNS-01
+## ⚠️ Amendement v2 — Contraintes réelles avec `freeboxos.fr`
 
 **Contexte :** La Freebox ne permet pas de NAT sur les ports publics inférieurs à 32678.  
-Le challenge HTTP-01 (certbot, port 80) est donc **infaisable** dans ce contexte.
+De plus, `freeboxos.fr` est géré par Free — il est impossible d'y ajouter des enregistrements TXT (`_acme-challenge`).  
+Le plugin `dns_freebox` **n'existe pas** dans acme.sh (confirmé par l'erreur "Cannot find DNS API hook for: dns_freebox").
 
-**Décision :** Remplacement de `certbot` par `acme.sh` avec le plugin `dns_freebox`.  
-Le challenge DNS-01 crée un enregistrement TXT `_acme-challenge` via l'API Freebox — aucun port entrant requis.
+**Bilan :**
+
+| Challenge ACME | Faisable ? | Raison |
+|---|---|---|
+| HTTP-01 (certbot) | ❌ | NAT Freebox min 32678 |
+| TLS-ALPN-01 | ❌ | même contrainte |
+| DNS-01 `dns_freebox` | ❌ | plugin inexistant + Free ne permet pas d'ajouter TXT sur `freeboxos.fr` |
+
+**Let's Encrypt est impossible avec `domatique.freeboxos.fr` dans la configuration actuelle.**
+
+**Solution retenue à terme :** Domaine personnel + Cloudflare DNS (`dns_cf`) — aucun port requis, renouvellement 100% automatique.
+
+### État de l'infrastructure (v2)
+
+Le container `acme.sh` est en place et prêt. La configuration est fonctionnelle dès qu'un domaine personnel avec API DNS (ex: Cloudflare) sera utilisé :
+- Mettre à jour `ServerName` (secret GitHub `SERVER_NAME`)
+- Passer `dns_freebox` → `dns_cf` + variable `CF_Token` dans `.env`
+- Exécuter le bootstrap (procédure dans `_docker/build_httpd/README.md`)
 
 ### Changements apportés (2026-06-08)
 
@@ -45,14 +62,16 @@ Le challenge DNS-01 crée un enregistrement TXT `_acme-challenge` via l'API Free
 
 ---
 
-## Prérequis hors code (actions manuelles — v2)
+## ⚠️ Amendement v2 — Prérequis hors code (domaine personnel)
 
 | Action | Responsable | Statut |
 |---|---|---|
-| Enregistrer app acme.sh auprès de l'API Freebox + autorisation physique box | 👤 Développeur humain | À faire |
-| Récupérer et configurer `FREEBOX_APP_ID` / `FREEBOX_API_KEY` (env Pi) | 👤 Développeur humain | À faire |
+| Acquérir un domaine personnel (OVH, Namecheap…) | 👤 Développeur humain | **À faire — bloquant** |
+| Déléguer le DNS à Cloudflare (gratuit) | 👤 Développeur humain | À faire |
+| Configurer `CF_Token` comme variable d'env sur le Pi | 👤 Développeur humain | À faire |
 | Créer répertoire `/home/pi/appli/acme.sh/` sur le Pi | 👤 Développeur humain | À faire |
-| Exécuter procédure bootstrap acme.sh (1ère émission) | 👤 Développeur humain | À faire |
+| Mettre à jour secret GitHub `SERVER_NAME` avec le nouveau domaine | 👤 Développeur humain | À faire |
+| Exécuter procédure bootstrap acme.sh (1ère émission, `dns_cf`) | 👤 Développeur humain | À faire |
 
 > Procédure bootstrap détaillée dans `_docker/build_httpd/README.md` — section "Bootstrap — 1ère installation".
 

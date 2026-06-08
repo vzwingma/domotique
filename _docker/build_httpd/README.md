@@ -119,65 +119,70 @@ Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 
 ---
 
-## Gestion du certificat TLS (Let's Encrypt)
+## Gestion du certificat TLS
 
-| Propriété | Valeur |
-|---|---|
-| Type | **Let's Encrypt** (signé, 90 jours) |
-| Challenge | DNS-01 (plugin `dns_freebox`, aucun port entrant requis) |
-| Emplacement sur le Pi | `/home/pi/appli/acme.sh/` (bind-mount) |
-| Emplacement dans le container httpd | `/acme.sh/<domaine>/fullchain.cer` + `<domaine>.key` |
-| Renouvellement | Automatique — container `acme.sh` en mode daemon toutes les 12h |
-| NAT requis | **Aucun port 80 nécessaire** — challenge DNS uniquement |
+### Contraintes Let's Encrypt avec `freeboxos.fr`
 
-### Pré-requis — Enregistrement de l'application Freebox (une seule fois)
+| Challenge ACME | Port requis | Faisable avec cette config ? |
+|---|---|---|
+| HTTP-01 (webroot) | port 80 public | ❌ NAT Freebox min port 32678 |
+| TLS-ALPN-01 | port 443 public | ❌ même contrainte |
+| DNS-01 (automatique) | aucun | ❌ `freeboxos.fr` = DNS géré par Free, pas d'API pour ajouter des TXT |
 
-acme.sh utilise l'API Freebox pour créer le TXT record `_acme-challenge`. Il faut d'abord autoriser l'accès :
+> **Let's Encrypt automatisé est impossible avec `domatique.freeboxos.fr`** dans la configuration actuelle.  
+> Le container `acme.sh` est en place et prêt — il fonctionnera dès qu'un **domaine personnel** avec une API DNS supportée sera utilisé.
+
+---
+
+### Option A — Domaine personnel + Cloudflare DNS ✅ Recommandé
+
+Acheter un domaine (~1–10 €/an chez OVH, Namecheap…) et déléguer le DNS à Cloudflare (gratuit).  
+acme.sh dispose d'un hook `dns_cf` (Cloudflare) pleinement automatisé — aucun port entrant requis.
+
+#### Pré-requis
+
+1. Domaine enregistré, nameservers pointant vers Cloudflare
+2. Clé API Cloudflare (`CF_Token` ou `CF_Key`+`CF_Email`) sur le Pi
+3. Enregistrement DNS A `mon-domaine.tld` → IP publique Freebox (ou DDNS)
+4. NAT Freebox 38243 → Pi 8243 (déjà en place)
+
+#### Variables d'environnement (`.env` dans `_docker/`)
 
 ```bash
-# 1. Déclarer l'application auprès de la Freebox
-curl -X POST http://mafreebox.freebox.fr/api/v9/login/authorize \
-  -H "Content-Type: application/json" \
-  -d '{"app_id":"acme_sh","app_name":"ACME.sh","app_version":"1.0","device_name":"Raspberry Pi"}'
-
-# → Appuyer sur le bouton physique de la Freebox pour autoriser l'accès
-# → La réponse contient { "app_token": "..." }
+CF_Token=<Cloudflare API Token>       # ou CF_Key + CF_Email
 ```
 
-Conserver `app_id` (`acme_sh`) et `app_token` — ils constituent `FREEBOX_APP_ID` et `FREEBOX_API_KEY`.
-
-Les exposer comme variables d'environnement sur le Pi (fichier `.env` dans `_docker/` ou `~/.profile`) :
-
-```bash
-export FREEBOX_APP_ID=acme_sh
-export FREEBOX_API_KEY=<app_token obtenu ci-dessus>
-```
-
-### Bootstrap — 1ère installation (procédure manuelle)
-
-À exécuter **une seule fois** avant le premier démarrage de la stack avec SSL :
+#### Bootstrap
 
 ```bash
 # 1. Créer le répertoire sur le Pi
 mkdir -p /home/pi/appli/acme.sh
 
-# 2. Émettre le certificat initial (DNS-01, sans port 80)
+# 2. Émettre le certificat initial
 docker compose -f domotique-compose.yml run --rm \
-  -e FREEBOX_APP_ID=${FREEBOX_APP_ID} \
-  -e FREEBOX_API_KEY=${FREEBOX_API_KEY} \
-  acme.sh --issue --dns dns_freebox \
-  -d domatique.freeboxos.fr \
+  -e CF_Token=${CF_Token} \
+  acme.sh --issue --dns dns_cf \
+  -d mon-domaine.tld \
   --server letsencrypt
 
-# 3. Démarrer la stack complète
+# 3. Mettre à jour ServerName dans la config (secret GitHub SERVER_NAME)
+# 4. Démarrer la stack complète
 docker compose -f domotique-compose.yml up -d
 ```
 
-> ℹ️ Aucun NAT port 80 requis. Le challenge DNS-01 crée un enregistrement TXT via l'API Freebox.
+#### Renouvellement automatique
 
-### Renouvellement automatique
+Le container `acme.sh` en mode daemon renouvelle toutes les 12h (effectif à J-30).  
+Apache reprend le cert renouvelé au prochain restart du container.
 
-Le container `acme.sh` tourne en mode daemon et tente un renouvellement toutes les 12h.
+---
+
+### Option B — Certificat auto-signé (fallback)
+
+Si aucun domaine personnel n'est disponible, revenir à un certificat auto-signé embarqué dans l'image :  
+voir l'historique git avant le Plan 004 (commit de migration Let's Encrypt).
+
+---
 Let's Encrypt renouvelle effectivement le certificat à partir de J-30 avant expiration.
 Apache relit les certificats au prochain redémarrage du container — aucun reload manuel requis pour les renouvellements courants (fenêtre de 30 jours).
 

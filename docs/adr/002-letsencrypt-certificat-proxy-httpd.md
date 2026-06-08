@@ -1,7 +1,7 @@
 # ADR 002 — Migration certificat TLS vers Let's Encrypt (proxy Apache httpd)
 
 **Date :** 2026-06-08  
-**Statut :** Amendée (v2 — 2026-06-08)  
+**Statut :** En cours — bloqué (contraintes DNS `freeboxos.fr`)  
 **Décideurs :** 🟠 ARCos + 👤 Développeur humain
 
 ---
@@ -21,18 +21,20 @@ Le proxy Apache HTTPD (`httpd-proxy`) expose l'accès externe à Domoticz sur `h
 - Infrastructure sur Raspberry Pi, déployée via Docker Compose
 - Port externe non-standard : `38243` (ne change pas la faisabilité du challenge ACME)
 
-**Contrainte découverte post-implémentation v1 :**
-- La Freebox ne permet pas de NAT sur les ports publics < 32678 → port 80 public inaccessible
-- Le challenge HTTP-01 (certbot) est donc **infaisable** dans ce contexte
+**Contraintes découvertes post-implémentation :**
+- La Freebox ne permet pas de NAT sur les ports publics < 32678 → port 80 public inaccessible → HTTP-01 impossible
+- `freeboxos.fr` est géré par Free — il est **impossible d'y ajouter des enregistrements TXT** → DNS-01 impossible sur ce domaine
+- Le plugin `dns_freebox` n'existe pas dans acme.sh (confirmé à l'exécution)
+
+**Conclusion :** Let's Encrypt est inaccessible avec `domatique.freeboxos.fr`. Un **domaine personnel** avec une API DNS supportée (ex: Cloudflare) est nécessaire.
 
 ---
 
 ## Décision
 
-**v1 (2026-06-08, révisée) :** Container `certbot/certbot` (webroot HTTP-01) — requiert NAT port 80.  
-**v2 (2026-06-08, retenue) :** Container `neilpang/acme.sh` (challenge DNS-01 via plugin `dns_freebox`).
-
-Le plugin `dns_freebox` d'acme.sh utilise l'API locale Freebox pour créer l'enregistrement TXT `_acme-challenge` requis par Let's Encrypt — aucun port entrant requis.
+**v1 (remplacée) :** Container `certbot/certbot` (HTTP-01) — port 80 requis → impossible.  
+**v2 (remplacée) :** Container `acme.sh` + plugin `dns_freebox` → plugin inexistant, `freeboxos.fr` DNS non modifiable.  
+**v3 (retenue — en attente d'action humaine) :** Container `acme.sh` + plugin `dns_cf` (Cloudflare) sur un **domaine personnel**.
 
 ---
 
@@ -50,31 +52,34 @@ Le plugin `dns_freebox` d'acme.sh utilise l'API locale Freebox pour créer l'enr
 - **Inconvénients** : Dépendance hôte (certbot installé sur Pi, hors Docker), rupture avec l'approche tout-Docker, hook de restart manuel à maintenir
 - **Raison du rejet** : Incohérence architecturale avec le modèle Docker-first du projet
 
-### Option 3 : Challenge DNS-01 avec acme.sh + plugin dns_freebox ✅ Retenue (v2)
+### Option 3 : Challenge DNS-01 avec acme.sh + Cloudflare (`dns_cf`) ✅ Retenue (v3, en attente)
 
-- **Avantages** : Pas besoin d'exposer le port 80, entièrement automatisé via l'API Freebox locale, compatible Docker-first
-- **Inconvénients** : Nécessite d'enregistrer une app auprès de l'API Freebox (opération manuelle unique), `FREEBOX_APP_ID`/`FREEBOX_API_KEY` à configurer sur le Pi
-- **Raison du choix** : Seule option viable compte tenu de la contrainte NAT Freebox
+- **Avantages** : Pas besoin d'exposer le port 80, entièrement automatisé, `dns_cf` est le hook acme.sh le plus éprouvé, gratuit via Cloudflare
+- **Inconvénients** : Nécessite un domaine personnel (~1–10€/an) et délégation DNS à Cloudflare ; `CF_Token` à configurer sur le Pi
+- **Raison du choix** : Seule option compatible avec la contrainte NAT Freebox et la structure DNS de `freeboxos.fr`
+
+### Option 4 (rejetée) : Challenge DNS-01 avec `dns_freebox`
+
+- **Inconvénients** : Plugin inexistant dans acme.sh ; de plus `freeboxos.fr` est géré par Free, impossible d'y ajouter des TXT
+- **Raison du rejet** : Infaisable techniquement
 
 ---
 
 ## Conséquences
 
-### Positives
-- Certificat signé Let's Encrypt : aucun avertissement navigateur
-- Renouvellement automatique toutes les 12h (effectif à J-30 avant expiration)
+### Positives (acquises)
+- Infrastructure acme.sh en place — opérationnelle dès qu'un domaine sera configuré
 - Certificat et clé privée ne transitent plus dans les secrets GitHub ni dans l'image Docker
-- **Aucun port entrant requis** (ni 80, ni autre) — surface d'attaque réduite
+- Le VirtualHost `:80` supprimé — surface d'attaque réduite
 
 ### Négatives / Compromis
-- Enregistrement initial de l'app Freebox requis (opération manuelle unique, appui physique sur la box)
-- `FREEBOX_APP_ID` et `FREEBOX_API_KEY` à gérer comme secrets sur le Pi
-- Apache ne relit les certs qu'au restart du container (pas de reload automatique post-renouvellement)
+- **Let's Encrypt non opérationnel** avec `domatique.freeboxos.fr` — domaine personnel requis
+- `CF_Token` Cloudflare à gérer comme secret sur le Pi
+- Apache ne relit les certs qu'au restart du container
 
 ### Neutres
 - L'image Docker `httpd-proxy` ne monte plus le volume certbot-www
-- Le VirtualHost `:80` et `Listen 80` supprimés de `httpd.conf`
-- La configuration `httpd.conf` référence désormais `/acme.sh/__SERVER_NAME__/` pour les certs (substituté au build CI/CD via secret `SERVER_NAME`)
+- La configuration `httpd.conf` référence `/acme.sh/__SERVER_NAME__/` (substituté au build via secret `SERVER_NAME`)
 
 ---
 
@@ -88,8 +93,8 @@ Le plugin `dns_freebox` d'acme.sh utilise l'API locale Freebox pour créer l'enr
   - `_docker/domotique-compose.yml` — service acme.sh, volumes acme-data, suppression port 80
   - `_docker/build_httpd/httpd.conf` — suppression Listen 80 + VHost ACME, chemins certs acme.sh
   - `_docker/build_httpd/README.md` — procédure bootstrap DNS-01
-- **Tâches de suivi (v2)** :
-  - 👤 Développeur humain : enregistrer app acme.sh via API Freebox, configurer env vars Pi, créer `/home/pi/appli/acme.sh/`, exécuter bootstrap
+- **Tâches de suivi (v3)** :
+  - 👤 Développeur humain : acquérir domaine personnel, déléguer DNS à Cloudflare, configurer `CF_Token` sur Pi, mettre à jour secret GitHub `SERVER_NAME`, exécuter bootstrap `acme.sh --dns dns_cf`
 - **Date d'effet v1** : 2026-06-08
 - **Date d'effet v2** : 2026-06-08
 
@@ -100,7 +105,7 @@ Le plugin `dns_freebox` d'acme.sh utilise l'API locale Freebox pour créer l'enr
 - [Plan d'Action 004 : `.github/plans/004_letsencrypt_migration.plan.md`](./../plans/004_letsencrypt_migration.plan.md)
 - [Procédure bootstrap : `_docker/build_httpd/README.md`](./../../_docker/build_httpd/README.md)
 - [Documentation architecture : `docs/ARCHITECTURE.md`](../ARCHITECTURE.md)
-- [acme.sh — plugin dns_freebox](https://github.com/acmesh-official/acme.sh/wiki/dnsapi#dns_freebox)
+- [acme.sh — plugin dns_cf (Cloudflare)](https://github.com/acmesh-official/acme.sh/wiki/dnsapi#dns_cf)
 - [Let's Encrypt — Challenge DNS-01](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge)
 - [Image officielle neilpang/acme.sh](https://hub.docker.com/r/neilpang/acme.sh)
 
