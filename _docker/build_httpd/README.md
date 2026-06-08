@@ -175,7 +175,5 @@ L'image est reconstruite automatiquement à chaque push sur `master` :
 
 | Fichier | Rôle |
 |---|---|
-| `Dockerfile` | Image Alpine + conf Apache (cert monté via volume, non embarqué) |
+| `Dockerfile` | Image Alpine + conf Apache (certificat monté via volume, non embarqué) |
 | `httpd.conf` | Configuration Apache (VirtualHosts :80/:8243/:8280, ACME webroot, SSLProxy) |
-| `certs/httpddomoticzserver.crt` | Ancien certificat auto-signé (conservé, non utilisé en production) |
-| `certs/httpddomoticzserver.key` | Ancienne clé privée auto-signée (conservée, non utilisée en production) |
