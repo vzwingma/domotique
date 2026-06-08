@@ -76,9 +76,10 @@ L'accès depuis Internet passe par :
 | Étape | Composant | Détail |
 |---|---|---|
 | DNS public | `domatique.freeboxos.fr` | Domaine Free/Freebox pointant sur l'IP publique du domicile |
-| Port externe | `38243` | Port exposé sur Internet via règle NAT Freebox |
-| NAT Freebox | Freebox (routeur FAI) | Redirige `38243` → `8243` sur le Raspberry Pi (LAN) |
-| Proxy Apache | `httpd-proxy` (container Docker) | Écoute `:8243`, termine TLS, SSLProxy vers Domoticz `:8443` |
+| Port externe HTTPS | `38243` | Port exposé sur Internet via règle NAT Freebox |
+| Port externe ACME | `80` | Port pour le challenge Let's Encrypt (HTTP-01) via NAT Freebox |
+| NAT Freebox | Freebox (routeur FAI) | Redirige `38243` → `8243` et `80` → `80` sur le Raspberry Pi (LAN) |
+| Proxy Apache | `httpd-proxy` (container Docker) | Écoute `:8243` (HTTPS), `:80` (ACME only), `:8280` (local HTTP) |
 | Backend Domoticz | `domoticz` (container Docker) | Auth native Domoticz, écoute `:8443` |
 
 URL d'accès : **`https://domatique.freeboxos.fr:38243/`**
@@ -87,16 +88,25 @@ URL d'accès : **`https://domatique.freeboxos.fr:38243/`**
 
 | Propriété | Valeur |
 |---|---|
-| Type | Certificat **auto-signé** (self-signed) |
-| Algorithme | RSA |
-| Emplacement dans l'image | `/usr/local/apache2/conf/ssl_conf/httpddomoticzserver.crt` + `.key` |
-| Intégration | Embarqué dans l'image Docker lors du build (`COPY` dans le Dockerfile) |
-| Renouvellement | **Manuel** — régénérer le certificat puis rebuilder/republier l'image via CI/CD |
+| Type | Certificat **Let's Encrypt** (signé CA publique, 90 jours) |
+| Challenge | HTTP-01 (webroot, port 80 public) |
+| Emplacement sur le Pi | `/home/pi/appli/letsencrypt/` (bind-mount vers `/etc/letsencrypt` dans le container) |
+| Renouvellement | **Automatique** — container `certbot` toutes les 12h (`certbot renew --webroot`) |
+| Bootstrap | Procédure manuelle initiale (voir `_docker/build_httpd/README.md`) |
+
+### Gestion du certificat TLS
+
+| Propriété | Valeur |
+|---|---|
+| Type | Certificat **Let's Encrypt** (signé, 90 jours, renouvelé automatiquement) |
+| Emplacement dans le container | `/etc/letsencrypt/live/domatique.freeboxos.fr/` (volume monté) |
+| Renouvellement | **Automatique** — container `certbot` toutes les 12h (`certbot renew --webroot`) |
+| Challenge ACME | HTTP-01, webroot sur port 80, NAT Freebox 80→80 requis |
 
 **Pipeline CI/CD :**
-- Le `ServerName` Apache est injecté depuis le secret GitHub `SERVER_NAME` lors du build (`__SERVER_NAME__` remplacé dans `httpd.conf`)
-- Le certificat et la clé sont stockés dans `_docker/build_httpd/certs/` et copiés dans l'image
-- L'image est reconstruite et publiée automatiquement sur push `master` (workflow `build-httpd.yml`)
+- Le `ServerName` Apache est injecté depuis le secret GitHub `SERVER_NAME` lors du build (`__SERVER_NAME__` remplacé dans `httpd.conf` et dans les chemins de certificat)
+- Le certificat n'est **plus embarqué dans l'image** — il est monté via volume Docker au runtime
+- L'image est reconstruite automatiquement sur push `master` (workflow `build-httpd.yml`)
 
 **Vérification côté proxy (SSLProxy) :**
 
@@ -109,7 +119,8 @@ SSLProxyCheckPeerName off
 SSLProxyCheckPeerExpire off
 ```
 
-> ⚠️ Le certificat auto-signé génère un avertissement dans les navigateurs. Il n'y a pas de renouvellement automatique (pas de Let's Encrypt / ACME). À surveiller lors de l'expiration.
+> ℹ️ Le certificat exposé aux clients (VHost :8243) est signé par Let's Encrypt — aucun avertissement navigateur.
+> La désactivation SSLProxy concerne uniquement la connexion interne Apache → Domoticz (certificat auto-signé Domoticz interne).
 
 ---
 

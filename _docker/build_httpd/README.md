@@ -114,36 +114,52 @@ docker build -t vzwingmadomatic/httpd:latest .
 ```
 
 Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
-- le certificat TLS auto-signé (`certs/httpddomoticzserver.crt` + `.key`)
 - la configuration Apache (`httpd.conf`) avec le placeholder `__SERVER_NAME__` substitué au build via CI/CD (secret `SERVER_NAME`)
+- **le certificat n'est plus embarqué** — il est monté via volume Docker depuis `/home/pi/appli/letsencrypt`
 
 ---
 
-## Gestion du certificat TLS
+## Gestion du certificat TLS (Let's Encrypt)
 
 | Propriété | Valeur |
 |---|---|
-| Type | **Auto-signé** (self-signed) |
-| Emplacement image | `/usr/local/apache2/conf/ssl_conf/` |
-| Fichiers sources | `certs/httpddomoticzserver.crt` + `certs/httpddomoticzserver.key` |
-| Intégration | Copiés dans l'image via `Dockerfile` (`COPY`) |
-| Renouvellement | **Manuel** — régénérer, committer, puis rebuilder l'image |
+| Type | **Let's Encrypt** (signé, 90 jours) |
+| Challenge | HTTP-01 (webroot, port 80) |
+| Emplacement sur le Pi | `/home/pi/appli/letsencrypt/` (bind-mount) |
+| Emplacement dans le container | `/etc/letsencrypt/live/<domaine>/fullchain.pem` + `privkey.pem` |
+| Renouvellement | Automatique — container `certbot` toutes les 12h |
+| NAT requis | Freebox port 80 public → Pi port 80 (en plus de 38243→8243) |
 
-**Renouvellement du certificat (procédure) :**
+### Bootstrap — 1ère installation (procédure manuelle)
+
+À exécuter **une seule fois** avant le premier démarrage de la stack avec SSL :
 
 ```bash
-# Générer un nouveau certificat auto-signé (valable 3650 jours)
-openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
-  -keyout certs/httpddomoticzserver.key \
-  -out certs/httpddomoticzserver.crt \
-  -subj "/CN=domatique.freeboxos.fr"
+# 1. Créer les répertoires sur le Pi
+mkdir -p /home/pi/appli/letsencrypt /home/pi/appli/certbot-www
 
-# Rebuilder l'image (ou laisser la CI/CD le faire au prochain push master)
-docker build -t vzwingmadomatic/httpd:latest .
+# 2. Démarrer httpd-proxy seul (port 80 disponible pour ACME)
+docker compose -f domotique-compose.yml up -d httpd-proxy
+
+# 3. Obtenir le certificat initial
+docker compose -f domotique-compose.yml run --rm certbot \
+  certbot certonly --webroot \
+  -w /var/www/certbot \
+  -d domatique.freeboxos.fr \
+  --email votre@email.com \
+  --agree-tos --no-eff-email
+
+# 4. Démarrer la stack complète
+docker compose -f domotique-compose.yml up -d
 ```
 
-> ⚠️ Le certificat auto-signé génère un avertissement dans les navigateurs.
-> Il n'y a pas de renouvellement automatique (pas de Let's Encrypt / ACME intégré).
+> ⚠️ Le NAT Freebox port 80 doit être ouvert **avant** l'étape 3.
+
+### Renouvellement automatique
+
+Le container `certbot` tourne en boucle et tente un renouvellement toutes les 12h.
+Let's Encrypt renouvelle effectivement le certificat à partir de J-30 avant expiration.
+Apache relit les certificats à chaque nouvelle connexion TLS — aucun reload manuel requis.
 
 ---
 
@@ -159,7 +175,7 @@ L'image est reconstruite automatiquement à chaque push sur `master` :
 
 | Fichier | Rôle |
 |---|---|
-| `Dockerfile` | Image Alpine + copie cert + conf |
-| `httpd.conf` | Configuration Apache (VirtualHosts, SSL termination, proxy) |
-| `certs/httpddomoticzserver.crt` | Certificat TLS auto-signé |
-| `certs/httpddomoticzserver.key` | Clé privée du certificat |
+| `Dockerfile` | Image Alpine + conf Apache (cert monté via volume, non embarqué) |
+| `httpd.conf` | Configuration Apache (VirtualHosts :80/:8243/:8280, ACME webroot, SSLProxy) |
+| `certs/httpddomoticzserver.crt` | Ancien certificat auto-signé (conservé, non utilisé en production) |
+| `certs/httpddomoticzserver.key` | Ancienne clé privée auto-signée (conservée, non utilisée en production) |
