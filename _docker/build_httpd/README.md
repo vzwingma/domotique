@@ -5,29 +5,54 @@ Il expose deux VirtualHosts avec des politiques d'accès distinctes selon l'orig
 
 ---
 
+## Point d'entrée externe
+
+L'accès depuis Internet suit le chemin suivant :
+
+```
+  https://domatique.freeboxos.fr:38243/
+          │  DNS Free → IP publique domicile
+          ▼
+  Freebox (routeur FAI)
+  NAT : port 38243 (public) → port 8243 (Raspberry Pi LAN)
+          │
+          ▼
+  httpd-proxy :8243  (ce composant)
+  TLS termination → SSLProxy → Domoticz :8443
+```
+
+Le **routeur Freebox** assure le NAT. Aucun autre composant réseau intermédiaire entre Internet et ce proxy.
+
+---
+
 ## Architecture réseau
 
 ```
-                  Internet / Réseau local
+                https://domatique.freeboxos.fr:38243/
+                          │  (DNS Free → IP publique)
+          ┌───────────────▼──────────────────┐
+          │ Freebox (routeur FAI)            │
+          │ NAT : 38243 → Pi :8243           │
+          └───────────────┬──────────────────┘
                           │
-          ┌───────────────┴──────────────────┐
-          │ Accès externe                     │ Accès local
-          │ HTTPS :8243                       │ HTTP :8280
-          ▼                                   ▼
-  ┌───────────────────────────────────────────────────────┐
-  │                   httpd-proxy (Apache 2.4)            │
-  │                                                       │
-  │  VirtualHost :8243 (HTTPS)   VirtualHost :8280 (HTTP) │
-  │  ┌─────────────────────┐    ┌─────────────────────┐   │
-  │  │ SSL Termination     │    │ Pas de TLS          │   │
-  │  │ Filtre User-Agent   │    │ CORS header *       │   │
-  │  │ (3 agents autorisés)│    │ Accès libre         │   │
-  │  └──────────┬──────────┘    └──────────┬──────────┘   │
-  └─────────────┼─────────────────────────┼───────────────┘
-                │ SSLProxy                 │ HTTP Proxy
-                ▼                          ▼
-        Domoticz :8443 (HTTPS)     Domoticz :8080 (HTTP)
-        (192.168.1.83)             (192.168.1.83)
+           ┌──────────────┴──────────────────┐
+           │ Accès externe                   │ Accès local
+           │ HTTPS :8243                     │ HTTP :8280
+           ▼                                 ▼
+   ┌───────────────────────────────────────────────────────┐
+   │                   httpd-proxy (Apache 2.4)            │
+   │                                                       │
+   │  VirtualHost :8243 (HTTPS)   VirtualHost :8280 (HTTP) │
+   │  ┌─────────────────────┐    ┌─────────────────────┐   │
+   │  │ TLS termination     │    │ Pas de TLS          │   │
+   │  │ Cert auto-signé     │    │ CORS header *       │   │
+   │  │ SSLProxy            │    │ Accès libre         │   │
+   │  └──────────┬──────────┘    └──────────┬──────────┘   │
+   └─────────────┼─────────────────────────┼───────────────┘
+                 │ SSLProxy                 │ HTTP Proxy
+                 ▼                          ▼
+         Domoticz :8443 (HTTPS)     Domoticz :8080 (HTTP)
+         (192.168.1.83)             (192.168.1.83)
 ```
 
 ---
@@ -36,11 +61,12 @@ Il expose deux VirtualHosts avec des politiques d'accès distinctes selon l'orig
 
 | Paramètre | Valeur |
 |---|---|
-| Port | `8243` (exposé sur le Raspberry Pi) |
+| URL publique | `https://domatique.freeboxos.fr:38243/` |
+| Port exposé Pi | `8243` |
 | Protocole entrant | HTTPS (TLS terminé par Apache) |
-| Protocole sortant | HTTPS vers Domoticz `:8443` |
+| Protocole sortant | HTTPS vers Domoticz `:8443` (SSLProxy) |
 | Cible | `https://192.168.1.83:8443/` |
-| Certificat | Auto-signé embarqué dans l'image |
+| Certificat | Auto-signé, embarqué dans l'image Docker |
 
 ### Accès et authentification
 

@@ -1,12 +1,40 @@
 # Architecture — Système domotique Domoticz / dzVents
 
-> Document de référence architecture. Dernière mise à jour : juillet 2025.
+> Document de référence architecture. Dernière mise à jour : juin 2026.
 
 ---
 
 ## 1. Vue d'ensemble
 
-Le système domotique repose sur **Domoticz** comme plateforme centrale, avec des scripts d'automatisation écrits en **dzVents (Lua)**. Deux intégrations externes matérielles sont pilotées via des bridges HTTP :
+Le système domotique repose sur **Domoticz** comme plateforme centrale, avec des scripts d'automatisation écrits en **dzVents (Lua)**. Deux intégrations externes matérielles sont pilotées via des bridges HTTP. L'accès distant passe par un **proxy Apache HTTPD** avec terminaison TLS, exposé via le NAT de la Freebox.
+
+### 1.1 Flux réseau complet (Internet → Domoticz)
+
+```
+  https://domatique.freeboxos.fr:38243/
+          │  DNS Free → IP publique domicile
+          ▼
+  ┌─────────────────────────────────────┐
+  │  Freebox (routeur FAI)              │
+  │  NAT : 38243 public → 8243 Pi LAN  │
+  └───────────────┬─────────────────────┘
+                  │ HTTPS :8243
+                  ▼
+  ┌─────────────────────────────────────┐
+  │  httpd-proxy (Apache 2.4)           │
+  │  VHost :8243 — TLS termination      │
+  │  Certificat auto-signé              │
+  │  SSLProxy → Domoticz :8443          │
+  └───────────────┬─────────────────────┘
+                  │ HTTPS (SSLProxy)
+                  ▼
+  ┌─────────────────────────────────────┐
+  │  Domoticz :8443 (HTTPS interne)     │
+  │  Auth native (login Domoticz)       │
+  └─────────────────────────────────────┘
+```
+
+### 1.2 Scripts dzVents — Couches applicatives
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -36,6 +64,52 @@ Le système domotique repose sur **Domoticz** comme plateforme centrale, avec de
 | **Tydom Bridge** | Pilotage volets + thermostat Delta Dore | HTTP REST local |
 | **Freebox** | Détection présence réseau (smartphones) | HTTP REST local |
 | **API Jours Fériés** | Calendrier officiel des jours fériés français | HTTPS REST public |
+
+---
+
+## 1bis. Point d'entrée externe et gestion des certificats TLS
+
+### Accès distant
+
+L'accès depuis Internet passe par :
+
+| Étape | Composant | Détail |
+|---|---|---|
+| DNS public | `domatique.freeboxos.fr` | Domaine Free/Freebox pointant sur l'IP publique du domicile |
+| Port externe | `38243` | Port exposé sur Internet via règle NAT Freebox |
+| NAT Freebox | Freebox (routeur FAI) | Redirige `38243` → `8243` sur le Raspberry Pi (LAN) |
+| Proxy Apache | `httpd-proxy` (container Docker) | Écoute `:8243`, termine TLS, SSLProxy vers Domoticz `:8443` |
+| Backend Domoticz | `domoticz` (container Docker) | Auth native Domoticz, écoute `:8443` |
+
+URL d'accès : **`https://domatique.freeboxos.fr:38243/`**
+
+### Gestion du certificat TLS
+
+| Propriété | Valeur |
+|---|---|
+| Type | Certificat **auto-signé** (self-signed) |
+| Algorithme | RSA |
+| Emplacement dans l'image | `/usr/local/apache2/conf/ssl_conf/httpddomoticzserver.crt` + `.key` |
+| Intégration | Embarqué dans l'image Docker lors du build (`COPY` dans le Dockerfile) |
+| Renouvellement | **Manuel** — régénérer le certificat puis rebuilder/republier l'image via CI/CD |
+
+**Pipeline CI/CD :**
+- Le `ServerName` Apache est injecté depuis le secret GitHub `SERVER_NAME` lors du build (`__SERVER_NAME__` remplacé dans `httpd.conf`)
+- Le certificat et la clé sont stockés dans `_docker/build_httpd/certs/` et copiés dans l'image
+- L'image est reconstruite et publiée automatiquement sur push `master` (workflow `build-httpd.yml`)
+
+**Vérification côté proxy (SSLProxy) :**
+
+La vérification du certificat Domoticz (auto-signé) est désactivée côté Apache :
+
+```apache
+SSLProxyVerify none
+SSLProxyCheckPeerCN off
+SSLProxyCheckPeerName off
+SSLProxyCheckPeerExpire off
+```
+
+> ⚠️ Le certificat auto-signé génère un avertissement dans les navigateurs. Il n'y a pas de renouvellement automatique (pas de Let's Encrypt / ACME). À surveiller lors de l'expiration.
 
 ---
 
