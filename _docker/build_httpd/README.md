@@ -119,6 +119,34 @@ Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 
 ---
 
+## Gestion du certificat TLS
+
+| Propriété | Valeur |
+|---|---|
+| Type | **Auto-signé** (self-signed) |
+| Emplacement image | `/usr/local/apache2/conf/ssl_conf/` |
+| Fichiers sources | `certs/httpddomoticzserver.crt` + `certs/httpddomoticzserver.key` |
+| Intégration | Copiés dans l'image via `Dockerfile` (`COPY`) |
+| Renouvellement | **Manuel** — régénérer, committer, puis rebuilder l'image |
+
+**Renouvellement du certificat (procédure) :**
+
+```bash
+# Générer un nouveau certificat auto-signé (valable 3650 jours)
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+  -keyout certs/httpddomoticzserver.key \
+  -out certs/httpddomoticzserver.crt \
+  -subj "/CN=domatique.freeboxos.fr"
+
+# Rebuilder l'image (ou laisser la CI/CD le faire au prochain push master)
+docker build -t vzwingmadomatic/httpd:latest .
+```
+
+> ⚠️ Le certificat auto-signé génère un avertissement dans les navigateurs.
+> Il n'y a pas de renouvellement automatique (pas de Let's Encrypt / ACME intégré).
+
+---
+
 ## CI/CD
 
 L'image est reconstruite automatiquement à chaque push sur `master` :
