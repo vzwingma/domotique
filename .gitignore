@@ -29,3 +29,6 @@ _docker/build_httpd/httpddomoticzserver.key
 _docker/build_httpd/_rules_access_clear_.txt
 /domoticz-ext-bridge/
 _docker/build_httpd/certs/
+
+# Ignore all files in the .agents/skills/cave directory
+.agents/skills/cave*
