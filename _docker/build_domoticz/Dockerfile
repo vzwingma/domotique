@@ -1,4 +1,4 @@
-FROM domoticz/domoticz:2026.17523
+FROM domoticz/domoticz:2026.18004
 # Construit à partir de domoticz/domoticz:latest
 
 LABEL vzwingma.domatic.domoticz.image.authors="vincent.zwingmann@github.com"
