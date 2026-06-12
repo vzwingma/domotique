@@ -184,11 +184,11 @@ Le systeme est deploye sur **Raspberry Pi** via Docker Compose (`_docker/domotiq
 
 | Composant | Image | Ports | Role |
 |---|---|---|---|
-| `httpd-proxy` | `vzwingmadomatic/httpd` (Apache 2.4) | 8243, 8280 | Proxy frontal TLS (Let's Encrypt), point d'entree externe |
+| `httpd-proxy` | `vzwingmadomatic/httpd` (Apache 2.4) | 8243, 8280 | Proxy frontal TLS (certificat auto-signé), point d'entree externe |
 | `domoticz` | `vzwingmadomatic/domoticz` | 8080, 8443 | Moteur domotique central |
 | `tydom-bridge` | `vzwingmadomatic/domoticz-tydom` | 9101 | Bridge HTTP <-> protocole Tydom Delta Dore |
 | `deconz` | `deconzcommunity/deconz` | 9102, 9143 | Passerelle Zigbee |
-| `acme.sh` | `neilpang/acme.sh` | — | Renouvellement auto certificat Let's Encrypt via DNS-01 / API Freebox (12h) |
+| `acme.sh` | `neilpang/acme.sh` | — | (non actif) Renouvellement auto Let's Encrypt via DNS-01 — requiert domaine personnel |
 | `watchtower` | `containrrr/watchtower` | — | Auto-update des images Docker |
 
 **Acces externe :** `https://domatique.freeboxos.fr:38243/` — NAT Freebox 38243→8243 (HTTPS) et 80→80 (ACME challenge).

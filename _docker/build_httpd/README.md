@@ -121,74 +121,24 @@ Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 
 ## Gestion du certificat TLS
 
-### Situation actuelle — Certificat auto-signé
+| Propriété | Valeur |
+|---|---|
+| Type | Certificat **auto-signé** généré à build time (`openssl req -x509`) |
+| Durée de validité | 10 ans (renouvelé à chaque rebuild CI/CD) |
+| Emplacement dans le container | `/usr/local/apache2/conf/ssl_conf/httpddomoticzserver.crt/.key` |
+| Impact | Avertissement navigateur sur l'accès externe — normal et attendu |
 
-L'image embarque un certificat **auto-signé** généré à build time (`openssl req -x509`, 10 ans).  
-Impact : avertissement navigateur sur l'accès externe — attendu.
+### Évolution vers Let's Encrypt
 
-### Contraintes Let's Encrypt avec `freeboxos.fr`
+Let's Encrypt est impossible avec `domatique.freeboxos.fr` :
 
-| Challenge ACME | Port requis | Faisable avec cette config ? |
-|---|---|---|
-| HTTP-01 (webroot) | port 80 public | ❌ NAT Freebox min port 32678 |
-| TLS-ALPN-01 | port 443 public | ❌ même contrainte |
-| DNS-01 (automatique) | aucun | ❌ `freeboxos.fr` = DNS géré par Free, pas d'API pour ajouter des TXT |
+| Challenge | Raison du blocage |
+|---|---|
+| HTTP-01 (port 80) | NAT Freebox min port public 32678 |
+| DNS-01 | `freeboxos.fr` géré par Free — pas d'API pour ajouter des TXT |
 
-> **Let's Encrypt automatisé est impossible avec `domatique.freeboxos.fr`** dans la configuration actuelle.
-
----
-
-### Option A — Domaine personnel + Cloudflare DNS ✅ Recommandé (quand disponible)
-
-Acheter un domaine (~1–10 €/an chez OVH, Namecheap…) et déléguer le DNS à Cloudflare (gratuit).  
-Ajouter le container `acme.sh` (`neilpang/acme.sh`) à la stack avec le hook `dns_cf` — aucun port entrant requis.
-
-#### Pré-requis
-
-1. Domaine enregistré, nameservers pointant vers Cloudflare
-2. Clé API Cloudflare (`CF_Token` ou `CF_Key`+`CF_Email`) sur le Pi
-3. Enregistrement DNS A `mon-domaine.tld` → IP publique Freebox (ou DDNS)
-4. NAT Freebox 38243 → Pi 8243 (déjà en place)
-
-#### Variables d'environnement (`.env` dans `_docker/`)
-
-```bash
-CF_Token=<Cloudflare API Token>       # ou CF_Key + CF_Email
-```
-
-#### Bootstrap
-
-```bash
-# 1. Créer le répertoire sur le Pi
-mkdir -p /home/pi/appli/acme.sh
-
-# 2. Émettre le certificat initial
-docker compose -f domotique-compose.yml run --rm \
-  -e CF_Token=${CF_Token} \
-  acme.sh --issue --dns dns_cf \
-  -d mon-domaine.tld \
-  --server letsencrypt
-
-# 3. Mettre à jour ServerName dans la config (secret GitHub SERVER_NAME)
-# 4. Démarrer la stack complète
-docker compose -f domotique-compose.yml up -d
-```
-
-#### Renouvellement automatique
-
-Le container `acme.sh` en mode daemon renouvelle toutes les 12h (effectif à J-30).  
-Apache reprend le cert renouvelé au prochain restart du container.
-
----
-
-### Option B — Certificat auto-signé (fallback)
-
-Si aucun domaine personnel n'est disponible, revenir à un certificat auto-signé embarqué dans l'image :  
-voir l'historique git avant le Plan 004 (commit de migration Let's Encrypt).
-
----
-Let's Encrypt renouvelle effectivement le certificat à partir de J-30 avant expiration.
-Apache relit les certificats au prochain redémarrage du container — aucun reload manuel requis pour les renouvellements courants (fenêtre de 30 jours).
+**Prérequis pour Let's Encrypt :** acquérir un domaine personnel + déléguer le DNS à un provider avec API (ex: Cloudflare `dns_cf`).  
+Une fois le domaine disponible, ajouter `neilpang/acme.sh` à la stack Compose avec le hook `dns_cf` — aucun port entrant requis.
 
 ---
 
@@ -204,5 +154,5 @@ L'image est reconstruite automatiquement à chaque push sur `master` :
 
 | Fichier | Rôle |
 |---|---|
-| `Dockerfile` | Image Alpine + conf Apache (certificat monté via volume, non embarqué) |
-| `httpd.conf` | Configuration Apache (VirtualHosts :80/:8243/:8280, ACME webroot, SSLProxy) |
+| `Dockerfile` | Image Alpine + conf Apache + certificat auto-signé généré à build time (`openssl`) |
+| `httpd.conf` | Configuration Apache (VirtualHosts :8243/:8280, SSLProxy) |
