@@ -7,7 +7,11 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 ## Plans actifs / en cours
 
-- [`004_letsencrypt_migration.plan.md`](./004_letsencrypt_migration.plan.md) — **BLOQUÉ** (en attente domaine personnel)
+_(aucun plan en cours)_
+
+## Plans suspendus
+
+- [`004_letsencrypt_migration.plan.md`](./004_letsencrypt_migration.plan.md) — **SUSPENDU** (domaine personnel requis)
 
 ## Plans archivés / complétés
 

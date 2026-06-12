@@ -1,7 +1,7 @@
 # ADR 002 — Migration certificat TLS vers Let's Encrypt (proxy Apache httpd)
 
 **Date :** 2026-06-08  
-**Statut :** En cours — bloqué (contraintes DNS `freeboxos.fr`)  
+**Statut :** Suspendue — retour au certificat auto-signé  
 **Décideurs :** 🟠 ARCos + 👤 Développeur humain
 
 ---
@@ -68,18 +68,16 @@ Le proxy Apache HTTPD (`httpd-proxy`) expose l'accès externe à Domoticz sur `h
 ## Conséquences
 
 ### Positives (acquises)
-- Infrastructure acme.sh en place — opérationnelle dès qu'un domaine sera configuré
-- Certificat et clé privée ne transitent plus dans les secrets GitHub ni dans l'image Docker
-- Le VirtualHost `:80` supprimé — surface d'attaque réduite
+- Certificat auto-signé généré à build time — plus de secrets GitHub pour les certs, plus de volume externe
+- VirtualHost `:80` supprimé — surface d'attaque réduite
 
 ### Négatives / Compromis
-- **Let's Encrypt non opérationnel** avec `domatique.freeboxos.fr` — domaine personnel requis
-- `CF_Token` Cloudflare à gérer comme secret sur le Pi
-- Apache ne relit les certs qu'au restart du container
+- **Avertissement navigateur** sur l'accès externe (certificat non signé CA publique)
+- Let's Encrypt non opérationnel avec `domatique.freeboxos.fr` — domaine personnel requis pour la suite
 
 ### Neutres
-- L'image Docker `httpd-proxy` ne monte plus le volume certbot-www
-- La configuration `httpd.conf` référence `/acme.sh/__SERVER_NAME__/` (substituté au build via secret `SERVER_NAME`)
+- La configuration `httpd.conf` référence `/usr/local/apache2/conf/ssl_conf/` (cert embarqué dans l'image)
+- Renouvellement du cert automatique via rebuild CI/CD (10 ans de validité — pas urgent)
 
 ---
 

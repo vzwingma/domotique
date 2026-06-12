@@ -1,8 +1,8 @@
 # Plan d'Action 004 — Migration certificat TLS vers Let's Encrypt
 
-**Statut :** BLOQUÉ — En attente de domaine personnel  
+**Statut :** SUSPENDU — retour au certificat auto-signé (domaine personnel requis pour Let's Encrypt)  
 **Date :** 2026-06-08  
-**Amendé le :** 2026-06-08 (v2 — contraintes réelles documentées)
+**Amendé le :** 2026-06-12 (v3 — retour cert auto-signé)
 
 ---
 
@@ -26,30 +26,24 @@ Voir [ADR-002](`docs/adr/002-letsencrypt-certificat-proxy-httpd.md`).
 
 ---
 
-## ⚠️ Amendement v2 — Contraintes réelles avec `freeboxos.fr`
+## ⚠️ Amendement v3 — Retour au certificat auto-signé (2026-06-12)
 
-**Contexte :** La Freebox ne permet pas de NAT sur les ports publics inférieurs à 32678.  
-De plus, `freeboxos.fr` est géré par Free — il est impossible d'y ajouter des enregistrements TXT (`_acme-challenge`).  
-Le plugin `dns_freebox` **n'existe pas** dans acme.sh (confirmé par l'erreur "Cannot find DNS API hook for: dns_freebox").
+**Contexte :** Aucun des challenges ACME n'est réalisable avec `domatique.freeboxos.fr` :
+- HTTP-01 : NAT Freebox min 32678
+- DNS-01 : `freeboxos.fr` géré par Free, pas d'API pour TXT, plugin `dns_freebox` inexistant dans acme.sh
 
-**Bilan :**
+**Décision :** Retour au certificat **auto-signé généré à build time** (`openssl req -x509`, 10 ans, renouvelé à chaque rebuild CI/CD).  
+Plus simple, sans dépendance externe, sans container supplémentaire.
 
-| Challenge ACME | Faisable ? | Raison |
-|---|---|---|
-| HTTP-01 (certbot) | ❌ | NAT Freebox min 32678 |
-| TLS-ALPN-01 | ❌ | même contrainte |
-| DNS-01 `dns_freebox` | ❌ | plugin inexistant + Free ne permet pas d'ajouter TXT sur `freeboxos.fr` |
+**Prérequis pour reprendre vers Let's Encrypt :** acquérir un domaine personnel + Cloudflare DNS (`dns_cf`).
 
-**Let's Encrypt est impossible avec `domatique.freeboxos.fr` dans la configuration actuelle.**
+### État de l'infrastructure (v3)
 
-**Solution retenue à terme :** Domaine personnel + Cloudflare DNS (`dns_cf`) — aucun port requis, renouvellement 100% automatique.
-
-### État de l'infrastructure (v2)
-
-Le container `acme.sh` est en place et prêt. La configuration est fonctionnelle dès qu'un domaine personnel avec API DNS (ex: Cloudflare) sera utilisé :
-- Mettre à jour `ServerName` (secret GitHub `SERVER_NAME`)
-- Passer `dns_freebox` → `dns_cf` + variable `CF_Token` dans `.env`
-- Exécuter le bootstrap (procédure dans `_docker/build_httpd/README.md`)
+| Fichier | État |
+|---|---|
+| `_docker/build_httpd/Dockerfile` | `openssl req -x509` au build — cert embarqué dans l'image |
+| `_docker/build_httpd/httpd.conf` | Chemins SSL → `/usr/local/apache2/conf/ssl_conf/` |
+| `_docker/domotique-compose.yml` | Pas de service certbot/acme.sh, pas de port 80 |
 
 ### Changements apportés (2026-06-08)
 
@@ -62,14 +56,14 @@ Le container `acme.sh` est en place et prêt. La configuration est fonctionnelle
 
 ---
 
-## ⚠️ Amendement v2 — Prérequis hors code (domaine personnel)
+## ⚠️ Amendement v3 — Prérequis pour reprendre (domaine personnel)
 
 | Action | Responsable | Statut |
 |---|---|---|
 | Acquérir un domaine personnel (OVH, Namecheap…) | 👤 Développeur humain | **À faire — bloquant** |
 | Déléguer le DNS à Cloudflare (gratuit) | 👤 Développeur humain | À faire |
 | Configurer `CF_Token` comme variable d'env sur le Pi | 👤 Développeur humain | À faire |
-| Créer répertoire `/home/pi/appli/acme.sh/` sur le Pi | 👤 Développeur humain | À faire |
+| Ajouter service `acme.sh` dans le compose + volume `acme-data` | 🔵 DEVon | À faire |
 | Mettre à jour secret GitHub `SERVER_NAME` avec le nouveau domaine | 👤 Développeur humain | À faire |
 | Exécuter procédure bootstrap acme.sh (1ère émission, `dns_cf`) | 👤 Développeur humain | À faire |
 
