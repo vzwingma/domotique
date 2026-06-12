@@ -5,16 +5,25 @@ Ces instructions s'appliquent en priorite quand vous travaillez dans domoticz/sc
 ## Agents et orchestration
 
 Le projet suit une orchestration multi-agents avec validation humaine a chaque etape:
-- ARCos [v2.7]: planification et decisions architecturales
-- DEVon [v2.3]: implementation
-- QUALvin [v2.5]: verification qualite
-- DOCly [v2.4]: documentation
+- ARCos: planification et decisions architecturales
+- DEVon: implementation
+- QUALvin: verification qualite
+- DOCly: documentation
 
 Les fichiers de specificites projet sont:
 - .github/instructions/architect.instructions.md
 - .github/instructions/dev.instructions.md
 - .github/instructions/qa.instructions.md
 - .github/instructions/doc.instructions.md
+
+### Regle obligatoire ARCos — plan + ADR
+
+Toute initiative architecturale ou infrastructure (nouvelle fonctionnalite, migration, changement de composant) doit produire **avant** de marquer la tache terminee :
+1. Un fichier `Plan d'Action` dans `.github/plans/NNN_nom.plan.md` (incrementer le numero)
+2. Un ADR dans `docs/adr/NNN-titre-court.md` si decision architecturale majeure
+3. Une mise a jour de l'index `.github/plans/README.md`
+
+Ces livrables sont crees dans le meme lot que l'implementation, pas apres coup.
 
 ## Sources de verite
 
@@ -27,8 +36,8 @@ Les fichiers de specificites projet sont:
 
 ## Etat documentaire du depot
 
-- docs/ existe et contient : ARCHITECTURE.md, scenarios.puml, orchestration_sequence.puml, Orchestration.md, Retroconception.md.
-- docs/adr/ existe et contient ADR-TEMPLATE.md + les ADRs numerotes (ex: 001-jours-feries-integration-api-gouv.md).
+- Lire `docs/adr/` pour connaitre les ADRs existants (ADR-TEMPLATE.md + ADRs numerotes).
+- Lire `.github/plans/README.md` pour connaitre les plans d'action et leur statut global.
 - Les references BEST_PRACTICES.md, CODING_STANDARDS.md, CONTRIBUTING.md, CHANGELOG.md et configuration ESLint ne sont pas presentes au niveau du repo (hors dependances node_modules).
 - En cas d'ecart doc/code, corriger la doc dans le meme changement que le code.
 
@@ -166,3 +175,24 @@ Quand vous touchez le script concerne, renforcer la resilience de global_HTTP_re
 - Ne pas melanger bugfix, nouvelle feature et refacto large sans justification explicite.
 - Ne pas introduire de dependance externe sans necessite claire.
 - Ne pas supposer qu'un ID ou nom hard-code peut changer sans audit des dependances.
+
+---
+
+## Architecture infrastructure (_docker/)
+
+Le systeme est deploye sur **Raspberry Pi** via Docker Compose (`_docker/domotique-compose.yml`).
+
+| Composant | Image | Ports | Role |
+|---|---|---|---|
+| `httpd-proxy` | `vzwingmadomatic/httpd` (Apache 2.4) | 8243, 8280 | Proxy frontal TLS (Let's Encrypt), point d'entree externe |
+| `domoticz` | `vzwingmadomatic/domoticz` | 8080, 8443 | Moteur domotique central |
+| `tydom-bridge` | `vzwingmadomatic/domoticz-tydom` | 9101 | Bridge HTTP <-> protocole Tydom Delta Dore |
+| `deconz` | `deconzcommunity/deconz` | 9102, 9143 | Passerelle Zigbee |
+| `acme.sh` | `neilpang/acme.sh` | — | Renouvellement auto certificat Let's Encrypt via DNS-01 / API Freebox (12h) |
+| `watchtower` | `containrrr/watchtower` | — | Auto-update des images Docker |
+
+**Acces externe :** `https://domatique.freeboxos.fr:38243/` — NAT Freebox 38243→8243 (HTTPS) et 80→80 (ACME challenge).
+
+**Certificat TLS :** Let's Encrypt (webroot HTTP-01), monte en volume depuis `/home/pi/appli/letsencrypt/`. Non embarque dans l'image. Voir `_docker/build_httpd/README.md` pour la procedure de bootstrap.
+
+**Configuration :** `_docker/build_httpd/httpd.conf` est la source de verite de la config Apache. Le placeholder `__SERVER_NAME__` est substitue par le secret GitHub `SERVER_NAME` au build CI/CD.

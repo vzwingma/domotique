@@ -5,14 +5,19 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
 ## Architecture globale
 
 ```
-  Internet / Réseau local
-          │
-  ┌───────┴────────────────────────────────────────────────┐
-  │  Externe : HTTPS :8243      Local : HTTP :8280         │
-  │         httpd-proxy (Apache 2.4)                       │
-  │  Filtre User-Agent (3)      CORS + accès libre         │
-  │  SSL termination            Proxy HTTP                 │
-  └───────────────────────┬────────────────────────────────┘
+  https://domatique.freeboxos.fr:38243/
+          │  (DNS Free → IP publique)
+  ┌───────▼──────────────────────────────────────────────────┐
+  │  Freebox (routeur FAI)                                   │
+  │  NAT : port 38243 (public) → 8243 (Raspberry Pi LAN)    │
+  └───────────────────────┬──────────────────────────────────┘
+                          │ HTTPS :8243
+  ┌─────────────────────────────────────────────────────────┐
+  │  Externe : HTTPS :8243      Local : HTTP :8280          │
+  │         httpd-proxy (Apache 2.4)                        │
+  │  TLS termination            CORS + accès libre          │
+  │  Auth déléguée Domoticz     Proxy HTTP                  │
+  └───────────────────────┬─────────────────────────────────┘
                           │ ProxyPass
         ┌─────────────────▼──────────────────────────────┐
         │                      Domoticz                  │
@@ -47,17 +52,19 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
 
 ### Accès réseau à Domoticz
 
-| Chemin | Port exposé | Protocole | Filtrage | Cible |
+| Chemin | URL / Port exposé | Protocole | Filtrage | Cible |
 |---|---|---|---|---|
-| Accès externe | `:8243` | HTTPS (TLS terminé par httpd) | Auth déléguée à Domoticz | Domoticz `:8443` |
+| Accès externe public | `https://domatique.freeboxos.fr:38243/` → Pi `:8243` | HTTPS (TLS terminé par Apache) | Auth déléguée à Domoticz | Domoticz `:8443` |
 | Accès local LAN | `:8280` | HTTP | Aucun (`Require all granted`) + CORS `*` | Domoticz `:8080` |
 | Direct interne | `:8080` | HTTP | Réseau Docker uniquement | — |
 | Direct interne TLS | `:8443` | HTTPS | Réseau Docker uniquement | — |
 
 Le **proxy httpd** est le seul point d'entrée depuis l'extérieur. Il assure :
-- la terminaison TLS avec un certificat auto-signé embarqué dans l'image,
+- la terminaison TLS avec un certificat auto-signé embarqué dans l'image Docker,
 - la transmission transparente vers Domoticz — **l'authentification est déléguée à Domoticz** (login natif),
 - la réécriture des headers CORS sur le VirtualHost local (`:8280`).
+
+Le **routeur Freebox** assure le NAT : le port public `38243` est redirigé vers le port `8243` du Raspberry Pi sur le LAN.
 
 > Voir [`_docker/build_httpd/README.md`](_docker/build_httpd/README.md) pour le détail de la configuration Apache.
 

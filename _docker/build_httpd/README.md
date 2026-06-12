@@ -5,29 +5,54 @@ Il expose deux VirtualHosts avec des politiques d'accès distinctes selon l'orig
 
 ---
 
+## Point d'entrée externe
+
+L'accès depuis Internet suit le chemin suivant :
+
+```
+  https://domatique.freeboxos.fr:38243/
+          │  DNS Free → IP publique domicile
+          ▼
+  Freebox (routeur FAI)
+  NAT : port 38243 (public) → port 8243 (Raspberry Pi LAN)
+          │
+          ▼
+  httpd-proxy :8243  (ce composant)
+  TLS termination → SSLProxy → Domoticz :8443
+```
+
+Le **routeur Freebox** assure le NAT. Aucun autre composant réseau intermédiaire entre Internet et ce proxy.
+
+---
+
 ## Architecture réseau
 
 ```
-                  Internet / Réseau local
+                https://domatique.freeboxos.fr:38243/
+                          │  (DNS Free → IP publique)
+          ┌───────────────▼──────────────────┐
+          │ Freebox (routeur FAI)            │
+          │ NAT : 38243 → Pi :8243           │
+          └───────────────┬──────────────────┘
                           │
-          ┌───────────────┴──────────────────┐
-          │ Accès externe                     │ Accès local
-          │ HTTPS :8243                       │ HTTP :8280
-          ▼                                   ▼
-  ┌───────────────────────────────────────────────────────┐
-  │                   httpd-proxy (Apache 2.4)            │
-  │                                                       │
-  │  VirtualHost :8243 (HTTPS)   VirtualHost :8280 (HTTP) │
-  │  ┌─────────────────────┐    ┌─────────────────────┐   │
-  │  │ SSL Termination     │    │ Pas de TLS          │   │
-  │  │ Filtre User-Agent   │    │ CORS header *       │   │
-  │  │ (3 agents autorisés)│    │ Accès libre         │   │
-  │  └──────────┬──────────┘    └──────────┬──────────┘   │
-  └─────────────┼─────────────────────────┼───────────────┘
-                │ SSLProxy                 │ HTTP Proxy
-                ▼                          ▼
-        Domoticz :8443 (HTTPS)     Domoticz :8080 (HTTP)
-        (192.168.1.83)             (192.168.1.83)
+           ┌──────────────┴──────────────────┐
+           │ Accès externe                   │ Accès local
+           │ HTTPS :8243                     │ HTTP :8280
+           ▼                                 ▼
+   ┌───────────────────────────────────────────────────────┐
+   │                   httpd-proxy (Apache 2.4)            │
+   │                                                       │
+   │  VirtualHost :8243 (HTTPS)   VirtualHost :8280 (HTTP) │
+   │  ┌─────────────────────┐    ┌─────────────────────┐   │
+   │  │ TLS termination     │    │ Pas de TLS          │   │
+   │  │ Cert auto-signé     │    │ CORS header *       │   │
+   │  │ SSLProxy            │    │ Accès libre         │   │
+   │  └──────────┬──────────┘    └──────────┬──────────┘   │
+   └─────────────┼─────────────────────────┼───────────────┘
+                 │ SSLProxy                 │ HTTP Proxy
+                 ▼                          ▼
+         Domoticz :8443 (HTTPS)     Domoticz :8080 (HTTP)
+         (192.168.1.83)             (192.168.1.83)
 ```
 
 ---
@@ -36,11 +61,12 @@ Il expose deux VirtualHosts avec des politiques d'accès distinctes selon l'orig
 
 | Paramètre | Valeur |
 |---|---|
-| Port | `8243` (exposé sur le Raspberry Pi) |
+| URL publique | `https://domatique.freeboxos.fr:38243/` |
+| Port exposé Pi | `8243` |
 | Protocole entrant | HTTPS (TLS terminé par Apache) |
-| Protocole sortant | HTTPS vers Domoticz `:8443` |
+| Protocole sortant | HTTPS vers Domoticz `:8443` (SSLProxy) |
 | Cible | `https://192.168.1.83:8443/` |
-| Certificat | Auto-signé embarqué dans l'image |
+| Certificat | Auto-signé, embarqué dans l'image Docker |
 
 ### Accès et authentification
 
@@ -88,8 +114,81 @@ docker build -t vzwingmadomatic/httpd:latest .
 ```
 
 Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
-- le certificat TLS auto-signé (`certs/httpddomoticzserver.crt` + `.key`)
 - la configuration Apache (`httpd.conf`) avec le placeholder `__SERVER_NAME__` substitué au build via CI/CD (secret `SERVER_NAME`)
+- un **certificat TLS auto-signé** généré à build time via `openssl` (valide 10 ans, renouvelé à chaque rebuild CI/CD)
+
+---
+
+## Gestion du certificat TLS
+
+### Situation actuelle — Certificat auto-signé
+
+L'image embarque un certificat **auto-signé** généré à build time (`openssl req -x509`, 10 ans).  
+Impact : avertissement navigateur sur l'accès externe — attendu.
+
+### Contraintes Let's Encrypt avec `freeboxos.fr`
+
+| Challenge ACME | Port requis | Faisable avec cette config ? |
+|---|---|---|
+| HTTP-01 (webroot) | port 80 public | ❌ NAT Freebox min port 32678 |
+| TLS-ALPN-01 | port 443 public | ❌ même contrainte |
+| DNS-01 (automatique) | aucun | ❌ `freeboxos.fr` = DNS géré par Free, pas d'API pour ajouter des TXT |
+
+> **Let's Encrypt automatisé est impossible avec `domatique.freeboxos.fr`** dans la configuration actuelle.
+
+---
+
+### Option A — Domaine personnel + Cloudflare DNS ✅ Recommandé (quand disponible)
+
+Acheter un domaine (~1–10 €/an chez OVH, Namecheap…) et déléguer le DNS à Cloudflare (gratuit).  
+Ajouter le container `acme.sh` (`neilpang/acme.sh`) à la stack avec le hook `dns_cf` — aucun port entrant requis.
+
+#### Pré-requis
+
+1. Domaine enregistré, nameservers pointant vers Cloudflare
+2. Clé API Cloudflare (`CF_Token` ou `CF_Key`+`CF_Email`) sur le Pi
+3. Enregistrement DNS A `mon-domaine.tld` → IP publique Freebox (ou DDNS)
+4. NAT Freebox 38243 → Pi 8243 (déjà en place)
+
+#### Variables d'environnement (`.env` dans `_docker/`)
+
+```bash
+CF_Token=<Cloudflare API Token>       # ou CF_Key + CF_Email
+```
+
+#### Bootstrap
+
+```bash
+# 1. Créer le répertoire sur le Pi
+mkdir -p /home/pi/appli/acme.sh
+
+# 2. Émettre le certificat initial
+docker compose -f domotique-compose.yml run --rm \
+  -e CF_Token=${CF_Token} \
+  acme.sh --issue --dns dns_cf \
+  -d mon-domaine.tld \
+  --server letsencrypt
+
+# 3. Mettre à jour ServerName dans la config (secret GitHub SERVER_NAME)
+# 4. Démarrer la stack complète
+docker compose -f domotique-compose.yml up -d
+```
+
+#### Renouvellement automatique
+
+Le container `acme.sh` en mode daemon renouvelle toutes les 12h (effectif à J-30).  
+Apache reprend le cert renouvelé au prochain restart du container.
+
+---
+
+### Option B — Certificat auto-signé (fallback)
+
+Si aucun domaine personnel n'est disponible, revenir à un certificat auto-signé embarqué dans l'image :  
+voir l'historique git avant le Plan 004 (commit de migration Let's Encrypt).
+
+---
+Let's Encrypt renouvelle effectivement le certificat à partir de J-30 avant expiration.
+Apache relit les certificats au prochain redémarrage du container — aucun reload manuel requis pour les renouvellements courants (fenêtre de 30 jours).
 
 ---
 
@@ -105,7 +204,5 @@ L'image est reconstruite automatiquement à chaque push sur `master` :
 
 | Fichier | Rôle |
 |---|---|
-| `Dockerfile` | Image Alpine + copie cert + conf |
-| `httpd.conf` | Configuration Apache (VirtualHosts, SSL termination, proxy) |
-| `certs/httpddomoticzserver.crt` | Certificat TLS auto-signé |
-| `certs/httpddomoticzserver.key` | Clé privée du certificat |
+| `Dockerfile` | Image Alpine + conf Apache (certificat monté via volume, non embarqué) |
+| `httpd.conf` | Configuration Apache (VirtualHosts :80/:8243/:8280, ACME webroot, SSLProxy) |
