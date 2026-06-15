@@ -60,4 +60,4 @@ jobs:
         run: |
           cd _docker/build_httpd
           sed -i 's/__SERVER_NAME__/${{ secrets.SERVER_NAME }}/g' httpd.conf
-          docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
+          docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }} --build-arg SERVER_NAME=${{ secrets.SERVER_NAME }} --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .

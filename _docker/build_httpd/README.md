@@ -115,7 +115,7 @@ docker build -t vzwingmadomatic/httpd:latest .
 
 Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 - la configuration Apache (`httpd.conf`) avec le placeholder `__SERVER_NAME__` substitué au build via CI/CD (secret `SERVER_NAME`)
-- un **certificat TLS auto-signé** généré à build time via `openssl` (valide 10 ans, renouvelé à chaque rebuild CI/CD)
+- un **certificat TLS auto-signé** généré à build time via `openssl`, avec CN/SAN alignés sur `SERVER_NAME` (valide 10 ans, renouvelé à chaque rebuild CI/CD)
 
 ---
 
@@ -124,9 +124,15 @@ Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 | Propriété | Valeur |
 |---|---|
 | Type | Certificat **auto-signé** généré à build time (`openssl req -x509`) |
+| Identité TLS | `CN` + `subjectAltName` alignés sur `SERVER_NAME` |
 | Durée de validité | 10 ans (renouvelé à chaque rebuild CI/CD) |
 | Emplacement dans le container | `/usr/local/apache2/conf/ssl_conf/httpddomoticzserver.crt/.key` |
 | Impact | Avertissement navigateur sur l'accès externe — normal et attendu |
+
+### Côté Domoticz mobile
+
+L'application mobile consomme le **même certificat PEM** exporté depuis le serveur HTTPS et le place dans `assets/certificates/domoticz.crt`.
+Le hostname configuré dans le plugin SSL doit donc rester cohérent avec `SERVER_NAME` côté HTTPD.
 
 ### Évolution vers Let's Encrypt
 

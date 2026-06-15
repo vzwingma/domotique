@@ -60,7 +60,7 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
 | Direct interne TLS | `:8443` | HTTPS | Réseau Docker uniquement | — |
 
 Le **proxy httpd** est le seul point d'entrée depuis l'extérieur. Il assure :
-- la terminaison TLS avec un certificat auto-signé embarqué dans l'image Docker,
+- la terminaison TLS avec un certificat auto-signé embarqué dans l'image Docker, aligné sur `domatique.freeboxos.fr` (CN/SAN),
 - la transmission transparente vers Domoticz — **l'authentification est déléguée à Domoticz** (login natif),
 - la réécriture des headers CORS sur le VirtualHost local (`:8280`).
 
