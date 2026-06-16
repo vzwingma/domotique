@@ -5,11 +5,6 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 > Les détails de phases restent dans les fichiers `*.plan.md` et les rapports `*_reports/`.
 > Guide de référence : [`.github/PLANS.md`](../PLANS.md)
 
-## Plans actifs / en cours
-
-- [`005_tls_httpd_mobile_alignment.plan.md`](./005_tls_httpd_mobile_alignment.plan.md) — **EN COURS** (alignement certificat HTTPD/mobile)
-- [`006_httpd_cert_persistence.plan.md`](./006_httpd_cert_persistence.plan.md) — **EN COURS** (certificat HTTPD persistant)
-
 ## Plans suspendus
 
 - [`004_letsencrypt_migration.plan.md`](./004_letsencrypt_migration.plan.md) — **SUSPENDU** (domaine personnel requis)
@@ -19,5 +14,6 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 - [`001_dzvents_stabilisation.plan.md`](./001_dzvents_stabilisation.plan.md) — **COMPLÉTÉ**
 - [`002_tydom_bridge_hardening.plan.md`](./002_tydom_bridge_hardening.plan.md) — **COMPLÉTÉ**
 - [`003_jours_feries.plan.md`](./003_jours_feries.plan.md) — **COMPLÉTÉ**
+- [`005_tls_httpd_mobile_alignment.plan.md`](./005_tls_httpd_mobile_alignment.plan.md) — **COMPLÉTÉ** (alignement certificat HTTPD/mobile)
+- [`006_httpd_cert_persistence.plan.md`](./006_httpd_cert_persistence.plan.md) — **COMPLÉTÉ** (certificat HTTPD persistant)
 - [`004_letsencrypt_migration.plan.md`](./004_letsencrypt_migration.plan.md) — **BLOQUÉ** (en attente domaine personnel)
-
