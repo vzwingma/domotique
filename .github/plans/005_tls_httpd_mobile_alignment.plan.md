@@ -1,5 +1,11 @@
 # Plan d'Action 005 — Alignement TLS HTTPD / Domoticz mobile
 
+## Métadonnées
+- ID : 005
+- Fichier : `.github/plans/005_tls_httpd_mobile_alignment.plan.md`
+- Statut global : COMPLÉTÉ
+- Date : 2026-06-16
+
 ## Probleme
 
 Le frontal HTTPD genere aujourd'hui un certificat auto-signe avec `CN=domoticz`, alors que le client mobile `domotique-mobile` espere un certificat lie au domaine public `domatique.freeboxos.fr` et charge un PEM bundle dans l'app. Le resultat est un ecart entre l'identite TLS servie et les verifications cote mobile.

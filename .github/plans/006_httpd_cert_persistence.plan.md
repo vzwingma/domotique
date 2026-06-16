@@ -3,7 +3,7 @@
 ## Métadonnées
 - ID : 006
 - Fichier : `.github/plans/006_httpd_cert_persistence.plan.md`
-- Statut global : EN_COURS
+- Statut global : COMPLÉTÉ
 - Date : 2026-06-16
 
 ## Objectif global
