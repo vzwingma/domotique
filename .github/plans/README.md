@@ -8,6 +8,7 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 ## Plans actifs / en cours
 
 - [`005_tls_httpd_mobile_alignment.plan.md`](./005_tls_httpd_mobile_alignment.plan.md) — **EN COURS** (alignement certificat HTTPD/mobile)
+- [`006_httpd_cert_persistence.plan.md`](./006_httpd_cert_persistence.plan.md) — **EN COURS** (certificat HTTPD persistant)
 
 ## Plans suspendus
 
@@ -19,5 +20,4 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 - [`002_tydom_bridge_hardening.plan.md`](./002_tydom_bridge_hardening.plan.md) — **COMPLÉTÉ**
 - [`003_jours_feries.plan.md`](./003_jours_feries.plan.md) — **COMPLÉTÉ**
 - [`004_letsencrypt_migration.plan.md`](./004_letsencrypt_migration.plan.md) — **BLOQUÉ** (en attente domaine personnel)
-
 

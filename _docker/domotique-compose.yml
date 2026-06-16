@@ -8,6 +8,7 @@ services:
       - 8280:8280      
     volumes:
       - /home/pi/appli/httpd_logs:/usr/local/apache2/logs
+      - httpd_ssl_conf:/usr/local/apache2/conf/ssl_conf
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     restart: always
@@ -68,3 +69,6 @@ services:
       - WATCHTOWER_POLL_INTERVAL=60
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  httpd_ssl_conf:

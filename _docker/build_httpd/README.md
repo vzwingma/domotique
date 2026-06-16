@@ -66,7 +66,7 @@ Le **routeur Freebox** assure le NAT. Aucun autre composant réseau intermédiai
 | Protocole entrant | HTTPS (TLS terminé par Apache) |
 | Protocole sortant | HTTPS vers Domoticz `:8443` (SSLProxy) |
 | Cible | `https://192.168.1.83:8443/` |
-| Certificat | Auto-signé, embarqué dans l'image Docker |
+| Certificat | Auto-signé, persistant via le volume Docker nommé `httpd_ssl_conf` |
 
 ### Accès et authentification
 
@@ -115,7 +115,7 @@ docker build -t vzwingmadomatic/httpd:latest .
 
 Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 - la configuration Apache (`httpd.conf`) avec le placeholder `__SERVER_NAME__` substitué au build via CI/CD (secret `SERVER_NAME`)
-- un **certificat TLS auto-signé** généré à build time via `openssl`, avec CN/SAN alignés sur `SERVER_NAME` (valide 10 ans, renouvelé à chaque rebuild CI/CD)
+- un script d'initialisation TLS qui génère le certificat **au premier démarrage** si le volume persistant est vide
 
 ---
 
@@ -123,16 +123,21 @@ Le Dockerfile (`FROM httpd:2.4-alpine`) embarque :
 
 | Propriété | Valeur |
 |---|---|
-| Type | Certificat **auto-signé** généré à build time (`openssl req -x509`) |
+| Type | Certificat **auto-signé** généré au premier démarrage (`openssl req -x509`) |
 | Identité TLS | `CN` + `subjectAltName` alignés sur `SERVER_NAME` |
-| Durée de validité | 10 ans (renouvelé à chaque rebuild CI/CD) |
+| Durée de validité | 10 ans |
 | Emplacement dans le container | `/usr/local/apache2/conf/ssl_conf/httpddomoticzserver.crt/.key` |
-| Impact | Avertissement navigateur sur l'accès externe — normal et attendu |
+| Persistance | volume Docker nommé `httpd_ssl_conf` |
+| Impact | Avertissement navigateur sur l'accès externe — normal et attendu, mais certificat stable entre rebuilds |
 
 ### Côté Domoticz mobile
 
 L'application mobile consomme le **même certificat PEM** exporté depuis le serveur HTTPS et le place dans `assets/certificates/domoticz.crt`.
-Le hostname configuré dans le plugin SSL doit donc rester cohérent avec `SERVER_NAME` côté HTTPD.
+Le hostname configuré dans le plugin SSL doit rester cohérent avec `SERVER_NAME` côté HTTPD, mais un rebuild de l'image n'impose plus une nouvelle empreinte TLS tant que le volume est conservé.
+
+### Rotation manuelle
+
+Pour régénérer le certificat, supprimer le volume Docker nommé `httpd_ssl_conf` ou les fichiers `httpddomoticzserver.crt/.key` dans le volume avant le prochain démarrage.
 
 ### Évolution vers Let's Encrypt
 
@@ -160,5 +165,6 @@ L'image est reconstruite automatiquement à chaque push sur `master` :
 
 | Fichier | Rôle |
 |---|---|
-| `Dockerfile` | Image Alpine + conf Apache + certificat auto-signé généré à build time (`openssl`) |
+| `Dockerfile` | Image Alpine + conf Apache + init TLS au démarrage |
+| `httpd-cert-init.sh` | Génère le certificat au premier démarrage puis le réutilise via le volume `httpd_ssl_conf` |
 | `httpd.conf` | Configuration Apache (VirtualHosts :8243/:8280, SSLProxy) |
