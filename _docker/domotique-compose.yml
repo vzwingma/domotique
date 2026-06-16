@@ -8,6 +8,7 @@ services:
       - 8280:8280      
     volumes:
       - /home/pi/appli/httpd_logs:/usr/local/apache2/logs
+      - /home/pi/appli/httpd:/usr/local/apache2/conf/ssl_conf
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     restart: always
@@ -18,7 +19,7 @@ services:
       # Configuration Box Tydom
       - HOST=192.168.1.14:443
       - MAC=#Set TYDOM MAC adress
-      - PASSWD=#Set TYDOM password      
+      - PASSWD=#Set TYDOM password
       # Configuration passerelle Tydom
       - PORT=9001
       # Configuration pour les api
@@ -45,7 +46,7 @@ services:
     restart: always
 # DOMOTICZ
   domoticz:
-    image: vzwingmadomatic/domoticz:latest
+    image: vzwingmadomatic/domoticz:2026.17523
     environment:
       - TZ=Europe/Paris
     ports:
