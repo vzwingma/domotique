@@ -96,6 +96,8 @@ Lire 4 fichiers suivants dans `.github/instructions/`:
 - `qa.instructions.md`
 - `doc.instructions.md`
 
+> Si un fichier est absent, le créer depuis le template correspondant dans `.github/instructions/` du dépôt transverse (`architect.instructions.template.md`, `dev.instructions.template.md`, `qa.instructions.template.md`, `doc.instructions.template.md`) et remplir les placeholders avec les valeurs du projet.
+
 Pour chaque fichier, vérifier cohérence avec code source:
 - `dev.instructions.md`: versions librairies, noms fichiers constantes, chemins dossiers
 - `qa.instructions.md`: versions packages test, commandes CI, chemins rapport couverture
@@ -105,6 +107,7 @@ Pour chaque fichier, vérifier cohérence avec code source:
 En complément:
 - Identifier placeholders `[...]` non remplis et signaler comme action nécessaire
 - Identifier valeurs obsolètes (ex: version librairie outdatée)
+- Vérifier cohérence workflow avec `MAINa` comme point d'entrée principal (si `Maina.agent.md` présent)
 
 ### 6. Auditer les skills partagés
 
@@ -143,7 +146,7 @@ Avant appliquer modifications:
    - Sections **validées** (conformes au code, aucun changement)
    - Vérification agents `.github/agents/*.agent.md` à version courante (v3.0+)
    - Vérification skills `.github/skills/*/SKILL.md` présents et cohérents avec `PLANS.md`
-   - Modifications proposées pour chaque fichier `.github/instructions/*.instructions.md`
+   - Modifications proposées pour chaque fichier `.github/instructions/*.instructions.md` (créés depuis `*.instructions.template.md` si absents)
    - Signalement séparé placeholders non remplis vs valeurs obsolètes
 
 2. Attendre **validation 👤 Développeur humain** avant appliquer modifications.
