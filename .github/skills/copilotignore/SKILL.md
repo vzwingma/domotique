@@ -1,6 +1,7 @@
 ---
 name: "copilotignore"
 description: Règle absolue respect `.copilotignore` — aucun agent lire/accéder fichiers listés, jamais.
+applyTo: "**"
 ---
 
 # 🚫 Règle absolue : Respect de `.copilotignore`

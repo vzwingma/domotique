@@ -1,6 +1,7 @@
 ---
 name: "plan-phase-execution"
 description: "Skill — Procédure d'exécution de phase d'un Plan d'Action (AP). Appliqué automatiquement à tous les agents."
+applyTo: "**"
 ---
 
 # Skill : Exécution de Phase d'un Plan d'Action (AP)
@@ -14,7 +15,7 @@ description: "Skill — Procédure d'exécution de phase d'un Plan d'Action (AP)
 ## Avant de démarrer
 
 1. **Lire plan complet** : `.github/plans/<NO>_<nom>.plan.md`
-2. **Identifier tes tâches** : Chercher ton identifiant agent dans phase (ex: `🔵 DEVon`, `🟢 QUALvin`, etc.)
+2. **Identifier tes tâches** : Chercher ton identifiant agent dans phase (ex: `🔵 DEVon`, `🟢 QALvin`, etc.)
 3. **Lister tâches** assignées (T<N>.X, T<N>.Y, etc.) et séquence
 4. **Comprendre dépendances** : Quelle(s) phase(s) doit-on compléter avant tienne
 5. **Identifier rapport à remplir** : `.github/plans/<NO>_reports/PHASE_N_COMPLETION_REPORT.md`
@@ -58,6 +59,20 @@ Pour chaque tâche T<N>.<M> :
 
 - ✅ Mettre à jour statut dans rapport (🔄 → ✅ ou ❌)
 - ✅ Vérifier que tâche suivante peut démarrer (dépendances internes)
+
+---
+
+## ⚡ Compact avant phase suivante (recommandé)
+
+Avant de déclencher la phase suivante, recommander `/compact` pour éviter l'accumulation de skill blobs en contexte :
+
+```
+/compact
+Instruction : Résume en 200 mots max — phase courante, numéro, tâches restantes (T<N>.X), décisions clés prises.
+Supprime : blobs skill des phases précédentes, historique détaillé résolu, confirmations ("oui", "go", etc.).
+```
+
+> 💡 Sans compact entre phases, chaque skill injecté (~4-8KB) reste en contexte pour tous les tours suivants. Sur 4 phases, cela représente ~20-30KB de contexte inutile accumulé.
 
 ---
 
