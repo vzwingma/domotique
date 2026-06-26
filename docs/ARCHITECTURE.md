@@ -88,20 +88,11 @@ URL d'accès : **`https://domatique.freeboxos.fr:38243/`**
 
 | Propriété | Valeur |
 |---|---|
-| Type | Certificat **Let's Encrypt** (signé CA publique, 90 jours) |
-| Challenge | HTTP-01 (webroot, port 80 public) |
-| Emplacement sur le Pi | `/home/pi/appli/letsencrypt/` (bind-mount vers `/etc/letsencrypt` dans le container) |
+| Type | Certificat **Let's Encrypt** (signé CA publique, 90 jours, renouvelé automatiquement) |
+| Challenge | HTTP-01 (webroot sur port 80 public, NAT Freebox 80→80 requis) |
+| Emplacement sur le Pi | `/home/pi/appli/letsencrypt/` (bind-mount vers `/etc/letsencrypt/live/` dans le container) |
 | Renouvellement | **Automatique** — container `certbot` toutes les 12h (`certbot renew --webroot`) |
-| Bootstrap | Procédure manuelle initiale (voir `_docker/build_httpd/README.md`) |
-
-### Gestion du certificat TLS
-
-| Propriété | Valeur |
-|---|---|
-| Type | Certificat **Let's Encrypt** (signé, 90 jours, renouvelé automatiquement) |
-| Emplacement dans le container | `/etc/letsencrypt/live/domatique.freeboxos.fr/` (volume monté) |
-| Renouvellement | **Automatique** — container `certbot` toutes les 12h (`certbot renew --webroot`) |
-| Challenge ACME | HTTP-01, webroot sur port 80, NAT Freebox 80→80 requis |
+| Bootstrap initial | Procédure manuelle (voir `_docker/build_httpd/README.md`) |
 
 **Pipeline CI/CD :**
 - Le `ServerName` Apache est injecté depuis le secret GitHub `SERVER_NAME` lors du build (`__SERVER_NAME__` remplacé dans `httpd.conf` et dans les chemins de certificat)

@@ -1,64 +1,79 @@
 ---
-description: Specificites projet domotique pour l'agent QUALvin (qa)
+description: Spécificités projet domotique pour l'agent 🟢 QALvin (qa)
 applyTo: "**"
 ---
 
-# Specificites projet - domotique (QA)
+# Spécificités projet — domotique (QA)
+
+> Fichier auto-lu par 🟢 QALvin au démarrage.
+> Contient specs projet `domotique` (dzVents Lua, validation événements cross-scripts, non-régression patterns critiques).
 
 ## Workflow
 
-1. Recuperer les todos *-qa dont les dependances sont done.
-2. Passer le todo en in_progress.
-3. Executer la validation fonctionnelle dzVents (nominal + erreurs + non-regression).
-4. Passer le todo en done si valide, sinon blocked avec diagnostic precis.
+1. Consulte table SQL `todos` pour tâches `*-qa` avec dépendances `done`
+2. Passe todo en `in_progress`
+3. Exécute validation fonctionnelle dzVents (nominal + erreurs + non-régression)
+4. Passe en `done` si valide, `blocked` + description diagnostique si échec
 
-## Strategie QA reelle (dzVents)
+## Stratégie QA réelle (dzVents)
 
-Le depot ne fournit pas une suite unitaire Lua standardisee pour dzVents. La QA s'appuie donc sur:
-- verification de coherence statique du script (triggers, effets de bord, guards)
-- validation runtime via logs Domoticz
-- verification des flux cross-scripts (events/customEvents/httpResponses)
-- non-regression des regles DEV-1, DEV-2, DEV-4, DEV-5
+Le dépôt ne fournit pas suite unitaire Lua standardisée pour dzVents. QA s'appuie donc sur :
+- **Vérification cohérence statique** : triggers, effets de bord, guards, appels helpers
+- **Validation runtime** : logs Domoticz, événements émis, états devices
+- **Vérification flux cross-scripts** : événements `Scene Phase`, `Presence Domicile`, `Scene Phase`, `Scenario Nuit`, réalignements groupes
+- **Non-régression** : règles DEV-1, DEV-2, DEV-4, DEV-5 (voir `.github/copilot-instructions.md`)
 
-## Cas a couvrir systematiquement
+## Cas à couvrir systématiquement
 
-- Cas nominal: le script fait l'action attendue et ecrit des logs coherents.
-- Cas vide/nil: aucune concatenation dangereuse, pas de crash.
-- Cas erreur integration:
-  - timeout/connexion
-  - erreurs HTTP 4xx et 5xx
-  - retries bornes quand prevu
-- Cas coherence metier:
-  - scenePhase coherente (incluant Inconnue au boot)
-  - realignement groupes correct dans les deux sens
-  - etat Domoticz aligne avec etat Tydom reel
+### Cas nominal
+- Script fait l'action attendue
+- Logs cohérents (marker `[Domaine]`, uuid présent, niveau approprié)
+- Événements émis correctement si requis
 
-## Points de controle obligatoires
+### Cas vide / nil
+- Aucune concaténation dangereuse sur nil
+- Pas de crash si data absente
+- tostring() appliqué partout
 
-- Triggers declaratifs corrects: timer/devices/customEvents/httpResponses/system.
-- Conservation de la tracabilite uuid.
-- Respect des helpers centralises (global_data.lua).
-- Aucune reference hard-codee a un ID Tydom.
-- Si polling change: mettre a jour et verifier Health_check_dzVents.lua.
+### Cas erreur intégration
+- Timeout/perte connexion Tydom (erreur HTTP 503, 504)
+- Erreurs HTTP client (4xx) de Tydom/Freebox
+- Retries bornés quand prévu
+- Fallback gracieux si data indisponible
 
-## Exemples de commandes utiles (selon environnement)
+### Cas cohérence métier
+- `scenePhase` cohérente (y compris `Inconnue` au boot)
+- Réalignement groupes correct (groupe → items ET items → groupe)
+- État Domoticz aligné avec état réel Tydom (volets, consigne thermostat)
+
+## Points de contrôle obligatoires
+
+- **Triggers** : timer/devices/customEvents/httpResponses/system déclarés correctement
+- **uuid** : conservé dans logs et headers HTTP (`X-CorrId`)
+- **Helpers** : respect des wrappers centralisés de `global_data.lua`
+- **IDs Tydom** : aucun hard-code dans script métier (uniquement `TYDOM_DEVICES`)
+- **Polling** : si polling change (timer fréquence), vérifier seuils `Health_check_dzVents.lua` (Phase < 25h, Freebox < 10 min, Tydom Temp < 90 min)
+
+## Commandes utiles (Docker Compose)
 
 ```bash
-# depuis _docker/
-docker compose -f domotique-compose.yml up -d
+# Démarrer tous les services
+docker compose -f _docker/domotique-compose.yml up -d
 
-docker compose -f domotique-compose.yml logs -f domoticz
+# Logs Domoticz (où scripts dzVents s'exécutent)
+docker compose -f _docker/domotique-compose.yml logs -f domoticz
 
-docker compose -f domotique-compose.yml logs -f tydom-bridge
+# Logs Tydom Bridge (volets + chauffage)
+docker compose -f _docker/domotique-compose.yml logs -f tydom-bridge
 ```
 
-## Ce que tu ne fais pas
+## Ce que tu ne fais PAS
 
-- Ne pas modifier les scripts de production hors corrections QA explicitement demandees.
-- Ne pas mettre a jour la documentation (role DOCly).
-- Ne pas prendre de decision architecturale sans validation ARCos.
+- Pas modifier scripts de production hors corrections QA explicitement demandées
+- Pas mettre à jour documentation (rôle 🟣 DOCly)
+- Pas prendre décisions architecture sans validation 🟠 ARCos
 
-## Regle index des plans
+## Règle d'index des plans (obligatoire)
 
-- .github/plans/README.md est un index plans + statut global uniquement.
-- Si la livraison QA entraine un changement de statut global de plan, synchroniser cet index dans le meme changement.
+- `.github/plans/README.md` est index **plans + statut global** uniquement (pas phases)
+- Si phase QA livrée change statut global plan, synchronise `.github/plans/README.md` dans même changement

@@ -1,22 +1,38 @@
 ---
-description: Specificites projet domotique pour l'agent DEVon (dev)
+description: Spécificités projet domotique pour l'agent 🔵 DEVon (dev)
 applyTo: "**"
 ---
 
-# Specificites projet - domotique (Dev)
+# Spécificités projet — domotique (Dev)
+
+> Fichier auto-lu par agent 🔵 DEVon au démarrage. Contient specs projet `domotique` (dzVents Lua, automatisation événementielle Domoticz, intégrations HTTP Tydom/Freebox).
 
 ## Workflow
 
-1. Recuperer les todos owner=dev en pending sans dependances bloquantes.
-2. Passer le todo en in_progress.
-3. Implementer selon les conventions dzVents ci-dessous.
-4. Passer le todo en done quand le code est pret et verifie.
+1. Consulte table SQL `todos` pour tâches `owner = 'dev'` statut `pending` sans dépendances bloquantes
+2. Passe todo en `in_progress` avant commencer
+3. Implémente feature selon conventions dzVents ci-dessous
+4. Passe todo en `done` quand code prêt et validé
 
-## Stack technique reelle
+```sql
+-- Trouver les tâches dev disponibles
+SELECT t.* FROM todos t
+WHERE t.status = 'pending'
+AND (t.id LIKE '%-dev' OR t.description LIKE '%owner: dev%')
+AND NOT EXISTS (
+  SELECT 1 FROM todo_deps td
+  JOIN todos dep ON td.depends_on = dep.id
+  WHERE td.todo_id = t.id AND dep.status != 'done'
+);
+```
 
-- Domoticz + dzVents (Lua) pour l'automatisation evenementielle.
-- Integrations externes via bridges Node.js (notamment tydom-bridge).
-- Deploiement principal via Docker Compose.
+## Stack technique
+
+- **dzVents (Lua)** – scripts événementiels dans Domoticz
+- **Domoticz** – plateforme centrale (auth native, API interne)
+- **Tydom Bridge** (HTTP REST local) – volets + chauffage Delta Dore
+- **Freebox API** (HTTP REST local) – détection présence réseau
+- **API Jours Fériés** (calendrier.api.gouv.fr) – calendrier officiel
 
 ## Conventions de code dzVents
 
@@ -24,46 +40,66 @@ applyTo: "**"
 
 ```lua
 return {
-    on = { ... },
-    data = { ... },
+    on = { triggers = { ... } },
+    data = { state = { initial = ... } },
     logging = { level = domoticz.LOG_INFO, marker = "[Domaine] " },
     execute = function(domoticz, item)
-        -- logique
+        -- logique metier
     end
 }
 ```
 
-### Evenements et etat
+### Événements et état
 
-- Utiliser explicitement les triggers (timer, devices, customEvents, httpResponses, system).
-- scenePhase doit etre pilotee via l'evenement Scene Phase (pas d'ecriture directe hors script dedie).
-- Conserver la valeur Inconnue comme etat possible au boot.
+- **Triggers déclaratifs** : `timer`, `devices`, `customEvents`, `httpResponses`, `system`
+- **scenePhase** : alimentée **uniquement** via événement `Scene Phase` (jamais écriture directe)
+- **Boot** : tolère état `Inconnue` si scenePhase non restaurée ; restauration via `Device_Label_Scene_Phase.lua`
+- **État global** : uniquement via `domoticz.globalData` + `domoticz.globalData.joursFeries`
 
 ### Appels HTTP et IDs techniques
 
-- Toujours passer par les helpers centralises dans global_data.lua.
-- Ne jamais hard-coder un deviceId/endpointId Tydom.
-- Utiliser TYDOM_DEVICES, getTydomHeatURI, getTydomDeviceNumberFromDzItem, getDzItemFromTydomDeviceId.
+```lua
+-- TOUJOURS passer par helpers centralises
+local uuid = domoticz.helpers.uuid()
+local tydomIds = domoticz.helpers.getTydomDeviceNumberFromDzItem(name, domoticz)
+domoticz.helpers.callTydomBridgePUT(path, data, uuid, callback, domoticz)
+```
+
+- **Jamais** hard-coder deviceId/endpointId Tydom
+- Utiliser helpers : `TYDOM_DEVICES`, `getTydomHeatURI()`, `getTydomDeviceNumberFromDzItem()`, `getTydomBridgeGET()`, `getTydomBridgePUT()`
+- **Config centralisée** dans `global_data.lua` uniquement
 
 ### Groupes
 
-- Tout realignement groupe <- items doit utiliser verifyGroupeFromItem.
-- Ne pas re-implementer la logique localement.
+- Tout réalignement groupe ↔ items doit utiliser `verifyGroupeFromItem(groupe, items, uuid, domoticz)`
+- Pas réimplémenter logique localement
 
 ### Logging
 
-- marker au format [Domaine].
-- Prefixer les messages avec [uuid] pour la correlation.
-- tostring() obligatoire pour toute valeur potentiellement nil avant concatenation.
+```lua
+-- Format OBLIGATOIRE :
+-- [Domaine] [uuid] message
+-- ex: [Thermostat] [a1b2c3d4] consigne mise à 19.5°C
 
-## Ce que tu ne fais pas
+local marker = "[Thermostat] "
+local msg = "[" .. tostring(uuid) .. "] consigne mise à " .. tostring(consigne) .. "°C"
+domoticz.log(marker .. msg, domoticz.LOG_INFO)
+```
 
-- Ne pas modifier README ou la documentation (role DOCly), sauf demande explicite.
-- Ne pas introduire de nouvelle librairie ou pattern architectural sans validation ARCos.
-- Ne pas renommer des objets Domoticz (devices/groupes/scenes/variables) sans plan de migration.
-- Ne pas modifier les IDs Tydom hors TYDOM_DEVICES.
+- **marker** au format `[Domaine]`
+- **Préfixer messages** avec `[uuid]` pour corrélation
+- **tostring()** obligatoire pour toute variable potentiellement `nil`
+- **Niveaux** : `LOG_DEBUG` (détails technique), `LOG_INFO` (nominal + réalignements), `LOG_ERROR` (anomalies)
 
-## Regle index des plans
+## Ce que tu ne fais PAS
 
-- .github/plans/README.md doit rester limite a plans + statut global.
-- Si un statut global de plan change dans ton lot, synchroniser cet index dans le meme changement.
+- Pas modifier fichiers documentation (`README.md`, `docs/`, `copilot-instructions.md`) — rôle 🟣 DOCly
+- Pas introduire nouvelle librairie ou pattern architectural sans validation 🟠 ARCos
+- Pas renommer devices/groupes/scènes/variables Domoticz sans plan de migration validé
+- Pas modifier IDs Tydom hors `TYDOM_DEVICES` dans `global_data.lua`
+- Pas écrire directement `globalData.scenePhase` — émettre événement `Scene Phase` uniquement
+
+## Règle d'index des plans (obligatoire)
+
+- `.github/plans/README.md` limité aux **plans + statut global** (sans détail phases)
+- Si travail change statut global plan, MAJ `.github/plans/README.md` dans même changement

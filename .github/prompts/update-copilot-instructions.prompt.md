@@ -43,43 +43,37 @@ Lire intégralement `.github/copilot-instructions.md` pour identifier:
 - Sections déjà présentes
 - Infos potentiellement obsolètes ou incomplètes
 - Conventions décrites mais non vérifiées dans code
-- Chapitres indiqués <em>à compléter</em> ou <em>à valider</em>
+- Chapitres indiqués _à compléter_ ou _à valider_
 
 ### 2. Explorer la structure du projet
 
-Lister `src/` pour détecter nouveau dossier ou domaine non documenté
+Lister racine et sous-dossiers clés pour détecter nouveau domaine non documenté
 
 ### 3. Extraire les conventions réelles du code
 
-Pour chaque couche, rechercher et noter patterns réellement utilisés:
+Pour chaque couche/domaine identifié, rechercher et noter patterns réellement utilisés:
 
-**Interfaces**
-- Nommage interfaces
-- Structure type interface données
+**Architecture**
+- Couches applicatives (ex: Scene_*, Device_*, Groupes_*, Freebox_*, Tydom_*, global_*)
+- Orchestration des flux (ex: scenePhase, événements custom, cross-scripts)
+- Intégrations externes (HTTP, APIs tierces)
+- Gestion d'état (état global, contexte, data locales)
 
-**Services**
-- Pattern injection
-- Composition API calls (gestion erreurs, utilisation service URL/config pour endpoints, etc.)
-- Gestion erreurs HTTP
+**Conventions de nommage**
+- Préfixes fichiers par domaine
+- Noms variables globales
+- Format événements personnalisés
+- Conventions IDs/identifiants
 
-**Composants de pages**
-- Structure type composant
+**Sécurité**
+- Gestion credentials (variables Domoticz, ENV vars)
+- Pas hardcode secrets/URLs sensibles
+- Auth patterns (oauth, tokens, etc.)
 
-**Composants réutilisables**
-- Pattern cycle vie
-
-**Fonctions utilitaires**
-- Conventions nommage fichiers
-- Pattern fonctions pures
-
-**Tests**
-- Structure suites
-- Outils mock utilisés
-- Pattern setup
-
-**CSS / Styles**
-- Tokens CSS définis
-- Conventions nommage classes locales
+**Observabilité**
+- Format logs (markers, uuid, niveaux)
+- Tracing/correlation (uuid propagation)
+- Health checks existants
 
 ### 4. Vérifier la cohérence avec les instructions existantes
 
@@ -96,18 +90,18 @@ Lire 4 fichiers suivants dans `.github/instructions/`:
 - `qa.instructions.md`
 - `doc.instructions.md`
 
-> Si un fichier est absent, le créer depuis le template correspondant dans `.github/instructions/` du dépôt transverse (`architect.instructions.template.md`, `dev.instructions.template.md`, `qa.instructions.template.md`, `doc.instructions.template.md`) et remplir les placeholders avec les valeurs du projet.
+> Si un fichier est absent, le créer depuis le template correspondant dans `.github/instructions/` (fichiers `.template.md`) et remplir les placeholders avec les valeurs du projet.
 
 Pour chaque fichier, vérifier cohérence avec code source:
-- `dev.instructions.md`: versions librairies, noms fichiers constantes, chemins dossiers
-- `qa.instructions.md`: versions packages test, commandes CI, chemins rapport couverture
-- `doc.instructions.md`: chemins docs/ locaux, noms fichiers doc, versions pour diagrammes `.puml`
-- `architect.instructions.md`: noms couches, providers état, service HTTP, stratégie routing
+- `architect.instructions.md`: couches dzVents, patterns orchestration, décisions architecture, helpers centralisés
+- `dev.instructions.md`: conventions dzVents, structure scripts, triggers, appels HTTP, nommage, logging
+- `qa.instructions.md`: stratégie test dzVents, cas à couvrir, points de contrôle critiques
+- `doc.instructions.md`: fichiers documentation, conventions rédaction, versions à maintenir
 
 En complément:
 - Identifier placeholders `[...]` non remplis et signaler comme action nécessaire
-- Identifier valeurs obsolètes (ex: version librairie outdatée)
-- Vérifier cohérence workflow avec `MAINa` comme point d'entrée principal (si `Maina.agent.md` présent)
+- Identifier valeurs obsolètes (ex: nom fichier, référence module changé)
+- Vérifier cohérence workflow : ARCos (planification) → DEVon (impl) → QALvin (test) → DOCly (doc) comme point d'entrée principal
 
 ### 6. Auditer les skills partagés
 
@@ -119,9 +113,9 @@ Lire 4 skills suivants dans `.github/skills/` (si existent):
 
 Pour chaque skill, vérifier:
 - Frontmatter `applyTo: "**"` présent (inclusion auto dans contexte agent)
-- Contenu cohérent avec `.github/PLANS.md` (pas divergence format)
-- Agents `.github/agents/*.agent.md` référencent skills dans sections AP et /fleet (et répètent pas contenu)
-- Identifier contenu dupliqué entre skill et agent (candidat extraction)
+- Contenu cohérent avec `.github/plans/README.md` (pas divergence format)
+- Agents `.github/instructions/*.instructions.md` référencent skills et workflow dans sections pertinentes
+- Identifier contenu dupliqué entre skill et agent instructions (candidat extraction)
 
 > 💡 **Parallélisation possible**: Étapes 2 (exploration structure), 3 (extraction conventions), 5 (audit instructions/) et 6 (audit skills/) sont **indépendantes** et peuvent être lancées en `/fleet` pour accélérer audit global.
 
@@ -130,10 +124,10 @@ Pour chaque skill, vérifier:
 1. **Pas supprimer** sections existantes sans raison explicite — préférer amender ou compléter
 2. **Vérifier dans code** chaque convention avant ajouter: pas documenter hypothèses
 3. **Rester concis**: instructions Copilot lues chaque session; éviter verbosité
-4. **Conserver langue française** pour texte narratif
+4. **Conserver langue française** pour texte narratif, anglais pour blocs code
 5. **Utiliser exemples code** issus code source réel quand utile
 6. **Structurer ajouts** dans section pertinente existante, ou créer nouvelle section titrée si nécessaire
-7. **Pas dupliquer** infos déjà présentes dans fichiers agents (`.github/agents/`)
+7. **Pas dupliquer** infos déjà présentes dans fichiers agents (`.github/instructions/`)
 
 ## Format de livraison
 
@@ -144,9 +138,9 @@ Avant appliquer modifications:
    - Sections **amender** (avec valeur actuelle et valeur corrigée)
    - Sections **supprimer** (si obsolètes — demander confirmation)
    - Sections **validées** (conformes au code, aucun changement)
-   - Vérification agents `.github/agents/*.agent.md` à version courante (v3.0+)
-   - Vérification skills `.github/skills/*/SKILL.md` présents et cohérents avec `PLANS.md`
-   - Modifications proposées pour chaque fichier `.github/instructions/*.instructions.md` (créés depuis `*.instructions.template.md` si absents)
+   - Vérification agents instructions (v4.2+ pour DEVon/QALvin/DOCly)
+   - Vérification skills `.github/skills/*/SKILL.md` présents et cohérents
+   - Modifications proposées pour chaque fichier `.github/instructions/*.instructions.md`
    - Signalement séparé placeholders non remplis vs valeurs obsolètes
 
 2. Attendre **validation 👤 Développeur humain** avant appliquer modifications.

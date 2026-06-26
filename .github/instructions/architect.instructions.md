@@ -1,67 +1,91 @@
 ---
-description: Specificites projet domotique pour l'agent ARCos (architect)
+description: Spécificités projet domotique pour l'agent ARCos (architect)
 applyTo: "**"
 ---
 
-# Specificites projet - domotique (Architect)
+# Spécificités projet — domotique
 
-## Lecture obligatoire au demarrage
+> Fichier auto-lu par agent 🟠 ARCos au démarrage.
+> Contient spécificités projet `domotique` (système domotique centralisé sur Domoticz avec dzVents Lua, intégrations Tydom et Freebox, déploiement Docker Compose).
 
-- Lire .github/copilot-instructions.md.
-- Lire .github/tasks/todo/RETROCONCEPTION_dzVents.md avant tout changement d'architecture/comportement.
-- Lire .github/tasks/todo/PLAN_ACTIONS_dzVents.md avant toute proposition de roadmap/refactoring.
-- Lire domoticz/scripts/dzVents/global_data.lua avant toute decision impactant les scripts dzVents.
-- Si docs/ARCHITECTURE.md est absent (cas actuel), planifier une tache DOCly pour le creer en fin d'initiative.
+## Lecture du document d'architecture
 
-## Conventions architecturales dzVents
+**Au démarrage**, lis `docs/ARCHITECTURE.md` :
+- Comprendre stack dzVents (couches Scene_, Device_, global_, intégrations Tydom/Freebox)
+- Assurer cohérence décisions planification avec architecture existante
+- Architecture couvre : réseau (proxy Apache TLS), orchestration scènes quotidiennes, gestion état global (scenePhase, joursFeries)
 
-- Couches:
-  - Scene_*: orchestration des phases journalieres
-  - Device_* / Devices_*: comportement metier
-  - Groupes_*: synchronisation groupes et equipements
-  - Freebox_* / Tydom_*: integrations externes
-  - global_*: helpers, constantes, wrappers HTTP, etat partage
-- Etat global:
-  - scenePhase est une donnee transverse et doit etre alimentee via l'evenement custom Scene Phase.
-  - Le script Device_Label_Scene_Phase.lua gere la restauration au boot.
-- HTTP:
-  - Les appels vers Tydom passent par les helpers centralises de global_data.lua.
-  - Les IDs Tydom sont centralises dans TYDOM_DEVICES uniquement.
-- Observabilite:
-  - Toute chaine d'appel doit conserver la tracabilite uuid dans les logs.
+Lectures additionnelles obligatoires :
+- `.github/copilot-instructions.md` — contexte global projet
+- `.github/tasks/todo/RETROCONCEPTION_dzVents.md` — avant tout changement d'architecture/comportement
+- `.github/tasks/todo/PLAN_ACTIONS_dzVents.md` — avant toute proposition roadmap/refactoring
+- `domoticz/scripts/dzVents/global_data.lua` — avant toute décision impactant dzVents
 
-## ADR et documentation d'architecture
+## Conventions architecturales
 
-Toute decision architecturale majeure doit produire une tache DOCly pour creer un ADR dans docs/adr/ (quand ce dossier sera initialise), avec:
-- contexte
-- decision
-- alternatives
-- consequences
+**Couches dzVents** :
+- `Scene_*` : orchestration des phases quotidiennes
+- `Device_* / Devices_*` : comportement métier événementiel
+- `Groupes_*` : synchronisation groupes ↔ items unitaires
+- `Freebox_* / Tydom_*` : intégrations externes (présence, volets, chauffage)
+- `global_*` : helpers centralisés, constantes, wrappers HTTP, état partagé
+
+**État global** :
+- `scenePhase` : alimentée **uniquement** via l'événement custom `Scene Phase` (jamais écriture directe hors `Device_Label_Scene_Phase.lua`)
+- `joursFeries` : chargé via API gouvernementale + health check quotidien
+
+**HTTP & IDs techniques** :
+- Tous les appels Tydom passent par helpers centralisés de `global_data.lua`
+- IDs Tydom centralisés **uniquement** dans table `TYDOM_DEVICES` de `global_data.lua`
+- Pas de hard-code deviceId/endpointId Tydom dans les scripts métier
+
+**Observabilité** :
+- Chaque flux doit conserver traçabilité `uuid` (v4) propagée dans logs, événements, headers HTTP (`X-CorrId`)
+- Marker au format `[Domaine]`
+- Niveau log cohérent : `LOG_DEBUG` (détails), `LOG_INFO` (nominal), `LOG_ERROR` (anomalies)
+
+## Documentation des décisions architecturales (ADR)
+
+Chaque décision architecturale majeure doit produire fichier ADR dans `docs/adr/` :
+
+- **Nommage** : `docs/adr/NNN-titre-court.md` (ex: `docs/adr/001-orchestration-phases.md`)
+- **Contenu minimal** : contexte, décision prise, alternatives considérées, conséquences
+- **Quand créer ADR** : nouveau pattern dzVents, changement intégration (Tydom/Freebox), refactoring couche, déploiement Docker
+- Déléguer création ADR à 🟣 DOCly après validation décision
 
 ## Protocole de handoff SQL
 
-Quand une initiative est prete a etre executee, inserer les taches avec ce format:
+Quand tâche prête à être réalisée, insère todos dans table SQL avec ce format :
 
 ```sql
 INSERT INTO todos (id, title, description, status) VALUES
-  ('feat-xxx-dev', 'Titre dev',  'owner: dev - fichiers a modifier et comportement attendu', 'pending'),
-  ('feat-xxx-qa',  'Titre qa',   'owner: qa - validations nominales, erreurs, regressions',   'pending'),
-  ('feat-xxx-doc', 'Titre doc',  'owner: doc - README, copilot-instructions, docs/ si present', 'pending');
+  ('feat-xxx-dev', 'Titre dev',  'Description précise : fichiers à créer/modifier, interfaces/patterns à respecter', 'pending'),
+  ('feat-xxx-qa',  'Titre QA',   'Tests à valider : cas nominaux, erreurs HTTP, non-régression DEV-*, flux cross-scripts', 'pending'),
+  ('feat-xxx-doc', 'Titre Doc',  'Documentation : README, docs/ARCHITECTURE.md, docs/adr/ si ADR, copilot-instructions.md', 'pending');
 
 INSERT INTO todo_deps (todo_id, depends_on) VALUES
   ('feat-xxx-qa',  'feat-xxx-dev'),
   ('feat-xxx-doc', 'feat-xxx-dev');
 ```
 
-Convention IDs: feat-<nom>-dev / feat-<nom>-qa / feat-<nom>-doc.
+Convention nommage IDs : `feat-<nom>-dev` / `feat-<nom>-qa` / `feat-<nom>-doc`.
 
-## Interactions avec agents partenaires
+## Interactions avec l'agent partenaire (tydom-bridge, Freebox)
 
-- Contrats integration Tydom: coordonnes avec le composant tydom-bridge.
-- Contrats integration Freebox: preservent la sequence d'authentification et la robustesse.
-- Tout nouveau endpoint de bridge doit etre absorbe via global_data.lua avant usage metier.
+- Contrats API (URL, paramètres, codes retour) définis en coordination avec composants respectifs
+- Tout nouveau endpoint Tydom/Freebox doit être reflété dans `global_data.lua` avant usage métier
+- Préserver robustesse et séquencing (ex: authentification Freebox avant lecture LAN statuts)
 
-## Regle index des plans
+## Agents du projet
 
-- .github/plans/README.md reste un index synthetique: plans + statut global uniquement.
-- Toute creation de plan ou changement de statut global met a jour cet index dans le meme change set.
+| Icône | Nom      | Fichier agent              | Rôle                          |
+|-------|----------|---------------------------|-------------------------------|
+| 🔵    | DEVon    | `.github/instructions/dev.instructions.md` | Implémentation dzVents      |
+| 🟢    | QALvin   | `.github/instructions/qa.instructions.md` | Validation et tests          |
+| 🟣    | DOCly    | `.github/instructions/doc.instructions.md` | Documentation              |
+
+## Règle d'index des plans (obligatoire)
+
+- Fichier `.github/plans/README.md` est **index synthétique** : doit contenir uniquement liste plans et leur **statut global**
+- Pas afficher statuts phases
+- Toute création plan ou changement statut global doit inclure, dans même changement, mise à jour `.github/plans/README.md`
