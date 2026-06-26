@@ -46,7 +46,8 @@ services:
     restart: always
 # DOMOTICZ
   domoticz:
-    image: vzwingmadomatic/domoticz:2026.17523
+    image: vzwingmadomatic/domoticz:latest
+    privileged: true
     environment:
       - TZ=Europe/Paris
     ports:
