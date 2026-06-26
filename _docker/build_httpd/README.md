@@ -102,7 +102,7 @@ SSLProxyCheckPeerExpire off
 | Contrôle d'accès | `Require all granted` (pas de filtrage) |
 | CORS | `Access-Control-Allow-Origin: *` |
 
-Ce VirtualHost est destiné aux clients internes (scripts, dzVents, domoticz-ext-bridge) qui n'ont pas besoin de TLS sur le réseau local.
+Ce VirtualHost est destiné aux clients internes (scripts, dzVents) qui n'ont pas besoin de TLS sur le réseau local.
 
 ---
 

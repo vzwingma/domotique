@@ -24,7 +24,6 @@ domoticz.log.gz
 
 _docker/build_httpd/_rules_access_clear_.txt
 .idea/
-/domoticz-ext-bridge/
 
 # Ignore all files in the .agents/skills/cave directory
 .agents/skills/cave*
