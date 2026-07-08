@@ -9,7 +9,7 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
           │  (DNS Free → IP publique)
   ┌───────▼──────────────────────────────────────────────────┐
   │  Freebox (routeur FAI)                                   │
-  │  NAT : port 38243 (public) → 8243 (Raspberry Pi LAN)    │
+  │  NAT : port 38243 (public) → 8243 (Raspberry Pi LAN)     │
   └───────────────────────┬──────────────────────────────────┘
                           │ HTTPS :8243
   ┌─────────────────────────────────────────────────────────┐
