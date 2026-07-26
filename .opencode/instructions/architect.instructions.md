@@ -16,9 +16,9 @@ applyTo: "**"
 - Architecture couvre : réseau (proxy Apache TLS), orchestration scènes quotidiennes, gestion état global (scenePhase, joursFeries)
 
 Lectures additionnelles obligatoires :
-- `.github/copilot-instructions.md` — contexte global projet
-- `.github/tasks/todo/RETROCONCEPTION_dzVents.md` — avant tout changement d'architecture/comportement
-- `.github/tasks/todo/PLAN_ACTIONS_dzVents.md` — avant toute proposition roadmap/refactoring
+- `.opencode/copilot-instructions.md` — contexte global projet
+- `.opencode/tasks/todo/RETROCONCEPTION_dzVents.md` — avant tout changement d'architecture/comportement
+- `.opencode/tasks/todo/PLAN_ACTIONS_dzVents.md` — avant toute proposition roadmap/refactoring
 - `domoticz/scripts/dzVents/global_data.lua` — avant toute décision impactant dzVents
 
 ## Conventions architecturales
@@ -80,12 +80,12 @@ Convention nommage IDs : `feat-<nom>-dev` / `feat-<nom>-qa` / `feat-<nom>-doc`.
 
 | Icône | Nom      | Fichier agent              | Rôle                          |
 |-------|----------|---------------------------|-------------------------------|
-| 🔵    | DEVon    | `.github/instructions/dev.instructions.md` | Implémentation dzVents      |
-| 🟢    | QALvin   | `.github/instructions/qa.instructions.md` | Validation et tests          |
-| 🟣    | DOCly    | `.github/instructions/doc.instructions.md` | Documentation              |
+| 🔵    | DEVon    | `.opencode/agents/Devon.agent.md` | Implémentation dzVents      |
+| 🟢    | QALvin   | `.opencode/agents/Qalvin.agent.md` | Validation et tests          |
+| 🟣    | DOCly    | `.opencode/agents/Docly.agent.md` | Documentation              |
 
 ## Règle d'index des plans (obligatoire)
 
-- Fichier `.github/plans/README.md` est **index synthétique** : doit contenir uniquement liste plans et leur **statut global**
+- Fichier `.opencode/plans/README.md` est **index synthétique** : doit contenir uniquement liste plans et leur **statut global**
 - Pas afficher statuts phases
-- Toute création plan ou changement statut global doit inclure, dans même changement, mise à jour `.github/plans/README.md`
+- Toute création plan ou changement statut global doit inclure, dans même changement, mise à jour `.opencode/plans/README.md`

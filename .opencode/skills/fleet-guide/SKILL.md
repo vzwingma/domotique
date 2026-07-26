@@ -1,12 +1,11 @@
 ---
 name: "fleet-guide"
 description: "Skill — Guide parallélisation `/fleet` pour tous agents. Appliqué automatiquement."
-applyTo: "**"
 ---
 
 # Skill : Parallélisation avec /fleet
 
-> `/fleet` = mode exécution parallèle CLI Copilot. Dispatche plusieurs sous-agents simultanément, réduit temps total.
+> `/fleet` = mode exécution parallèle CLI OpenCode. Dispatche plusieurs sous-agents simultanément, réduit temps total.
 
 ---
 

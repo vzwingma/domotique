@@ -101,5 +101,5 @@ domoticz.log(marker .. msg, domoticz.LOG_INFO)
 
 ## Règle d'index des plans (obligatoire)
 
-- `.github/plans/README.md` limité aux **plans + statut global** (sans détail phases)
-- Si travail change statut global plan, MAJ `.github/plans/README.md` dans même changement
+- `.opencode/plans/README.md` limité aux **plans + statut global** (sans détail phases)
+- Si travail change statut global plan, MAJ `.opencode/plans/README.md` dans même changement

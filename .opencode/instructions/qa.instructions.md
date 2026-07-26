@@ -21,7 +21,7 @@ Le dépôt ne fournit pas suite unitaire Lua standardisée pour dzVents. QA s'ap
 - **Vérification cohérence statique** : triggers, effets de bord, guards, appels helpers
 - **Validation runtime** : logs Domoticz, événements émis, états devices
 - **Vérification flux cross-scripts** : événements `Scene Phase`, `Presence Domicile`, `Scene Phase`, `Scenario Nuit`, réalignements groupes
-- **Non-régression** : règles DEV-1, DEV-2, DEV-4, DEV-5 (voir `.github/copilot-instructions.md`)
+- **Non-régression** : règles DEV-1, DEV-2, DEV-4, DEV-5 (voir `.opencode/copilot-instructions.md`)
 
 ## Cas à couvrir systématiquement
 
@@ -75,5 +75,5 @@ docker compose -f _docker/domotique-compose.yml logs -f tydom-bridge
 
 ## Règle d'index des plans (obligatoire)
 
-- `.github/plans/README.md` est index **plans + statut global** uniquement (pas phases)
-- Si phase QA livrée change statut global plan, synchronise `.github/plans/README.md` dans même changement
+- `.opencode/plans/README.md` est index **plans + statut global** uniquement (pas phases)
+- Si phase QA livrée change statut global plan, synchronise `.opencode/plans/README.md` dans même changement

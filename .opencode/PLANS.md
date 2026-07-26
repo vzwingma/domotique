@@ -1,6 +1,6 @@
 # 📋 Plans d'Action (AP) — Documentation Centralisée
 
-**Document :** `.github/PLANS.md`  
+**Document :** `.opencode/PLANS.md`  
 **Objectif :** Guide centralisé pour créer, exécuter et tracker les plans d'action multi-phases.
 
 ---
@@ -25,7 +25,7 @@ Un **Plan d'Action (AP)** est un document structuré qui :
 ## 📂 Structure des Répertoires
 
 ```
-.github/
+.opencode/
 ├── PLANS.md                              # Ce document (guide centralisé)
 ├── plans/
 │   ├── 001_feature_1.plan.md    # Fichier plan principal
@@ -41,11 +41,11 @@ Un **Plan d'Action (AP)** est un document structuré qui :
 ```
 
 **Conventions de nommage :**
-- Fichier plan : `.github/plans/<NO>_<nom_descriptif>.plan.md`
+- Fichier plan : `.opencode/plans/<NO>_<nom_descriptif>.plan.md`
   - `<NO>` : Numéro séquentiel (001, 002, 003...)
   - `<nom_descriptif>` : Slug lisible en français ou anglais
   - Exemple : `001_modernisation_complète.plan.md`
-- Dossier reporting : `.github/plans/<NO>_reports/`
+- Dossier reporting : `.opencode/plans/<NO>_reports/`
   - Contient les rapports de phase (`PHASE_1_...`, `PHASE_2_...`, etc.)
   - Un rapport par phase complétée
 
@@ -58,7 +58,7 @@ Un **Plan d'Action (AP)** est un document structuré qui :
 ```markdown
 # Plan d'Action : <Titre Explicite>
 
-**Document :** `.github/plans/<NO>_<nom>.plan.md`  
+**Document :** `.opencode/plans/<NO>_<nom>.plan.md`  
 **Date de création :** YYYY-MM-DD  
 **Statut :** ✅ Complété | 🔄 En cours | ⏳ Planifié | ❌ Bloqué  
 **Objectif Prioritaire :** [HIGH | MEDIUM | LOW]
@@ -219,10 +219,10 @@ Phase 6 (Docs) ← [Phases 1-5 doivent être ✅]
 
 ### Structure du Reporting
 
-Pour chaque plan, créer un dossier `.github/plans/<NO>_reports/` avec un rapport par phase :
+Pour chaque plan, créer un dossier `.opencode/plans/<NO>_reports/` avec un rapport par phase :
 
 ```
-.github/plans/001_reports/
+.opencode/plans/001_reports/
 ├── PHASE_1_COMPLETION_REPORT.md
 ├── PHASE_2_COMPLETION_REPORT.md
 ├── PHASE_3_COMPLETION_REPORT.md
@@ -309,7 +309,7 @@ Fin du rapport Phase N
 
 ```bash
 # Créer le fichier plan
-touch .github/plans/00X_<nom>.plan.md
+touch .opencode/plans/00X_<nom>.plan.md
 
 # Remplir :
 # - Objectif global
@@ -329,14 +329,14 @@ touch .github/plans/00X_<nom>.plan.md
 
 ```bash
 # 1. Lire le plan complet
-cat .github/plans/<NO>_<nom>.plan.md
+cat .opencode/plans/<NO>_<nom>.plan.md
 
 # 2. Identifier les tâches assignées
 # Exemple : Agent Qalvin (🟢 QUAL) cherche "T<N>.<M>" où l'agent est "Qalvin (🟢 QUAL)"
 
 # 3. Créer le rapport de phase
-mkdir -p .github/plans/<NO>_reports/
-touch .github/plans/<NO>_reports/PHASE_N_COMPLETION_REPORT.md
+mkdir -p .opencode/plans/<NO>_reports/
+touch .opencode/plans/<NO>_reports/PHASE_N_COMPLETION_REPORT.md
 
 # 4. Exécuter les tâches T<N>.1, T<N>.2, etc.
 # 5. Documenter en temps réel dans le rapport
@@ -392,13 +392,13 @@ Remplir la **synthèse de phase** :
 ## 🎯 Intégration avec les Agents
 
 Chaque agent doit recevoir un **prompt structuré** qui :
-1. **Pointe vers le plan** (`.github/plans/<NO>_<nom>.plan.md`)
+1. **Pointe vers le plan** (`.opencode/plans/<NO>_<nom>.plan.md`)
 2. **Identifie ses tâches** (T<N>.X où agent = [son rôle])
-3. **Spécifie le rapport à remplir** (`.github/plans/<NO>_reports/PHASE_N_...`)
+3. **Spécifie le rapport à remplir** (`.opencode/plans/<NO>_reports/PHASE_N_...`)
 
 **Exemple de prompt pour Qalvin (🟢 QUAL) :**
 ```
-Exécute la Phase 1 du plan : .github/plans/001_modernisation_complète.plan.md
+Exécute la Phase 1 du plan : .opencode/plans/001_modernisation_complète.plan.md
 
 **Tâches assignées :**
 - T1.1 : Tests ClientHTTP.service
@@ -406,7 +406,7 @@ Exécute la Phase 1 du plan : .github/plans/001_modernisation_complète.plan.md
 - ... (T1.1 à T1.7)
 
 **Rapport à remplir :**
-- `.github/plans/001_reports/PHASE_1_COMPLETION_REPORT.md`
+- `.opencode/plans/001_reports/PHASE_1_COMPLETION_REPORT.md`
 
 **Pour chaque tâche, documenter :**
 - Fichiers créés/modifiés
@@ -474,8 +474,8 @@ Devon (🔵 DEV) (T2.1-T3.5)
 ## 📚 Exemples Existants
 
 - **AP-001 :** Modernisation Complète
-  - Plan : `.github/plans/001_modernisation_complète.plan.md`
-  - Rapports : `.github/plans/001_reports/PHASE_*_*.md`
+  - Plan : `.opencode/plans/001_modernisation_complète.plan.md`
+  - Rapports : `.opencode/plans/001_reports/PHASE_*_*.md`
   - Phases : 1 (Tests), 2 (Dépendances), 3 (Architecture), 4 (Performance), 5 (CI/CD), 6 (Docs)
   - Statut : 🔄 Phase 1 en cours
 
@@ -483,10 +483,10 @@ Devon (🔵 DEV) (T2.1-T3.5)
 
 ## 🚀 Lancer un Nouveau Plan
 
-1. **Créer le fichier** `.github/plans/<NO>_<nom>.plan.md`
+1. **Créer le fichier** `.opencode/plans/<NO>_<nom>.plan.md`
 2. **Remplir** objectif global, phases, tâches, dépendances
 3. **Valider** que les tâches sont mesurables et les agents assignés
-4. **Créer le dossier** `.github/plans/<NO>_reports/`
+4. **Créer le dossier** `.opencode/plans/<NO>_reports/`
 5. **Lancer la Phase 1** avec l'agent responsable
 6. **Suivre** via les rapports de phase
 

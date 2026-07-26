@@ -24,16 +24,16 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
         │          (moteur central d'automatisation)     │
         │   scripts dzVents (Lua)  ←→  BDD SQLite        │
         │   :8080 (HTTP interne)   :8443 (HTTPS interne) │
-        └──────────────┬──────────────────┬──────────────┘
-                       │                  │
-       ┌───────────────▼──────┐   ┌───────▼─────────────────┐
-       │    tydom-bridge      │   │  domoticz-ext-bridge    │
-       │    (Node.js 22)      │   │  (Node.js)              │
-       │    port 9001 / 9101  │   │  port 80                │
-       └──────────┬───────────┘   └─────────────────────────┘
-                  │
-       ┌──────────▼───────────┐
-       │    Box Tydom         │
+        └──────────────┬──────────────────────────────────┘
+                       │
+        ┌──────────────▼───────────┐
+        │    tydom-bridge          │
+        │    (Node.js 22)          │
+        │    port 9001 / 9101      │
+        └──────────┬───────────────┘
+                   │
+        ┌──────────▼───────────┐
+        │    Box Tydom         │
        │    (Delta Dore)      │
        │  volets + chauffage  │
        └──────────────────────┘
@@ -74,7 +74,6 @@ Le **routeur Freebox** assure le NAT : le port public `38243` est redirigé vers
 |---|---|---|
 | [`domoticz/`](domoticz/README.md) | Moteur d'automatisation + scripts Lua dzVents | Domoticz + dzVents |
 | [`tydom-bridge/`](tydom-bridge/README.md) | Pont Domoticz ↔ box Tydom (Delta Dore) — volets et thermostat | Node.js 22 |
-| [`domoticz-ext-bridge/`](domoticz-ext-bridge/README.md) | Proxy REST vers l'API JSON de Domoticz (CORS, TLS) | Node.js |
 | [`deCONZ/`](deCONZ/README.md) | Intégration des capteurs Zigbee via passerelle deCONZ | deCONZ (Phoscon) |
 | [`_docker/build_httpd/`](_docker/build_httpd/README.md) | Proxy Apache frontal : TLS, filtrage User-Agent, deux VirtualHosts | Apache 2.4 (Alpine) |
 | [`_docker/`](_docker/build_domoticz/README.md) | Images Docker custom et manifests de déploiement | Docker Compose |

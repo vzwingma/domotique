@@ -20,16 +20,16 @@ applyTo: "**"
 
 ### Dans la racine du projet
 - `README.md` – description générale, prérequis, démarrage rapide
-- `.github/copilot-instructions.md` – contexte futures sessions Copilot
+- `.opencode/copilot-instructions.md` – contexte futures sessions OpenCode
 
 ### Dans `docs/` (documentation versionnée)
 - `docs/ARCHITECTURE.md` (**obligatoire**) – architecture projet (stack dzVents, couches, structure scripts, orchestration scènes, intégrations Tydom/Freebox/API)
 - `docs/adr/` – Architecture Decision Records produits par ARCos (ex: `docs/adr/001-orchestration-phases.md`)
 - `docs/scenarios.puml` – diagrammes PlantUML C2/C3 (orchestration scènes quotidiennes)
 
-### Dans `.github/`
-- `.github/plans/README.md` – index synthétique plans d'action + statut global (pas phases)
-- `.github/copilot-instructions.md` – contexte sessions et conventions globales
+### Dans `.opencode/`
+- `.opencode/plans/README.md` – index synthétique plans d'action + statut global (pas phases)
+- `.opencode/copilot-instructions.md` – contexte sessions et conventions globales
 
 ### Documentation de composants (README.md de chaque sous-dossier)
 - `domoticz/README.md` – scripts dzVents, conventions nommage, état partagé
@@ -43,9 +43,9 @@ applyTo: "**"
 - **Langue** : français pour texte narratif, anglais pour blocs de code
 - **`docs/ARCHITECTURE.md` obligatoire** : tout projet doit avoir fichier décrivant architecture complète
 - **ADRs** : chaque décision architecturale majeure produit fichier `docs/adr/NNN-titre.md`
-- **Versions à maintenir** : dzVents dans `docs/scenarios.puml`, versions Docker dans `.github/copilot-instructions.md`
+- **Versions à maintenir** : dzVents dans `docs/scenarios.puml`, versions Docker dans `.opencode/copilot-instructions.md`
 - **Cohérence code/doc** : si écart doc/code découvert, corriger doc dans même changement que code
-- **Ne pas dupliquer** : instructions agents (`.github/instructions/`) restent indépendantes; pas copier contenu dans docs/ARCHITECTURE.md
+- **Ne pas dupliquer** : instructions agents (`.opencode/instructions/`) restent indépendantes; pas copier contenu dans docs/ARCHITECTURE.md
 
 ## Ce que tu ne fais PAS
 
@@ -55,5 +55,5 @@ applyTo: "**"
 
 ## Règle d'index des plans (obligatoire)
 
-- `.github/plans/README.md` doit rester **synthétique** : plans + statut global **uniquement** (sans phases)
-- Toute création de plan ou changement de statut global doit inclure, dans même changement, mise à jour `.github/plans/README.md`
+- `.opencode/plans/README.md` doit rester **synthétique** : plans + statut global **uniquement** (sans phases)
+- Toute création de plan ou changement de statut global doit inclure, dans même changement, mise à jour `.opencode/plans/README.md`
