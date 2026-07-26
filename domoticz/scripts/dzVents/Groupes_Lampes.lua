@@ -21,7 +21,7 @@ return
             if(groupName == domoticz.helpers.GROUPE_LUMIERES_SALON) then
                 return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON, domoticz.helpers.DEVICE_LAMPE_CUISINE }
             elseif(groupName == domoticz.helpers.GROUPE_LUMIERES_TOUTES) then
-                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON, domoticz.helpers.DEVICE_LAMPE_CUISINE, domoticz.helpers.DEVICE_LAMPE_BEBE, domoticz.helpers.DEVICE_LAMPE_NOUS }
+                return { domoticz.helpers.DEVICE_LAMPE_TV, domoticz.helpers.DEVICE_LAMPE_TV_2, domoticz.helpers.DEVICE_LAMPE_SALON, domoticz.helpers.DEVICE_LAMPE_CUISINE, domoticz.helpers.DEVICE_LAMPE_BEBE, DEVICE_LAMPE_VEILLEUSE_BEBE, domoticz.helpers.DEVICE_LAMPE_NOUS }
             else
                 return {}
             end
@@ -35,7 +35,7 @@ return
         domoticz.log("[" .. uuid .. "] Groupe [" .. group.name .. "] -> " .. group.state .. " : " .. levelSet .. "%", domoticz.LOG_INFO)
         for _, lumiereName in pairs(lumieresName) do
             -- Cas particulier : veilleuse bébé à éteindre
-            if(lumiereName == domoticz.helpers.DEVICE_LAMPE_BEBE and levelSet == 0) then
+            if(lumiereName == domoticz.helpers.DEVICE_LAMPE_VEILLEUSE_BEBE and levelSet == 0) then
                 domoticz.log("[" .. uuid .. "] Extinction veilleuse bébé", domoticz.LOG_INFO)
                 domoticz.devices(lumiereName).switchOff()
             -- Cas particulier : prise TV 2
