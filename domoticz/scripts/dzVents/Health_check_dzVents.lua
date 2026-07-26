@@ -1,24 +1,3 @@
--- ########################################
--- #       HEALTH CHECK DZVENTS           #
--- ########################################
--- Contrôle quotidien de santé des automatismes dzVents.
---
--- Indicateurs vérifiés (à 08:00 chaque matin) :
---   1. scenePhase : valeur exploitable (pas nil ni 'Inconnue')
---      → si 'Inconnue' mais Device Phase récent (< 25h) : état transitoire probable
---        après redémarrage — INFO seulement.
---      → si 'Inconnue' et Device Phase périmé (>= 25h) : panne avérée — ERROR.
---   2. Device Phase : preuve qu'une scène a tourné dans les 25 dernières heures
---   3. Intégration Freebox : dernière mise à jour < 10 min (polling ~1 min)
---      Seuil relevé de 5 à 10 min pour absorber les délais de polling après
---      un redémarrage nocturne (faux positifs QA-5).
---   4. Intégration Tydom   : dernière mise à jour < 90 min (polling ~60 min)
---
--- Comportement :
---   - Aucun flux existant n'est bloqué ni modifié.
---   - En cas d'indicateur dégradé : LOG_ERROR + notification Signal.
---   - En cas de santé OK : LOG_INFO résumé.
--- ###############################################
 return {
     on = {
         timer = { 'at 08:00' },

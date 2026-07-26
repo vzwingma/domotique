@@ -2,7 +2,7 @@
 -- Appelé pour chaque mise à jour des jumeaux numériques Température
 return {
     on = {
-        devices = { 'Température - Chambre Bébé', 'Température - Chambre Nous', 'Température - Salle de Bain' }
+        devices = { 'Température - Chambre Bébé', 'Température - Chambre Nous', 'Température - Salle de bain', 'Température - Salon', 'Température - Cuisine' }
     },
     data = {
         previousPresenceTels = { initial = true },
@@ -20,7 +20,7 @@ return {
             local temp = domoticz.devices("Température - " .. piece).temperature
             local humidity = domoticz.devices("Humidité - " .. piece).humidity
             domoticz.log ("température=" .. temp .. "°C / humidité=" .. humidity .. "%", domoticz.LOG_DEBUG)
-            domoticz.devices("TempératureHumidité - " .. piece).updateTempHum(temp, humidity)
+            domoticz.devices("Temp+H - " .. piece).updateTempHum(temp, humidity)
         end
         -- Alignement des températures et humidité d'une pièce à partir des valeurs des devices virtuels unitaires
         updateTempHumidity(item.name, domoticz)
