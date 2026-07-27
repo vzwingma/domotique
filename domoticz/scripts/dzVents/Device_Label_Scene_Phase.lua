@@ -45,6 +45,5 @@ return
         domoticz.log("[" .. domoticz.data.uuid .. "] Réception de l'événement [" .. item.customEvent .. "] : [" .. tostring(item.json.idx) .. "/" .. tostring(item.json.data) .. "]", domoticz.LOG_DEBUG)
         domoticz.globalData.scenePhase = item.json.data
         domoticz.devices(domoticz.helpers.DEVICE_STATUT_PHASE).updateText(item.json.data)
-
     end
 }
