@@ -15,7 +15,7 @@ services:
   tydom-bridge:
     image: vzwingmadomatic/domoticz-tydom:latest
     env_file:
-      - tydom.env
+      - stack.env
     ports:
       - 9101:9001
     restart: always
