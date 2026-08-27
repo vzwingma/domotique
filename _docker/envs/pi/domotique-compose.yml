@@ -16,11 +16,16 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /home/pi/appli/deCONZ:/opt/deCONZ
     restart: always
-# Watcher des images utilisées dans ce fichier pour auto-update
-  watchtower:
-    image: containrrr/watchtower:latest
+# Portainer agent vers le Portainer NAS
+  portainer_agent:
+    image: portainer/agent:latest
+    privileged: true    
+    ports:
+      - 9001:9001
     environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_POLL_INTERVAL=60
+      - AGENT_CLUSTER_ADDR=tasks.portainer_agent
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+      - /:/host
+    restart: always
