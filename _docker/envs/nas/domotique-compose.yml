@@ -1,0 +1,38 @@
+services:
+# HTTPD
+  httpd-proxy:
+    image: vzwingmadomatic/httpd:latest
+    ports:
+      - 8243:8243  
+      - 8280:8280      
+    volumes:
+      - /volume1/home/vinz/httpd_logs:/usr/local/apache2/logs
+      - /volume1/home/vinz/httpd:/usr/local/apache2/conf/ssl_conf
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+# TYDOM
+  tydom-bridge:
+    image: vzwingmadomatic/domoticz-tydom:latest
+    env_file:
+      - tydom.env
+    ports:
+      - 9101:9001
+    restart: always
+# DOMOTICZ
+  domoticz:
+    image: vzwingmadomatic/domoticz:latest
+    privileged: true
+    environment:
+      - TZ=Europe/Paris
+    ports:
+      - 8080:8080
+      - 8043:443
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /volume1/home/vinz/domoticz/database/domoticz.db:/opt/domoticz/userdata/domoticz.db
+      - /volume1/home/vinz/domoticz/scripts/dzVents:/opt/domoticz/userdata/scripts/dzVents/generated_scripts
+    depends_on:
+      - tydom-bridge
+    restart: always
