@@ -27,3 +27,5 @@ _docker/build_httpd/_rules_access_clear_.txt
 
 # Ignore all files in the .agents/skills/cave directory
 .agents/skills/cave*
+_docker/envs/nas/tydom_params.md
+_docker/envs/pi/.env

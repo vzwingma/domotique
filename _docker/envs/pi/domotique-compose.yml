@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+# deCONZ
+  deconz:
+    image: deconzcommunity/deconz:latest
+    ports:
+      - 9102:9102
+      - 9143:9143
+    environment:
+      - DECONZ_WS_PORT=9143
+      - DECONZ_WEB_PORT=9102
+    devices:
+      - /dev/ttyAMA0:/dev/ttyAMA0
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /home/pi/appli/deCONZ:/opt/deCONZ
+    restart: always
+# Watcher des images utilisées dans ce fichier pour auto-update
+  watchtower:
+    image: containrrr/watchtower:latest
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=60
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
