@@ -27,6 +27,8 @@ jest.mock('tydom-client', () => ({
 }));
 
 const request    = require('supertest');
+const { spawnSync } = require('node:child_process');
+const path = require('node:path');
 const tydomMod   = require('tydom-client');
 const { app, backendState, connectTydom } = require('../app');
 
@@ -72,17 +74,22 @@ beforeEach(() => {
 // A. Validation de configuration
 // ===========================================================================
 describe('A. Validation de configuration', () => {
-    test.skip(
-        'process.exit(1) si variable d\'environnement manquante — testé manuellement',
-        // Ce cas se produit au chargement du module (avant même require()).
-        // Jest ne permet pas de tester facilement process.exit() déclenchés au
-        // moment de l'évaluation du module car le module est mis en cache dès la
-        // première importation et ne peut pas être rechargé sans jest.resetModules(),
-        // ce qui entre en conflit avec la stratégie de mock partagée du fichier.
-        // Validation manuelle : retirer MAC ou PASSWD du setup.js et vérifier que
-        // node app.js se termine immédiatement avec "[FATAL] Variables d'environnement
-        // manquantes" et code de sortie 1.
-        () => {}
+    test.each(['MAC', 'PASSWD', 'AUTHAPI', 'PASSWDAPI'])(
+        'process.exit(1) si la variable %s est manquante',
+        variable => {
+            const result = spawnSync(process.execPath, ['-e', 'require("./app")'], {
+                cwd: path.resolve(__dirname, '..'),
+                env: { ...process.env, [variable]: '' },
+                encoding: 'utf8',
+                timeout: 5_000,
+            });
+
+            expect(result.error).toBeUndefined();
+            expect(result.status).toBe(1);
+            expect(result.stderr).toContain(
+                '[FATAL] Variables d\'environnement manquantes : ' + variable
+            );
+        }
     );
 });
 
@@ -305,6 +312,58 @@ describe('G. Headers de corrélation', () => {
     beforeEach(() => {
         // /_info nécessite un backend connecté
         backendState.status = 'connected';
+    });
+
+    // ===========================================================================
+    // H. Reconnexion avec backoff exponentiel
+    // ===========================================================================
+    describe('H. Reconnexion avec backoff exponentiel', () => {
+        afterEach(() => {
+            jest.clearAllTimers();
+            jest.useRealTimers();
+        });
+
+        test.each([
+            [1, 5_000],
+            [2, 15_000],
+            [3, 35_000],
+            [4, 75_000],
+            [5, 135_000],
+            [6, 195_000],
+        ])('%i échec(s) avant reconnexion après %i ms', async (failures, elapsed) => {
+            jest.useFakeTimers();
+            const retryClient = {
+                connect: jest.fn().mockResolvedValue(undefined),
+                close: jest.fn(),
+            };
+            for (let index = 0; index < failures; index++) {
+                retryClient.connect.mockRejectedValueOnce(new Error('Tydom indisponible'));
+                tydomMod.createClient.mockReturnValueOnce(retryClient);
+            }
+            tydomMod.createClient.mockReturnValueOnce(retryClient);
+
+            const connection = connectTydom();
+            const settled = jest.fn();
+            connection.then(settled);
+            await jest.advanceTimersByTimeAsync(0);
+
+            expect(backendState.status).toBe('degraded');
+            expect(backendState.lastError).toBe('Tydom indisponible');
+            expect(retryClient.connect).toHaveBeenCalledTimes(1);
+
+            await jest.advanceTimersByTimeAsync(elapsed - 1);
+            expect(retryClient.connect).toHaveBeenCalledTimes(failures);
+            expect(settled).not.toHaveBeenCalled();
+
+            await jest.advanceTimersByTimeAsync(1);
+            await connection;
+            expect(retryClient.connect).toHaveBeenCalledTimes(failures + 1);
+            expect(retryClient.close).toHaveBeenCalledTimes(failures);
+            expect(backendState.status).toBe('connected');
+            expect(backendState.lastError).toBeNull();
+            expect(settled).toHaveBeenCalledTimes(1);
+            expect(jest.getTimerCount()).toBe(0);
+        });
     });
 
     test('GET /_info avec header X-CorrId → réponse recopie la valeur', async () => {

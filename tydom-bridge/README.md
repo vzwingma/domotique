@@ -120,6 +120,8 @@ npm test
 La suite Jest + supertest couvre les cas nominaux et dégradés :
 
 - validation de configuration (variables manquantes → refus de démarrage) ;
+- validation de chaque variable obligatoire dans un processus Node isolé (code de sortie `1` et diagnostic fatal) ;
+- reconnexion séquentielle avec backoff exponentiel (5, 10, 20, 40 puis 60 secondes maximum), vérifiée avec une horloge simulée ;
 - health endpoints sans authentification ;
 - Basic Auth valide / invalide ;
 - routes métier avec backend simulé connecté ;

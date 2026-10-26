@@ -62,33 +62,40 @@ let client = null;
 // ---------------------------------------------------------------------------
 // 7. connectTydom() — retry exponentiel illimité
 // ---------------------------------------------------------------------------
-async function connectTydom() {
+function connectTydom() {
     let attempt = 0;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        attempt++;
-        setState('connecting');
-        console.log('[tydom] Tentative de connexion #' + attempt + ' à ' + HOST + ' pour [' + username + ']');
-        try {
-            // Fermer le client précédent s'il existe
-            if (client) {
-                try { client.close(); } catch (err) { console.error('[tydom] Erreur lors de la fermeture du client :', err); }
-                client = null;
+    return new Promise((resolve, reject) => {
+        async function tryConnect() {
+            attempt++;
+            setState('connecting');
+            console.log('[tydom] Tentative de connexion #' + attempt + ' à ' + HOST + ' pour [' + username + ']');
+            try {
+                // Fermer le client précédent s'il existe
+                if (client) {
+                    try { client.close(); } catch (err) { console.error('[tydom] Erreur lors de la fermeture du client :', err); }
+                    client = null;
+                }
+                client = createClient({ username, password, hostname: HOST });
+                await client.connect();
+                setState('connected');
+                console.log('[tydom] Connexion établie (tentative #' + attempt + ')');
+                resolve();
+            } catch (err) {
+                const delay = Math.min(RETRY_BASE_MS * Math.pow(2, attempt - 1), RETRY_MAX_MS);
+                const msg   = err?.message ?? String(err);
+                setState('degraded', msg);
+                console.error('[tydom] Échec tentative #' + attempt + ' : ' + msg
+                    + ' — nouvelle tentative dans ' + (delay / 1000) + 's');
+                setTimeout(runAttempt, delay);
             }
-            client = createClient({ username, password, hostname: HOST });
-            await client.connect();
-            setState('connected');
-            console.log('[tydom] Connexion établie (tentative #' + attempt + ')');
-            return; // succès → on sort de la boucle
-        } catch (err) {
-            const delay = Math.min(RETRY_BASE_MS * Math.pow(2, attempt - 1), RETRY_MAX_MS);
-            const msg   = err?.message ?? String(err);
-            setState('degraded', msg);
-            console.error('[tydom] Échec tentative #' + attempt + ' : ' + msg
-                + ' — nouvelle tentative dans ' + (delay / 1000) + 's');
-            await new Promise(resolve => setTimeout(resolve, delay));
         }
-    }
+
+        function runAttempt() {
+            tryConnect().catch(reject);
+        }
+
+        runAttempt();
+    });
 }
 
 // ---------------------------------------------------------------------------
