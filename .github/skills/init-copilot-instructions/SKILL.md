@@ -1,13 +1,8 @@
 ---
 name: init-copilot-instructions
-description: >
-  Initialise les instructions Copilot pour un nouveau projet. Utiliser pour :
-  "initialise les instructions Copilot", "génère les instructions pour ce projet",
-  "crée un copilot-instructions.md", "configure Copilot pour ce projet".
-  Prend en paramètre le type de projet et extrait les informations du code source.
-agent: agent
+description: "Initialise les instructions Copilot pour un nouveau projet. Utiliser pour : \"initialise les instructions Copilot\", \"génère les instructions pour ce projet\", \"crée un copilot-instructions.md\", \"configure Copilot pour ce projet\". Prend en paramètre le type de projet et extrait les informations du code source."
+disable-model-invocation: true
 ---
-
 # Initialisation des Instructions Copilot
 
 > **Prérequis** : Avant lancer prompt, fichiers suivants doivent exister projet cible (copiés depuis dépôt transverse) :
