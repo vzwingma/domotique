@@ -16,5 +16,4 @@ services:
       - /home/pi/appli/deCONZ:/opt/deCONZ
     security_opt:
       - no-new-privileges:true
-    mem_limit: 512m
     restart: unless-stopped
