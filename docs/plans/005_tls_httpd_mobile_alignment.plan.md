@@ -2,7 +2,7 @@
 
 ## Métadonnées
 - ID : 005
-- Fichier : `.github/plans/005_tls_httpd_mobile_alignment.plan.md`
+- Fichier : `docs/plans/005_tls_httpd_mobile_alignment.plan.md`
 - Statut global : COMPLÉTÉ
 - Date : 2026-06-16
 

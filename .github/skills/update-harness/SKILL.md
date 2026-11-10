@@ -23,7 +23,7 @@ et des conventions par rôle pour refléter l'état réel du projet.
 ## 2. Lire les instructions existantes
 
 - `.github/copilot-instructions.md` : sections présentes, infos obsolètes, sections « à compléter ».
-- Instructions par rôle : `.github/instructions/{orchestrator,architect,dev,qa,doc}.instructions.md` (créer depuis `*.instructions.template.md` si absent).
+- Instructions par rôle : `.github/instructions/{orchestrator,architect,dev,qa,doc}.instructions.md` (créer depuis les profils et le code si absent).
 
 La cible documentée est GitHub Copilot CLI uniquement ; VS Code et cloud agent sont hors périmètre. La CLI
 charge les skills selon pertinence ; ne pas décrire une sélection déterministe par rôle. Chaque profil Copilot

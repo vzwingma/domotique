@@ -226,7 +226,7 @@ Le plan est considéré conforme si :
 ## 8) Protocole de reporting (rapports de phase)
 
 ### Emplacement
-- Dossier : `.github/plans/002_reports/`
+- Dossier : `docs/plans/002_reports/`
 - Fichier par phase : `PHASE_<N>_COMPLETION_REPORT.md`
 
 ### Contenu minimal attendu par rapport
@@ -247,4 +247,3 @@ Le plan est considéré conforme si :
 **Statut : ✅ ARCHIVÉ / RÉTRO-DOCUMENTÉ**
 
 Ce plan formalise rétrospectivement un hardening et une qualification déjà menés, avec décision finale consolidée : **No-Go `0.15.1` et maintien `0.13.4`**.
-

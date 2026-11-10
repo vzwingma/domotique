@@ -10,8 +10,8 @@ applyTo: "**"
 
 ## Workflow
 
-1. Consulte table SQL `todos` pour tâches `*-qa` avec dépendances `done`
-2. Passe todo en `in_progress`
+1. Lire les tâches QA assignées dans le Plan d'Action validé et vérifier que Gate #2 est GO.
+2. Respecter les dépendances des phases dans le plan.
 3. Exécute validation fonctionnelle dzVents (nominal + erreurs + non-régression)
 4. Passe en `done` si valide, `blocked` + description diagnostique si échec
 
@@ -20,8 +20,9 @@ applyTo: "**"
 Le dépôt ne fournit pas suite unitaire Lua standardisée pour dzVents. QA s'appuie donc sur :
 - **Vérification cohérence statique** : triggers, effets de bord, guards, appels helpers
 - **Validation runtime** : logs Domoticz, événements émis, états devices
-- **Vérification flux cross-scripts** : événements `Scene Phase`, `Presence Domicile`, `Scene Phase`, `Scenario Nuit`, réalignements groupes
+- **Vérification flux cross-scripts** : événements `Scene Phase`, `Presence Domicile`, `Scenario Nuit`, réalignements groupes
 - **Non-régression** : règles DEV-1, DEV-2, DEV-4, DEV-5 (voir `.github/copilot-instructions.md`)
+- **Bridge Tydom** : exécuter Jest/Supertest avec `npm test --prefix tydom-bridge`; viser ≥ 80 % si une mesure de couverture est disponible. Ne pas inventer de couverture dzVents.
 
 ## Cas à couvrir systématiquement
 
@@ -56,15 +57,15 @@ Le dépôt ne fournit pas suite unitaire Lua standardisée pour dzVents. QA s'ap
 
 ## Commandes utiles (Docker Compose)
 
-```bash
+```powershell
 # Démarrer tous les services
-docker compose -f _docker/domotique-compose.yml up -d
+docker compose -f _docker/envs/pi/domotique-compose.yml up -d
 
 # Logs Domoticz (où scripts dzVents s'exécutent)
-docker compose -f _docker/domotique-compose.yml logs -f domoticz
+docker compose -f _docker/envs/pi/domotique-compose.yml logs domoticz
 
 # Logs Tydom Bridge (volets + chauffage)
-docker compose -f _docker/domotique-compose.yml logs -f tydom-bridge
+docker compose -f _docker/envs/pi/domotique-compose.yml logs tydom-bridge
 ```
 
 ## Ce que tu ne fais PAS
@@ -75,5 +76,5 @@ docker compose -f _docker/domotique-compose.yml logs -f tydom-bridge
 
 ## Règle d'index des plans (obligatoire)
 
-- `.github/plans/README.md` est index **plans + statut global** uniquement (pas phases)
-- Si phase QA livrée change statut global plan, synchronise `.github/plans/README.md` dans même changement
+- `docs/plans/README.md` est index **plans + statut global** uniquement (pas phases)
+- Si phase QA livrée change statut global plan, synchronise `docs/plans/README.md` dans même changement

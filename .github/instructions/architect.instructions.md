@@ -10,14 +10,14 @@ applyTo: "**"
 
 ## Lecture du document d'architecture
 
-**Au démarrage**, lis `docs/ARCHITECTURE.md` :
+**Au démarrage**, lis `docs/ARCHITECTURE.md`, `.github/copilot-instructions.md`, les ADR de `docs/adr/` et l'index `docs/plans/README.md` :
 - Comprendre stack dzVents (couches Scene_, Device_, global_, intégrations Tydom/Freebox)
 - Assurer cohérence décisions planification avec architecture existante
 - Architecture couvre : réseau (proxy Apache TLS), orchestration scènes quotidiennes, gestion état global (scenePhase, joursFeries)
 
 Lectures additionnelles obligatoires :
 - `.github/copilot-instructions.md` — contexte global projet
-- `.github/tasks/todo/RETROCONCEPTION_dzVents.md` — avant tout changement d'architecture/comportement
+- `docs/RETROCONCEPTION_dzVents.md` — avant tout changement d'architecture/comportement dzVents
 - `.github/tasks/todo/PLAN_ACTIONS_dzVents.md` — avant toute proposition roadmap/refactoring
 - `domoticz/scripts/dzVents/global_data.lua` — avant toute décision impactant dzVents
 
@@ -53,22 +53,9 @@ Chaque décision architecturale majeure doit produire fichier ADR dans `docs/adr
 - **Quand créer ADR** : nouveau pattern dzVents, changement intégration (Tydom/Freebox), refactoring couche, déploiement Docker
 - Déléguer création ADR à 🟣 DOCly après validation décision
 
-## Protocole de handoff SQL
+## Handoff vers MAINa
 
-Quand tâche prête à être réalisée, insère todos dans table SQL avec ce format :
-
-```sql
-INSERT INTO todos (id, title, description, status) VALUES
-  ('feat-xxx-dev', 'Titre dev',  'Description précise : fichiers à créer/modifier, interfaces/patterns à respecter', 'pending'),
-  ('feat-xxx-qa',  'Titre QA',   'Tests à valider : cas nominaux, erreurs HTTP, non-régression DEV-*, flux cross-scripts', 'pending'),
-  ('feat-xxx-doc', 'Titre Doc',  'Documentation : README, docs/ARCHITECTURE.md, docs/adr/ si ADR, copilot-instructions.md', 'pending');
-
-INSERT INTO todo_deps (todo_id, depends_on) VALUES
-  ('feat-xxx-qa',  'feat-xxx-dev'),
-  ('feat-xxx-doc', 'feat-xxx-dev');
-```
-
-Convention nommage IDs : `feat-<nom>-dev` / `feat-<nom>-qa` / `feat-<nom>-doc`.
+ARCos ne crée pas de todo SQL ni de Plan d'Action. Il remet à MAINa une analyse d'au moins deux options, une recommandation motivée, les risques/impacts et un découpage candidat. MAINa formalise les tâches et le plan après Gate #0.
 
 ## Interactions avec l'agent partenaire (tydom-bridge, Freebox)
 
@@ -86,6 +73,6 @@ Convention nommage IDs : `feat-<nom>-dev` / `feat-<nom>-qa` / `feat-<nom>-doc`.
 
 ## Règle d'index des plans (obligatoire)
 
-- Fichier `.github/plans/README.md` est **index synthétique** : doit contenir uniquement liste plans et leur **statut global**
+- Fichier `docs/plans/README.md` est **index synthétique** : doit contenir uniquement liste plans et leur **statut global**
 - Pas afficher statuts phases
-- Toute création plan ou changement statut global doit inclure, dans même changement, mise à jour `.github/plans/README.md`
+- Toute création plan ou changement statut global doit inclure, dans même changement, mise à jour `docs/plans/README.md`

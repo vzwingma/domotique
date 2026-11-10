@@ -84,4 +84,4 @@ Les scènes matinales de Domoticz (Scene_0, Scene_1, Scene_2a) fonctionnaient se
 ## Références
 
 - [API Jours Fériés — calendrier.api.gouv.fr](https://calendrier.api.gouv.fr/)
-- [Plan d'Action associé : `.github/plans/003_jours_feries.plan.md`]
+- [Plan d'Action associé : `../plans/003_jours_feries.plan.md`](../plans/003_jours_feries.plan.md)

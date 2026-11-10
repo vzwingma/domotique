@@ -1,26 +1,25 @@
 ---
 name: init-harness
-description: "Initialise le harnais multi-agents dans un projet (nouveau ou existant) : analyse du code, copilot-instructions.md depuis le template, conventions par rôle, docs/ARCHITECTURE.md. Usage : /init-harness [type de projet ou consignes]."
+description: "Initialise le harnais multi-agents dans un projet (nouveau ou existant) : analyse du code, consignes projet par rôle et docs/ARCHITECTURE.md. Usage : /init-harness [type de projet ou consignes]."
 ---
 
 # Initialisation du harnais multi-agents
 
 Consignes de l'utilisateur (optionnel) : $ARGUMENTS
 
-> **Prérequis** (copiés depuis le dépôt transverse) : `.github/agents/` (5 agents), `.github/skills/`,
-> `.github/PLANS.md`, `.github/copilot-instructions.template.md`,
-> `docs/ARCHITECTURE.template.md`, `docs/adr/ADR-TEMPLATE.md`.
+> **Prérequis** : `.github/agents/` (5 profils), `.github/skills/`, `.github/PLANS.md`,
+> `docs/ARCHITECTURE.template.md` et `docs/adr/ADR-TEMPLATE.md`.
 > Absents → lister les fichiers manquants et s'arrêter.
 
 ## 1. Détecter l'état du projet
 
-- **Nouveau** : pas de `.github/copilot-instructions.md` → partir de `.github/copilot-instructions.template.md`.
+- **Nouveau** : pas de `.github/copilot-instructions.md` → générer les consignes depuis le code réel et les profils d'agents.
 - **Existant** : `.github/copilot-instructions.md` présent → **conserver** ses sections projet, ne remplacer que les
-  sections génériques (agents, workflow, plans) par celles du template.
+  sections génériques (agents, workflow, plans) si elles ne correspondent plus aux profils et aux procédures.
 - **Ancien format** : fichiers `.github/instructions/*.instructions.md` présents → reprendre leurs valeurs
   dans les conventions par rôle (étape 4), puis signaler à 👤 que ces fichiers peuvent être retirés.
-- **Plans dans `.github/plans/`** (ancien emplacement, chemin protégé : chaque écriture demande confirmation) →
-  proposer `git mv .github/plans docs/plans` et mettre à jour les liens (ADR 004 du dépôt transverse).
+- **Plans dans `.github/plans/`** (ancien emplacement) → proposer leur migration vers `docs/plans/` et
+  mettre à jour les liens. Dans ce dépôt, `docs/plans/` est déjà l'emplacement de référence.
 
 ## 2. Analyser le projet
 
@@ -33,18 +32,16 @@ Identifier, **depuis le code réel** (jamais d'hypothèse) :
 Sources utiles : `README.md`, manifestes de dépendances, config lint/format, CI, `CONTRIBUTING.md`,
 `docs/` existants.
 
-## 3. Générer `.github/copilot-instructions.md`
+## 3. Générer ou mettre à jour `.github/copilot-instructions.md`
 
-1. Copier le template (ou fusionner, cas existant).
-2. Remplacer chaque placeholder `[...]` par la valeur observée.
-3. Supprimer les sections `[📌 SECTION À COMPLÉTER : …]` une fois remplies.
-4. Conserver intactes les sections génériques (agents, workflow, plans d'action).
+1. Décrire le projet, ses sources de vérité et ses commandes réellement disponibles.
+2. Conserver les règles métier valides si le fichier existe déjà.
+3. Aligner les références agents, workflow et plans sur les fichiers présents.
 
 ## 4. Remplir les conventions par rôle
 
-Créer les fichiers d'instructions par rôle depuis les templates `.github/instructions/*.instructions.template.md` :
-`orchestrator`, `architect`, `dev`, `qa`, `doc` → `.github/instructions/<rôle>.instructions.md` (sans `.template`),
-puis remplir leurs placeholders avec les valeurs de l'étape 2.
+Créer ou mettre à jour un fichier d'instructions par rôle à partir des profils d'agents et du code :
+`orchestrator`, `architect`, `dev`, `qa`, `doc` → `.github/instructions/<rôle>.instructions.md`.
 
 La cible documentée est GitHub Copilot CLI uniquement ; VS Code et cloud agent sont hors périmètre. Les
 skills CLI sont chargées selon pertinence, sans sélection déterministe par rôle. Les profils générés
@@ -66,8 +63,8 @@ points à valider par 👤.
 
 ## ✅ Checklist
 
-- [ ] `.github/copilot-instructions.md` créé ou fusionné, sections génériques intactes
-- [ ] Conventions des 5 rôles remplies (placeholders restants listés)
+- [ ] `.github/copilot-instructions.md` créé ou fusionné, contexte projet vérifié
+- [ ] Consignes des 5 rôles créées ou mises à jour depuis les profils et le code
 - [ ] Commandes build/lint/test réelles renseignées
 - [ ] `docs/ARCHITECTURE.md` et `docs/adr/` présents
 - [ ] Aucune référence à un fichier inexistant

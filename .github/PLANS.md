@@ -112,7 +112,7 @@ changement de statut global le met à jour **dans le même changement**.
 
 ---
 
-## 📚 Exemples réels
+## 📚 Plans du dépôt domotique
 
-- **AP 004** — Analyse critique & remédiation infra agents : [`docs/plans/004_analyse-critique-infra-agents.plan.md`](../docs/plans/004_analyse-critique-infra-agents.plan.md) (✅ Complété)
-- **AP 005** — Refonte « Copilot-first » : [`docs/plans/005_claude-first.plan.md`](../docs/plans/005_claude-first.plan.md) + [`docs/plans/005_reports/`](../docs/plans/005_reports/) (journal des gates, rapports avec preuves)
+- **AP 001** — Stabilisation dzVents : [`docs/plans/001_dzvents_stabilisation.plan.md`](../docs/plans/001_dzvents_stabilisation.plan.md)
+- **AP 007** — Qualification Tydom Node 26 ARM64 : [`docs/plans/007_tydom_node26_arm64.plan.md`](../docs/plans/007_tydom_node26_arm64.plan.md)

@@ -23,7 +23,7 @@ sur le modèle par défaut et un code de sortie nul : risque de faux succès à 
 La CLI peut lire `.github/skills/` et `.github/skills/` ; `.github/` l'emporte en cas de nom identique. Le
 chargement se fait selon la pertinence, non de façon déterministe ; chaque profil généré demande explicitement
 le chargement de ses skills. Les conventions sont projetées vers
-`.github/instructions/<role>.instructions.template.md`.
+`.github/instructions/<role>.instructions.md`.
 
 ---
 
@@ -41,8 +41,7 @@ le chargement de ses skills. Les conventions sont projetées vers
 ├── CHANGELOG.md                         # Historique des versions des agents
 ├── PLANS.md                             # Guide des Plans d'Action
 ├── README.md                            # Ce fichier
-├── copilot-instructions.md              # Instructions de ce depot transverse
-└── copilot-instructions.template.md     # Template a copier dans les projets
+└── copilot-instructions.md              # Instructions globales de ce dépôt
 ```
 
 
@@ -57,11 +56,11 @@ Selon le projet cible, copier :
 - `.github/agents/`
 - `.github/skills/`
 - `.github/PLANS.md`
-- `.github/copilot-instructions.template.md`
+- `.github/copilot-instructions.md` comme référence à adapter
 
 ### Etape 2 : Initialiser les instructions projet
 
-Lancer `/init-harness` : analyse du code, génération de `copilot-instructions.md`, remplissage des conventions par rôle (`conventions-<rôle>`).
+Lancer `/init-harness` : analyse du code, génération de `copilot-instructions.md` et création des cinq fichiers d'instructions par rôle.
 
 ### Etape 3 : Utiliser les agents
 
@@ -91,7 +90,7 @@ Les agents restent focalises sur leurs instructions runtime. La vue transverse e
 
 ### Instructions projet (`.github/instructions/`)
 
-Un fichier par rôle (`orchestrator`, `architect`, `dev`, `qa`, `doc`) : `<rôle>.instructions.md`, créé depuis `<rôle>.instructions.template.md` via `/init-harness`.
+Un fichier actif par rôle (`orchestrator`, `architect`, `dev`, `qa`, `doc`) : `<rôle>.instructions.md`. Adapter ces consignes au projet cible.
 
 ### Commandes (`.github/skills/`)
 

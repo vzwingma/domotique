@@ -28,8 +28,10 @@ applyTo: "**"
 - `docs/scenarios.puml` – diagrammes PlantUML C2/C3 (orchestration scènes quotidiennes)
 
 ### Dans `.github/`
-- `.github/plans/README.md` – index synthétique plans d'action + statut global (pas phases)
 - `.github/copilot-instructions.md` – contexte sessions et conventions globales
+
+### Plans d'action
+- `docs/plans/README.md` – index synthétique plans d'action + statut global (pas phases)
 
 ### Documentation de composants (README.md de chaque sous-dossier)
 - `domoticz/README.md` – scripts dzVents, conventions nommage, état partagé
@@ -55,5 +57,6 @@ applyTo: "**"
 
 ## Règle d'index des plans (obligatoire)
 
-- `.github/plans/README.md` doit rester **synthétique** : plans + statut global **uniquement** (sans phases)
-- Toute création de plan ou changement de statut global doit inclure, dans même changement, mise à jour `.github/plans/README.md`
+- `docs/plans/README.md` doit rester **synthétique** : plans + statut global **uniquement** (sans phases)
+- Toute création de plan ou changement de statut global doit inclure, dans même changement, mise à jour `docs/plans/README.md`
+- Vérifier les versions de dzVents et images Docker dans leurs sources avant de les documenter; `docs/scenarios.puml` décrit l'orchestration quotidienne.

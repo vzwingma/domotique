@@ -17,7 +17,7 @@ Le déplacement du conteneur est déclaré par l'utilisateur, mais la configurat
 | Surface | Constat vérifié dans le dépôt | Conséquence |
 |---|---|---|
 | [Dockerfile](../../_docker/build_tydom/Dockerfile) | `FROM node:lts-slim`, `npm install --save`, copie du contexte complet | Base flottante et installation à rendre reproductibles ; Node réellement déployé inconnu |
-| [CI](../workflows/build-tydom.yml) | Tests configurés sur Node `26`, mais build `linux/arm/v7` avec QEMU/Buildx | Configuration des tests ne prouve pas leur succès ; ARMv7 n'est pas ARM64 |
+| [CI](../../.github/workflows/build-tydom.yml) | Tests configurés sur Node `26`, mais build `linux/arm/v7` avec QEMU/Buildx | Configuration des tests ne prouve pas leur succès ; ARMv7 n'est pas ARM64 |
 | [Manifeste](../../tydom-bridge/package.json) | `tydom-client` fixé à `0.13.4`, Jest et supertest disponibles | Conserver cette baseline ; pas de montée de version du client dans ce chantier |
 | [Lockfile](../../tydom-bridge/package-lock.json) | Dépendances natives de développement, dont `@parcel/watcher`, variantes ARM64 glibc et `unrs-resolver` | Vérifier les installations de test et de production séparément ; ne pas supposer un arbre entièrement JavaScript |
 | [Recette Compose](../../_docker/tydom-compose-rec.yml) | Tag `:tydom`, port hôte `5102`, bind-mount de `app.js`, pas de plateforme explicite | Identifier le vrai service de production ; un montage peut masquer le code contenu dans l'image |
@@ -95,14 +95,14 @@ Après gate #1 uniquement. Conserver une image candidate séparée de `latest` e
 ### T2.1 - Adapter le build
 
 - **Agent :** DEVon.
-- **Fichiers :** [Dockerfile](../../_docker/build_tydom/Dockerfile), [CI](../workflows/build-tydom.yml) ; [package.json](../../tydom-bridge/package.json) et [lockfile](../../tydom-bridge/package-lock.json) seulement si adaptation justifiée.
+- **Fichiers :** [Dockerfile](../../_docker/build_tydom/Dockerfile), [CI](../../.github/workflows/build-tydom.yml) ; [package.json](../../tydom-bridge/package.json) et [lockfile](../../tydom-bridge/package-lock.json) seulement si adaptation justifiée.
 - **Travail :** épingler Node 26 slim et digest ; remplacer l'installation par `npm ci --omit=dev` pour l'image runtime. Utiliser un contexte maîtrisé excluant `node_modules`, données sensibles et artefacts locaux ; ne jamais copier des binaires Windows/AMD64.
 - **Acceptation :** build propre ARM64 réussi depuis le lockfile sans mutation ; chargement réel de `tydom-client@0.13.4` ; aucune nouvelle bibliothèque système ou modification TLS sans justification. Si un module natif l'exige, documenter sa compilation et ne garder que ses bibliothèques runtime.
 
 ### T2.2 - Adapter publication et déploiement candidat
 
 - **Agent :** DEVon.
-- **Fichiers :** [CI](../workflows/build-tydom.yml), [recette](../../_docker/tydom-compose-rec.yml) et configuration effective à identifier en phase 1.
+- **Fichiers :** [CI](../../.github/workflows/build-tydom.yml), [recette](../../_docker/tydom-compose-rec.yml) et configuration effective à identifier en phase 1.
 - **Travail :** cible `linux/arm64` (et AMD64 si option B), tag candidat immuable lié au commit, publication limitée aux événements autorisés ; une pull request ne doit pas publier de tag de production. Conserver tests Node 26 et scan existants. Préparer service candidat sans montage masquant `app.js`, sans accès aux commandes domotiques tant que non autorisé.
 - **Acceptation :** manifest publié contenant exactement les plateformes approuvées, digest archivé, `process.arch=arm64` et Node `v26.*` vérifiés dans la candidate. Aucun remplacement automatique de la production.
 
@@ -150,7 +150,7 @@ La nouvelle plateforme est peut-être déjà utilisée en production. La bascule
 ### T4.1 - Livrer le dossier d'exploitation
 
 - **Agent :** DOCly.
-- **Fichiers :** [README image](../../_docker/build_tydom/README.md), [README bridge](../../tydom-bridge/README.md), [architecture](../../docs/ARCHITECTURE.md), [instructions](../copilot-instructions.md) si impactées, ADR décidé après gate #1, présent plan et [index](./README.md).
+- **Fichiers :** [README image](../../_docker/build_tydom/README.md), [README bridge](../../tydom-bridge/README.md), [architecture](../ARCHITECTURE.md), [instructions](../../.github/copilot-instructions.md) si impactées, ADR décidé après gate #1, présent plan et [index](./README.md).
 - **Travail :** corriger les références obsolètes Node22/AMD64 et le contexte de build ; documenter plateformes réellement qualifiées, digests, réseau, secrets par référence, santé, séquence de bascule et rollback.
 - **Acceptation :** commandes adaptées au déploiement inventorié ; aucune compatibilité non testée annoncée ; ADR numéroté sans collision et décision approuvée reflétée.
 - **Gate humain #4 :** validation documentaire et autorisation explicite de la fenêtre de production. Initiative toujours ouverte tant que la vérification post-bascule n'est pas terminée.

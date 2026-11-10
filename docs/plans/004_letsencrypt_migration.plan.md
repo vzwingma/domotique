@@ -19,7 +19,7 @@ Remplacer le certificat TLS auto-signé embarqué dans l'image Docker `httpd-pro
 
 ## Décision architecturale
 
-Voir [ADR-002](`docs/adr/002-letsencrypt-certificat-proxy-httpd.md`).
+Voir [ADR-002](../adr/002-letsencrypt-certificat-proxy-httpd.md).
 
 **Solution initiale (v1) :** Container `certbot/certbot` (webroot HTTP-01) — nécessitait NAT Freebox port 80.  
 **Solution finale (v2) :** Container `neilpang/acme.sh` (DNS-01 via API Freebox) — aucun port entrant requis.
@@ -140,4 +140,3 @@ Plus simple, sans dépendance externe, sans container supplémentaire.
 | API Freebox indisponible lors du renouvellement | acme.sh retente toutes les 12h ; Let's Encrypt notifie par email 30j avant expiration |
 | Apache démarre sans cert (1er boot) → erreur SSL | Procédure bootstrap séquentielle : acme.sh d'abord, puis stack complète |
 | Renouvellement cert sans reload Apache | Watchtower ou restart manuel périodique ; fenêtre de 30j pour agir avant expiration |
-

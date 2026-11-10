@@ -18,7 +18,7 @@ Les cinq profils sont générés depuis `.github/`. Les outils sont dérivés pa
 
 La CLI lit `.github/skills/` et `.github/skills/` ; `.github/` gagne à nom identique. Le chargement est fait
 selon pertinence, non de façon déterministe : chaque profil porte une consigne explicite de chargement.
-Les conventions sont projetées en `.github/instructions/<rôle>.instructions.template.md`.
+Les consignes projet actives résident dans `.github/instructions/<rôle>.instructions.md`.
 
 ## 🎯 Agents
 

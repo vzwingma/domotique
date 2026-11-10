@@ -100,7 +100,7 @@ Le proxy Apache HTTPD (`httpd-proxy`) expose l'accès externe à Domoticz sur `h
 
 ## Références
 
-- [Plan d'Action 004 : `.github/plans/004_letsencrypt_migration.plan.md`](./../plans/004_letsencrypt_migration.plan.md)
+- [Plan d'Action 004 : `docs/plans/004_letsencrypt_migration.plan.md`](../plans/004_letsencrypt_migration.plan.md)
 - [Procédure bootstrap : `_docker/build_httpd/README.md`](./../../_docker/build_httpd/README.md)
 - [Documentation architecture : `docs/ARCHITECTURE.md`](../ARCHITECTURE.md)
 - [acme.sh — plugin dns_cf (Cloudflare)](https://github.com/acmesh-official/acme.sh/wiki/dnsapi#dns_cf)
@@ -194,7 +194,7 @@ Le proxy Apache HTTPD (`httpd-proxy`) expose l'accès externe à Domoticz sur `h
 
 ## Références
 
-- [Plan d'Action 004 : `.github/plans/004_letsencrypt_migration.plan.md`](./../plans/004_letsencrypt_migration.plan.md)
+- [Plan d'Action 004 : `docs/plans/004_letsencrypt_migration.plan.md`](../plans/004_letsencrypt_migration.plan.md)
 - [Procédure bootstrap : `_docker/build_httpd/README.md`](./../../_docker/build_httpd/README.md)
 - [Documentation architecture : `docs/ARCHITECTURE.md`](../ARCHITECTURE.md)
 - [Let's Encrypt — Challenge HTTP-01](https://letsencrypt.org/docs/challenge-types/#http-01-challenge)

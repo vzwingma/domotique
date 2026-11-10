@@ -74,5 +74,5 @@ L'objectif est de conserver un certificat stable entre les rebuilds de l'image, 
 
 ## Références
 
-- [Plan d'Action 006 — Persistance du certificat HTTPD](../../.github/plans/006_httpd_cert_persistence.plan.md)
+- [Plan d'Action 006 — Persistance du certificat HTTPD](../plans/006_httpd_cert_persistence.plan.md)
 - [`_docker/build_httpd/README.md`](../../_docker/build_httpd/README.md)

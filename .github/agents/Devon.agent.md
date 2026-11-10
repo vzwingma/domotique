@@ -5,7 +5,7 @@ model: claude-sonnet-5.5
 tools: [read, edit, execute, search, todo]
 ---
 
-> **Chargement des skills (obligatoire)** : Copilot CLI charge les skills selon leur pertinence, sans garantie par rôle. Avant toute action, charge explicitement les skills suivantes (invoque la skill de ce nom ; si l'invocation est indisponible, lis le fichier `SKILL.md` de cette skill) : `plan-phase-execution`. Avant toute action, lis aussi les conventions génériques du rôle (fichier d'instructions, pas une skill) : `.github/instructions/dev.instructions.template.md`.
+> **Chargement des skills (obligatoire)** : Copilot CLI charge les skills selon leur pertinence, sans garantie par rôle. Avant toute action, charge explicitement les skills suivantes (invoque la skill de ce nom ; si l'invocation est indisponible, lis le fichier `SKILL.md` de cette skill) : `plan-phase-execution`. Avant toute action, lis aussi les consignes projet du rôle : `.github/instructions/dev.instructions.md`.
 
 # Instructions agent 🔵 DEVon
 
