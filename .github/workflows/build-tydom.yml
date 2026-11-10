@@ -7,18 +7,9 @@ on:
   # Validate the GitOps branch and existing development branches.
   # Push: image sources only, so that Compose/docs commits on master do not republish `latest`.
   push:
-    branches: [ main, master, feat/tydom, feat/tydom_resilience ]
-    paths:
-      - 'tydom-bridge/**'
-      - '_docker/build_tydom/**'
-      - '!**/*.md'
+    branches: [ main, master, feat/tydom ]
   pull_request:
-    branches: [ main, master, feat/tydom, feat/tydom_resilience ]
-    paths:
-      - 'tydom-bridge/**'
-      - '_docker/build_tydom/**'
-      - '.github/workflows/build-tydom.yml'
-      - '!**/*.md'
+    branches: [ main, master, feat/tydom ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
