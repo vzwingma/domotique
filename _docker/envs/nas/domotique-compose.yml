@@ -13,7 +13,7 @@ services:
     restart: always
 # TYDOM
   tydom-bridge:
-    image: vzwingmadomatic/domoticz-tydom:candidate-node26-arm64-552f09d8f41e5c6d6a1ad28672a227a68ae41cfb@sha256:328a227210914548886c385f39705b1164c605dca7ddd5e9607f196f7bb83114
+    image: vzwingmadomatic/domoticz-tydom:latest
     platform: linux/arm64
     env_file:
       - stack.env

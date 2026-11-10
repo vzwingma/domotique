@@ -36,6 +36,8 @@ Toutes les valeurs sont passées via variables d'environnement. Les cinq premiè
 | `NODE_TLS_REJECT_UNAUTHORIZED` | ✗ | `0` | Mettre à `1` pour forcer la vérification TLS (production) |
 
 > **Note TLS** : par défaut, la vérification du certificat TLS est désactivée pour la compatibilité avec les box Tydom locales (certificat auto-signé). En production ou en mode cloud, définir `NODE_TLS_REJECT_UNAUTHORIZED=1`.
+>
+> **Node 26 / OpenSSL 3** : la box Tydom locale exige la renégociation TLS legacy. L'image Docker l'active via `OPENSSL_CONF` (voir [_docker/build_tydom/README.md](../_docker/build_tydom/README.md)). Hors de cette image, un lancement local sans cette configuration échoue avec `fetch failed`.
 
 ---
 

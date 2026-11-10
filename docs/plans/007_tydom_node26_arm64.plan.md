@@ -33,6 +33,8 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 | Essai direct autorisé | 2026-11-10 | Publier la candidate et modifier la stack actuelle pour essai réel | GO utilisateur à 16:21 | CI 42842530815 réussie ; risque noyau ancien signalé ; qualification réelle non encore acquise |
 | Préparation rollback | 2026-11-10 | Conserver image actuelle avant bascule | Confirmé utilisateur à 16:23 | Image ID `sha256:a521bdc0c398fbbea87470deef7d280d263b79de78587b88d5485241eb5d23a7`, tag local demandé `vzwingmadomatic/domoticz-tydom:rollback-before-node26` |
 | Ajustement CI | 2026-11-10 | Rétablir le build/push automatique de production après fusion | Demandé utilisateur à 16:32 | Push `master` publie `latest` après tests, smoke et Sonar ; PR sans publication ; candidate manuelle conservée ; Compose NAS reste épinglé, aucune qualification réelle présumée |
+| Correctif TLS legacy | 2026-11-10 | Activer la renégociation TLS legacy dans l'image Tydom (Node 26 / OpenSSL 3) | Validé par test manuel utilisateur (`HTTP 404` avec `OPENSSL_CONF`), PR #225 fusionnée | Affaiblissement TLS limité au conteneur Tydom ; qualification fonctionnelle encore à obtenir |
+| Référence Compose NAS | 2026-11-10 | Suivre `latest` (sans digest) avec `platform: linux/arm64` | Choix utilisateur à 17:25, digest épinglé proposé et écarté | Déploiement par pull explicite de la seule image Tydom ; push `master` limité aux sources de l'image pour éviter une republication par un commit Compose/doc |
 
 ### Essai direct : état d'exécution
 
@@ -42,6 +44,17 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 - La stack est GitOps : l'utilisateur a confirmé et corrigé la branche suivie en `master` à 16:24. La PR #223 est encore ouverte au dernier contrôle ; les modifications locales du Compose doivent être poussées et intégrées dans `master` avant synchronisation de la stack.
 - Ne pas utiliser une mise à jour globale forçant le téléchargement de toutes les images `latest` : HTTPD et Domoticz ne font pas partie de cette bascule.
 - Rollback : rétablir l'image locale sauvegardée, retirer `platform: linux/arm64` (l'ancienne image est ARM32), ne pas forcer de pull du tag local. Conserver les mêmes variables et ports. Vérifier santé et lectures après restauration ; suspendre la synchronisation GitOps pendant la récupération si elle risque d'annuler le rollback.
+
+### Correctif TLS legacy et bascule sur `latest`
+
+- Candidate `328a2272…` déployée sur le NAS : Node `v26.13.0 arm64`, mais `/health/ready` en 503 `degraded`, `lastError: "fetch failed"`.
+- Diagnostic dans le conteneur : `fetch` vers la box → `ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED`. Avec une configuration OpenSSL `UnsafeLegacyRenegotiation` passée par `OPENSSL_CONF` : `HTTP 404`, donc poignée de main TLS aboutie. L'ancienne image Node 16 tolérait cette renégociation.
+- Correctif ([Dockerfile](../../_docker/build_tydom/Dockerfile)) : génération de `/usr/local/etc/tydom-openssl.cnf` au build et `ENV OPENSSL_CONF`. Premier essai en échec CI (`/etc/ssl` absent de l'image slim), corrigé.
+- PR #225 fusionnée (`534c1c9`) ; run [42851269177](https://github.com/vzwingma/domotique/actions/runs/42851269177) : `latest` = `sha256:886366859bdf970bd8edd85b16c043e0aecc9f3ee45c314543a3f300ab0ec1a3` (`linux/arm64`, `OPENSSL_CONF` présent dans la configuration de l'image, vérifié sur le registre).
+- Le Compose NAS pointait encore sur la candidate `328a2272…` (sans correctif) : il référence désormais `latest` avec `platform: linux/arm64` (choix utilisateur, sans digest).
+- CI ajustée : push limité à `tydom-bridge/**` et `_docker/build_tydom/**` (PR : + workflow), smoke tests vérifiant `OPENSSL_CONF`.
+- Le tag `latest` de Docker Hub n'est plus l'image ARM32 Node 16 : le retour arrière dépend uniquement de l'image locale `sha256:a521bdc0…` sur le NAS (tag `rollback-before-node26`), à ne pas purger.
+- Reste à faire : pull explicite de la seule image Tydom, recréation du conteneur, vérification du digest déployé, puis qualification (`/health/ready`, lectures, reconnexion, flux Domoticz) et surveillance 24 h.
 
 Les constats de la section suivante et le rapport de préparation décrivent leurs états historiques respectifs.
 La décision initiale de conserver `0.13.4` est remplacée pour la candidate par l'accord sur `0.16.1`.
