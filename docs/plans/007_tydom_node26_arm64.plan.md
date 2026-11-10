@@ -55,6 +55,8 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 - CI ajustée : push limité à `tydom-bridge/**` et `_docker/build_tydom/**` (PR : + workflow), smoke tests vérifiant `OPENSSL_CONF`.
 - Le tag `latest` de Docker Hub n'est plus l'image ARM32 Node 16 : le retour arrière dépend uniquement de l'image locale `sha256:a521bdc0…` sur le NAS (tag `rollback-before-node26`), à ne pas purger.
 - Reste à faire : pull explicite de la seule image Tydom, recréation du conteneur, vérification du digest déployé, puis qualification (`/health/ready`, lectures, reconnexion, flux Domoticz) et surveillance 24 h.
+- Test NAS de `latest` `886366…` : `OPENSSL_CONF` présent, mais toujours `ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED`. Cause : section racine renommée à tort en `openssl_conf`, que Node ignore sans `--openssl-shared-config`. Rétablie en `nodejs_conf` ; les smoke tests exigent désormais cette section.
+- Test NAS avec `nodejs_conf` : renégociation acceptée, puis `EE certificate key too weak` (clé du certificat de la box < 1024 bits). `SECLEVEL=1` insuffisant, `SECLEVEL=0` passe à l'étape suivante (certificat auto-signé, toléré par `NODE_TLS_REJECT_UNAUTHORIZED=0` d'`app.js`). `CipherString = DEFAULT:@SECLEVEL=0` ajouté à l'image et contrôlé en CI. Compromis : TLS fortement affaibli pour le seul conteneur Tydom (réseau local).
 
 Les constats de la section suivante et le rapport de préparation décrivent leurs états historiques respectifs.
 La décision initiale de conserver `0.13.4` est remplacée pour la candidate par l'accord sur `0.16.1`.

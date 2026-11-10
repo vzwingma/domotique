@@ -115,7 +115,8 @@ jobs:
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
-            if (!c || !fs.readFileSync(c, 'utf8').includes('UnsafeLegacyRenegotiation')) throw new Error('OPENSSL_CONF ' + c);
+            const o = c ? fs.readFileSync(c, 'utf8') : '';
+            if (!/^nodejs_conf\s*=/m.test(o) || !o.includes('UnsafeLegacyRenegotiation') || !o.includes('@SECLEVEL=0')) throw new Error('OPENSSL_CONF ' + c);
           "
 
   # Production on master pushes; candidate publication remains manual.
@@ -178,7 +179,8 @@ jobs:
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
-            if (!c || !fs.readFileSync(c, 'utf8').includes('UnsafeLegacyRenegotiation')) throw new Error('OPENSSL_CONF ' + c);
+            const o = c ? fs.readFileSync(c, 'utf8') : '';
+            if (!/^nodejs_conf\s*=/m.test(o) || !o.includes('UnsafeLegacyRenegotiation') || !o.includes('@SECLEVEL=0')) throw new Error('OPENSSL_CONF ' + c);
           "
       -
         name: Push verified ARM64 image
