@@ -69,8 +69,8 @@ Le Compose NAS suit `latest` avec `platform: linux/arm64`.
 - Sécurité TLS du conteneur Tydom réduite (renégociation legacy, clés faibles, certificat non vérifié via
   `NODE_TLS_REJECT_UNAUTHORIZED=0`). Acceptable car le flux reste sur le LAN. Ne pas réutiliser cette image pour d'autres flux.
 - Noyau 4.9 hors support officiel : surveiller le comportement après chaque montée de Node.
-- `latest` ne contient plus l'image ARM32 : le retour arrière repose sur l'image sauvegardée localement sur le NAS
-  (`rollback-before-node26`, en retirant `platform: linux/arm64`).
+- `latest` ne contient plus l'image ARM32 et l'image de rollback locale a été supprimée le 2026-11-10 après validation :
+  aucun retour vers Node 16 n'est plus possible directement. Un incident se corrige en avant : nouvelle publication `master`, ou retour à une image Node 26 précédente si elle a été conservée sous un tag local.
 - Le Compose NAS suivant `latest` sans digest, chaque déploiement demande un pull explicite de l'image Tydom.
 
 ### Neutres
@@ -81,7 +81,7 @@ Le Compose NAS suit `latest` avec `platform: linux/arm64`.
 - **Fichiers impactés** : `_docker/build_tydom/Dockerfile`, `_docker/build_tydom/openssl.cnf`, `.github/workflows/build-tydom.yml`,
   `_docker/envs/nas/domotique-compose.yml`, `tydom-bridge/package.json`, `tydom-bridge/package-lock.json`.
 - **Tâches de suivi** : requalifier avec la box réelle toute montée de version de `tydom-client` ou de Node (et de leurs majeures OpenSSL) ;
-  retirer l'image de rollback ARM32 du NAS une fois la stabilité confirmée.
+  avant chaque pull de `latest` sur le NAS, conserver l'image en cours sous un tag local de retour arrière.
 - **Date d'effet** : 2026-11-10 (PR #225 à #227).
 
 ## Références

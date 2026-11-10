@@ -59,7 +59,8 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 - Déploiement : pull explicite de la seule image Tydom, puis « Pull and redeploy » sans re-pull global.
 - Test NAS de `latest` `886366…` : `OPENSSL_CONF` présent, mais toujours `ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED`. Cause : section racine renommée à tort en `openssl_conf`, que Node ignore sans `--openssl-shared-config`. Rétablie en `nodejs_conf` ; les smoke tests exigent désormais cette section.
 - Test NAS avec `nodejs_conf` : renégociation acceptée, puis `EE certificate key too weak` (clé du certificat de la box < 1024 bits). `SECLEVEL=1` insuffisant, `SECLEVEL=0` passe à l'étape suivante (certificat auto-signé, toléré par `NODE_TLS_REJECT_UNAUTHORIZED=0` d'`app.js`). `CipherString = DEFAULT:@SECLEVEL=0` ajouté à l'image et contrôlé en CI. Compromis : TLS fortement affaibli pour le seul conteneur Tydom (réseau local).
-- Résultat final (18:41) : bridge connecté et fonctionnel sur le NAS, `tydom-client@0.16.1` validé par l'utilisateur. Plan clôturé ; décision consignée dans l'[ADR 006](../adr/006-tydom-node26-arm64-tls-legacy.md). Suivi : surveillance d'exploitation et purge ultérieure de l'image de rollback ARM32.
+- Résultat final (18:41) : bridge connecté et fonctionnel sur le NAS, `tydom-client@0.16.1` validé par l'utilisateur. Plan clôturé ; décision consignée dans l'[ADR 006](../adr/006-tydom-node26-arm64-tls-legacy.md). Suivi : surveillance d'exploitation.
+- 19:41 : PR #228 fusionnée (CI master [42876323419](https://github.com/vzwingma/domotique/actions/runs/42876323419) réussie, `latest` = `sha256:3abd97f7…`). Image de rollback ARM32 `rollback-before-node26` supprimée du NAS par l'utilisateur : le retour vers Node 16 n'est plus possible.
 
 Les constats de la section suivante et le rapport de préparation décrivent leurs états historiques respectifs.
 La décision initiale de conserver `0.13.4` est remplacée pour la candidate par l'accord sur `0.16.1`.

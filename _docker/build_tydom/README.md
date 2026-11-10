@@ -5,7 +5,7 @@ La base est épinglée par digest dans le Dockerfile. Qualifiée sur le NAS avec
 
 > Le NAS AS1102T utilise un noyau 4.9.119, inférieur au minimum officiel Node 26 ARM64 (4.18).
 > Le bridge y fonctionne, mais cette configuration reste hors support officiel Node.
-> Depuis la bascule Node 26, `latest` n'est plus l'image ARM32 Node 16 : le retour arrière repose sur l'image sauvegardée localement sur le NAS.
+> Depuis la bascule Node 26, `latest` n'est plus l'image ARM32 Node 16 ; l'ancienne image de rollback a été supprimée du NAS.
 
 ---
 
@@ -109,7 +109,7 @@ ou Portainer > Images > Pull), puis recréer uniquement le conteneur `tydom-brid
 HTTPD et Domoticz suivent aussi `latest`. Vérifier ensuite que le digest du conteneur correspond à celui du résumé du job.
 
 Avant tout pull de `latest`, conserver l'image en cours sous un tag local de retour arrière
-(ex. `vzwingmadomatic/domoticz-tydom:rollback-before-node26` pour l'ancienne image ARM32) : le pull déplace le tag `latest`.
+(ex. `vzwingmadomatic/domoticz-tydom:rollback-AAAAMMJJ`) : le pull déplace le tag `latest`.
 
 Le build CI sous QEMU ne remplace pas une vérification sur le NAS après déploiement (`/health/ready` = 200).
 
