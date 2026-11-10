@@ -1,0 +1,166 @@
+@startuml
+title Activite d'orchestration humain / agents / livrables
+
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #f7f9fb
+  BorderColor #2f4050
+  ArrowColor #2f4050
+  DiamondBackgroundColor #fff4d6
+  DiamondBorderColor #b08a00
+}
+
+start
+
+partition "Developpeur humain" {
+  :Exprimer et cadrer le besoin;
+  :Declencher MAINa\n(claude --agent MAINa, /maina ou demande directe);
+}
+
+partition "MAINa" {
+  :Qualifier le besoin;
+  :Identifier les contraintes\net les livrables attendus;
+}
+
+partition "ARCos" {
+  :Analyser les options d'architecture;
+  :Comparer risques, couts, impacts;
+  :Recommander une approche;
+}
+
+partition "Livrables" {
+  :Produire recommandation architecture;
+  if (Decision structurante ?) then (oui)
+    :Preparer / mettre a jour un ADR;
+  else (non)
+    :Conserver la decision dans le plan;
+  endif
+}
+
+partition "MAINa" {
+  :Rediger le Plan d'Action;
+  :Soumettre le plan a validation;
+}
+
+partition "Developpeur humain" {
+  if (Plan valide ?) then (oui)
+    :Valider explicitement le plan;
+  else (non)
+    :Demander ajustements;
+  endif
+}
+
+while (Plan non valide ?) is (oui)
+  partition "MAINa" {
+    :Reviser le cadrage;
+    :Redemander expertise si necessaire;
+  }
+  partition "ARCos" {
+    :Affiner la recommandation;
+  }
+  partition "MAINa" {
+    :Resoumettre le plan revise;
+  }
+  partition "Developpeur humain" {
+    if (Plan valide ?) then (oui)
+      :Valider explicitement le plan;
+    else (non)
+      :Demander nouveaux ajustements;
+    endif
+  }
+endwhile (non)
+
+partition "DEVon" {
+  :Implementer selon le plan valide;
+}
+
+partition "Livrables" {
+  :Produire / modifier le code;
+}
+
+partition "MAINa" {
+  :Collecter notification de fin implementation;
+  :Soumettre la phase implementation;
+}
+
+partition "Developpeur humain" {
+  if (Implementation valide ?) then (oui)
+    :Valider la phase implementation;
+  else (non)
+    :Demander corrections ciblees;
+  endif
+}
+
+while (Corrections implementation requises ?) is (oui)
+  partition "DEVon" {
+    :Corriger le code;
+  }
+  partition "MAINa" {
+    :Resoumettre la phase implementation;
+  }
+  partition "Developpeur humain" {
+    if (Implementation valide ?) then (oui)
+      :Valider la phase implementation;
+    else (non)
+      :Demander nouvelles corrections;
+    endif
+  }
+endwhile (non)
+
+partition "QALvin" {
+  :Ecrire / ajuster les tests;
+  :Executer la validation QA;
+}
+
+partition "Livrables" {
+  :Produire tests, resultats\net rapport QA;
+}
+
+if (Anomalies QA ?) then (oui)
+  partition "MAINa" {
+    :Deleguer corrections issues QA;
+  }
+  partition "DEVon" {
+    :Corriger les anomalies;
+  }
+  partition "QALvin" {
+    :Relancer les tests;
+    :Confirmer la validation QA;
+  }
+else (non)
+  partition "QALvin" {
+    :Confirmer la validation QA;
+  }
+endif
+
+partition "MAINa" {
+  :Soumettre les resultats QA;
+}
+
+partition "Developpeur humain" {
+  :Valider la phase QA;
+}
+
+partition "DOCly" {
+  :Synchroniser la documentation;
+}
+
+partition "Livrables" {
+  :Mettre a jour README, ARCHITECTURE, ADR, guides;
+}
+
+partition "MAINa" {
+  :Presenter la synthese finale;
+}
+
+partition "Developpeur humain" {
+  if (Livrables finaux acceptes ?) then (oui)
+    :Accepter la livraison;
+  else (non)
+    :Demander ajustement final;
+  endif
+}
+
+stop
+
+@enduml

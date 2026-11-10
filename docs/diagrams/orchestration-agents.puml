@@ -1,0 +1,106 @@
+@startuml
+title Organisation et orchestration humain / agents / commandes / livrables
+
+skinparam shadowing false
+skinparam responseMessageBelowArrow true
+skinparam sequence {
+  ArrowColor #2f4050
+  ActorBorderColor #2f4050
+  LifeLineBorderColor #8a9aaa
+  ParticipantBorderColor #2f4050
+  ParticipantBackgroundColor #f7f9fb
+}
+
+actor "Developpeur humain" as Human
+participant "MAINa\nMaitre orchestrateur" as Maina
+participant "ARCos\nArchitecture" as Arcos
+participant "DEVon\nImplementation" as Devon
+participant "QALvin\nTests / QA" as Qalvin
+participant "DOCly\nDocumentation" as Docly
+participant "Commandes" as Commands
+database "Livrables" as Deliverables
+
+== Entree et cadrage ==
+
+Human -> Maina : Cadre le besoin\n(objectif, contraintes, priorites)
+Human -> Commands : Commande optionnelle\n/maina, /maina-help, /init-harness
+Commands --> Maina : Contexte operationnel\net regles de workflow
+
+Maina -> Arcos : Delegue analyse architecture\n(options, risques, recommandation)
+Arcos --> Maina : Recommandation technique\nperimetre, compromis, impacts
+Arcos -> Deliverables : Produit / met a jour\nnotes architecture, ADR si necessaire
+
+Maina -> Deliverables : Redige Plan d'Action\nphases, criteres d'acceptation, gates
+Maina -> Human : Soumet le Plan d'Action\na validation humaine
+Human --> Maina : Valide, ajuste ou refuse le plan
+
+alt Plan ajuste ou refuse
+  Maina -> Arcos : Redemande arbitrage\nou clarification ciblée
+  Arcos --> Maina : Revision de recommandation
+  Maina -> Human : Resoumet le plan revise
+  Human --> Maina : Validation explicite
+else Plan valide
+  Maina -> Deliverables : Fige le Plan d'Action valide
+end
+
+== Phase implementation ==
+
+Maina -> Devon : Delegue implementation\nselon le plan valide
+Devon -> Deliverables : Implemente le livrable Code\n(changements source, config, scripts)
+Devon --> Maina : Notifie fin d'implementation\navec resume et points d'attention
+Maina -> Human : Demande validation de phase\nimplementation
+Human --> Maina : Valide ou demande correction
+
+alt Correction demandee
+  Maina -> Devon : Delegue corrections ciblees
+  Devon -> Deliverables : Met a jour le Code
+  Devon --> Maina : Notifie corrections terminees
+  Maina -> Human : Resoumet validation implementation
+  Human --> Maina : Validation explicite
+end
+
+== Phase QA ==
+
+Maina -> Qalvin : Delegue tests et validation\nunitaires, integration, regression
+Qalvin -> Deliverables : Produit / met a jour\nTests, rapport QA, resultats commandes
+Qalvin --> Maina : Notifie validation QA\nou anomalies detectees
+
+alt Anomalies detectees
+  Maina -> Devon : Delegue corrections issues QA
+  Devon -> Deliverables : Corrige le Code
+  Devon --> Maina : Notifie correction
+  Maina -> Qalvin : Redemande validation QA
+  Qalvin --> Maina : Validation QA confirmee
+end
+
+Maina -> Human : Soumet resultats QA\na validation humaine
+Human --> Maina : Validation explicite
+
+== Phase documentation ==
+
+Maina -> Docly : Delegue synchronisation documentation\nREADME, ARCHITECTURE, ADR, guides
+Docly -> Deliverables : Produit / met a jour\nDocumentation et changelog si requis
+Docly --> Maina : Notifie fin documentation\navec fichiers modifies
+Maina -> Human : Soumet livrables finaux\ncode, tests, documentation, decisions
+Human --> Maina : Acceptation finale\nou demande d'ajustement
+
+== Synthese des livrables ==
+
+note over Deliverables
+Livrables attendus selon le besoin :
+- Plan d'Action valide
+- Recommandation architecture / ADR
+- Code implemente
+- Tests et rapport QA
+- Documentation synchronisee
+- Resume final des changements
+end note
+
+note over Maina
+Invariant d'orchestration :
+MAINa pilote le flux, mais chaque gate
+critique requiert une validation explicite
+du developpeur humain.
+end note
+
+@enduml

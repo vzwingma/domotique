@@ -1,0 +1,66 @@
+flowchart TD
+  Human[👤 Developpeur humain]
+  Maina[⚫ MAINa<br/>Maitre orchestrateur]
+  Arcos[🟠 ARCos<br/>Architecture]
+  Devon[🔵 DEVon<br/>Implementation]
+  Qalvin[🟢 QALvin<br/>Tests / QA]
+  Docly[🟣DOCly<br/>Documentation]
+  Commands[Commandes /maina, /init-harness]
+  ValidCommande[Validation]
+
+  subgraph Deliverables[Livrables]
+    ActionPlan[(Plan d'Action)]
+    Architecture[(Recommandation architecture)]
+    Adr[(ADR)]
+    Code[(Code)]
+    Tests[(Tests)]
+    QaReport[(Rapport QA)]
+    Documentation[(Documentation)]
+    FinalSummary[(Synthese finale)]
+  end
+
+  Human -->|Cadre le besoin| Maina
+  Human -->|Valide| ActionPlan
+  Human -->|Declenche| Commands
+  Commands -->|Active workflow| Maina
+
+Human -->|Relis et valide| ValidCommande
+ValidCommande -->|Décision| Maina
+
+  Maina -->|Delegue conception| Arcos
+  Maina -->|Delegue implementation| Devon
+  Maina -->|Delegue validation| Qalvin
+  Maina -->|Delegue documentation| Docly
+
+  Arcos -->|Livre| Architecture
+  Arcos -->|Livre si necessaire| Adr
+  Maina -->|Livre| ActionPlan
+  Devon -->|Livre| Code
+  Qalvin -->|Livre| Tests
+  Qalvin -->|Livre| QaReport
+  Docly -->|Livre| Documentation
+  Maina -->|Livre| FinalSummary
+
+
+
+  Maina -->|Soumet livrable / gate| Human
+  Human -->|Valide / ajuste / refuse| Maina
+
+  classDef human fill:#f5f5f5,stroke:#666666,color:#111111,stroke-width:2px
+  classDef maina fill:#1f2937,stroke:#000000,color:#ffffff,stroke-width:2px
+  classDef arcos fill:#f59e0b,stroke:#92400e,color:#111111,stroke-width:2px
+  classDef devon fill:#3b82f6,stroke:#1e40af,color:#ffffff,stroke-width:2px
+  classDef qalvin fill:#22c55e,stroke:#166534,color:#111111,stroke-width:2px
+  classDef docly fill:#8b5cf6,stroke:#5b21b6,color:#ffffff,stroke-width:2px
+  classDef command fill:#e0f2fe,stroke:#0369a1,color:#0f172a,stroke-width:2px
+  classDef deliverable fill:#fff7ed,stroke:#c2410c,color:#7c2d12,stroke-width:2px
+
+  class Human human
+  class Maina maina
+  class Arcos arcos
+  class Devon devon
+  class Qalvin qalvin
+  class Docly docly
+  class Commands command
+  class ValidCommande command
+  class ActionPlan,Architecture,Adr,Code,Tests,QaReport,Documentation,FinalSummary deliverable

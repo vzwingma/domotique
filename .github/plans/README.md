@@ -9,6 +9,10 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 - [`004_letsencrypt_migration.plan.md`](./004_letsencrypt_migration.plan.md) — **SUSPENDU** (domaine personnel requis)
 
+## Plans planifiés
+
+- [`007_tydom_node26_arm64.plan.md`](./007_tydom_node26_arm64.plan.md) — **PLANIFIÉ**
+
 ## Plans archivés / complétés
 
 - [`001_dzvents_stabilisation.plan.md`](./001_dzvents_stabilisation.plan.md) — **COMPLÉTÉ**
