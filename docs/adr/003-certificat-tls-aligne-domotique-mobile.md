@@ -72,6 +72,6 @@ Cette divergence provoquait un échec de validation côté client, alors que le 
 
 ## Références
 
-- [Plan d'Action 005 — Alignement TLS HTTPD / Domoticz mobile](../../.github/plans/005_tls_httpd_mobile_alignment.plan.md)
+- [Plan d'Action 005 — Alignement TLS HTTPD / Domoticz mobile](../plans/005_tls_httpd_mobile_alignment.plan.md)
 - [`_docker/build_httpd/README.md`](../../_docker/build_httpd/README.md)
 - [`domotique-mobile/plugins/withNetworkSecurity.js`](https://github.com/vzwingma/domotique-mobile/blob/main/plugins/withNetworkSecurity.js)

@@ -113,7 +113,7 @@ Lire 4 skills suivants dans `.github/skills/` (si existent):
 
 Pour chaque skill, vérifier:
 - Frontmatter `applyTo: "**"` présent (inclusion auto dans contexte agent)
-- Contenu cohérent avec `.github/plans/README.md` (pas divergence format)
+- Contenu cohérent avec `docs/plans/README.md` (pas divergence format)
 - Agents `.github/instructions/*.instructions.md` référencent skills et workflow dans sections pertinentes
 - Identifier contenu dupliqué entre skill et agent instructions (candidat extraction)
 

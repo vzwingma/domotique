@@ -1,33 +1,42 @@
-# Copilot instructions for domotique
+# Instructions Copilot — domotique
 
-Ces instructions s'appliquent en priorite quand vous travaillez dans domoticz/scripts/dzVents.
+Ces instructions s'appliquent en priorite quand vous travaillez dans domoticz/scripts/dzVents. Le depot automatise un systeme residentiel via Domoticz/dzVents, bridges HTTP Tydom et Freebox, deCONZ et Docker Compose.
+
+## Mode de communication
+
+Mode caveman full actif par defaut. Desactiver uniquement sur demande explicite (`stop caveman` ou `normal mode`).
 
 ## Agents et orchestration
 
-Le projet suit une orchestration multi-agents avec validation humaine a chaque etape:
-- ARCos: planification et decisions architecturales
-- DEVon: implementation
-- QUALvin: verification qualite
-- DOCly: documentation
+Le workflow multi-agents est orchestre par MAINa et comporte des gates humains obligatoires :
+- ARCos : analyse architecturale en lecture seule, au moins deux options et recommandation
+- DEVon : implementation dans le scope valide
+- QALvin : tests et verification qualite
+- DOCly : documentation apres validation des tests, sauf redaction ADR autorisee entre Gate #0 et #1
+- MAINa : cadrage, plan persistant, delegations et gates #0 a #4
 
 Les fichiers de specificites projet sont:
+- .github/instructions/orchestrator.instructions.md
 - .github/instructions/architect.instructions.md
 - .github/instructions/dev.instructions.md
 - .github/instructions/qa.instructions.md
 - .github/instructions/doc.instructions.md
 
-### Regle obligatoire ARCos — plan + ADR
+Les sous-agents ne s'adressent pas directement a l'humain : ils rendent un bloc `handoff` a MAINa, qui presente preuves, questions et risques au gate.
+
+### Regle obligatoire MAINa — plan + ADR
 
 Toute initiative architecturale ou infrastructure (nouvelle fonctionnalite, migration, changement de composant) doit produire **avant** de marquer la tache terminee :
-1. Un fichier `Plan d'Action` dans `.github/plans/NNN_nom.plan.md` (incrementer le numero)
+1. Un fichier `Plan d'Action` dans `docs/plans/NNN_nom.plan.md` (incrementer le numero)
 2. Un ADR dans `docs/adr/NNN-titre-court.md` si decision architecturale majeure
-3. Une mise a jour de l'index `.github/plans/README.md`
+3. Une mise a jour de l'index `docs/plans/README.md`
 
 Ces livrables sont crees dans le meme lot que l'implementation, pas apres coup.
+Les gates suivent `.github/skills/gate-protocol/SKILL.md`; ne jamais passer a la phase suivante sans decision explicite `GO`.
 
 ## Sources de verite
 
-- Lire .github/tasks/todo/RETROCONCEPTION_dzVents.md avant toute evolution de comportement.
+- Lire docs/RETROCONCEPTION_dzVents.md avant toute evolution de comportement.
 - Lire .github/tasks/todo/PLAN_ACTIONS_dzVents.md avant toute proposition de refactoring/roadmap.
 - Lire domoticz/scripts/dzVents/global_data.lua avant toute modification dzVents.
 - TYDOM_DEVICES dans global_data.lua est l'unique source de verite des IDs Tydom.
@@ -37,7 +46,7 @@ Ces livrables sont crees dans le meme lot que l'implementation, pas apres coup.
 ## Etat documentaire du depot
 
 - Lire `docs/adr/` pour connaitre les ADRs existants (ADR-TEMPLATE.md + ADRs numerotes).
-- Lire `.github/plans/README.md` pour connaitre les plans d'action et leur statut global.
+- Lire `docs/plans/README.md` pour connaitre les plans d'action et leur statut global.
 - Les references BEST_PRACTICES.md, CODING_STANDARDS.md, CONTRIBUTING.md, CHANGELOG.md et configuration ESLint ne sont pas presentes au niveau du repo (hors dependances node_modules).
 - En cas d'ecart doc/code, corriger la doc dans le meme changement que le code.
 
@@ -54,6 +63,8 @@ Regles de coherence:
 - scenePhase doit etre maintenue via l'evenement custom Scene Phase.
 - La restauration au boot est geree par Device_Label_Scene_Phase.lua.
 - Preserver la propagation uuid et la correlaton des logs de bout en bout.
+
+Les plans et rapports sont dans `docs/plans/`; le guide reste `.github/PLANS.md`. Les modeles generiques de plan, rapport, handoff, ADR et architecture restent dans leurs repertoires `templates/`.
 
 ## Priorites de travail
 

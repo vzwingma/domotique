@@ -1,24 +1,25 @@
 ---
-name: "plan-phase-execution"
-description: "Skill — Procédure d'exécution de phase d'un Plan d'Action (AP). Appliqué automatiquement à tous les agents."
-applyTo: "**"
+name: plan-phase-execution
+description: "Procédure standard d'exécution d'une phase de Plan d'Action (AP) : lecture du plan, exécution des tâches T<N>.<M> assignées, rapport de phase avec preuves, relais. Préchargée par ARCos, DEVon, QALvin et DOCly."
 ---
 
 # Skill : Exécution de Phase d'un Plan d'Action (AP)
 
-> Skill décrit **procédure standard** pour agent exécute phase Plan Action.
-> Chaque agent connaît propre identifiant et cibles délégation (voir instructions).
-> Référence complète format AP : `.github/PLANS.md`
+> Procédure commune à tous les agents exécutants. Chaque agent connaît son identifiant et ses relais.
+> Modèles : rapport [`templates/phase-report.template.md`](templates/phase-report.template.md) · handoff [`templates/handoff.template.md`](templates/handoff.template.md) · Guide : `.github/PLANS.md`
 
 ---
 
 ## Avant de démarrer
 
-1. **Lire plan complet** : `.github/plans/<NO>_<nom>.plan.md`
-2. **Identifier tes tâches** : Chercher ton identifiant agent dans phase (ex: `🔵 DEVon`, `🟢 QALvin`, etc.)
-3. **Lister tâches** assignées (T<N>.X, T<N>.Y, etc.) et séquence
-4. **Comprendre dépendances** : Quelle(s) phase(s) doit-on compléter avant tienne
-5. **Identifier rapport à remplir** : `.github/plans/<NO>_reports/PHASE_N_COMPLETION_REPORT.md`
+1. **Lire le plan complet** : `docs/plans/<NO>_<slug>.plan.md`
+2. **Identifier tes tâches** : ton identifiant agent dans la phase (`🔵 DEVon`, `🟢 QALvin`…)
+3. **Lister tes tâches** (T<N>.X, T<N>.Y…) et leur séquence
+4. **Vérifier les dépendances** : phases précédentes ✅ et gate précédent `GO` dans le journal des gates
+5. **Rapport** : `docs/plans/<NO>_reports/PHASE_N_COMPLETION_REPORT.md` (créer depuis le modèle si absent)
+
+Agent en lecture seule (🟠 ARCos) : ne pas écrire le rapport — rendre son contenu dans la réponse,
+⚫ MAINa l'écrit.
 
 ---
 
@@ -26,86 +27,43 @@ applyTo: "**"
 
 Pour chaque tâche T<N>.<M> :
 
-1. **Lire tâche en détail** dans plan
-   - Quel(s) fichier(s) toucher / tester / documenter
-   - Quoi couvrir / implémenter
-   - Critères acceptation mesurables
+1. **Lire la tâche** : fichiers à toucher / tester / documenter, scope, critère d'acceptation.
+2. **Exécuter** selon ton rôle, sans élargir le périmètre.
+3. **Documenter dans le rapport** au fil de l'eau (statut, fichiers, résultats, notes).
 
-2. **Exécuter tâche** selon ton rôle
-
-3. **Documenter dans rapport phase** en temps réel
-
-**Format documentation par tâche :**
-```markdown
-### T<N>.<M> - [Titre de la tâche]
-
-**Statut :** ✅ DONE (ou 🔄 IN_PROGRESS, ❌ BLOCKED)
-
-**Fichiers Créés / Modifiés :**
-- `path/to/file1.ts` — [Brève description]
-- `path/to/file2.tsx` — [Brève description]
-
-**Résultats :**
-- Critère 1 : ✅ Atteint (ex: "Coverage 92% ≥90%")
-- Critère 2 : ✅ Atteint
-
-**Notes :**
-[Décisions, problèmes rencontrés, hypothèses]
-```
+Chaque résultat cite sa **preuve** : commande lancée et résultat obtenu (tests, lint, build, couverture).
 
 ---
 
 ## Après chaque tâche
 
-- ✅ Mettre à jour statut dans rapport (🔄 → ✅ ou ❌)
-- ✅ Vérifier que tâche suivante peut démarrer (dépendances internes)
-
----
-
-## ⚡ Compact avant phase suivante (recommandé)
-
-Avant de déclencher la phase suivante, recommander `/compact` pour éviter l'accumulation de skill blobs en contexte :
-
-```
-/compact
-Instruction : Résume en 200 mots max — phase courante, numéro, tâches restantes (T<N>.X), décisions clés prises.
-Supprime : blobs skill des phases précédentes, historique détaillé résolu, confirmations ("oui", "go", etc.).
-```
-
-> 💡 Sans compact entre phases, chaque skill injecté (~4-8KB) reste en contexte pour tous les tours suivants. Sur 4 phases, cela représente ~20-30KB de contexte inutile accumulé.
+- Mettre à jour le statut dans le rapport (🔄 → ✅ ou ❌)
+- Vérifier que la tâche suivante peut démarrer (dépendances internes)
 
 ---
 
 ## À la fin de la phase
 
-Remplir **Synthèse Phase** dans rapport :
+1. Remplir la **Synthèse de Phase** du rapport (tâches X/Y, critères, bloqueurs, questions).
+2. Statut du rapport : `✅ COMPLÉTÉE — validation 👤 en attente`.
+3. Rendre la main à ⚫ MAINa pour le gate : résumé court, puis **bloc `handoff`** (YAML, modèle
+   [`templates/handoff.template.md`](templates/handoff.template.md)) en toute fin de réponse —
+   fichiers, critères avec preuve, commandes + résultats, risques, questions, suite.
+   Relais vers l'agent suivant **seulement après** validation du gate.
 
-```markdown
-## 📊 Synthèse de Phase
-
-**Tâches Complétées :** X/Y ✅
-**Critères de Réussite Atteints :**
-- ✅ Critère 1
-- ✅ Critère 2
-
-**Bloqueurs :** Aucun ❌
-**Prochaine Phase :** Phase X peut démarrer (toutes les dépendances ✅)
-```
-
-Puis **signaler à agent suivant** selon tes instructions délégation.
+> 💡 Session longue : avant la phase suivante, `/compact` (instructions de compaction : `copilot-instructions.md`).
 
 ---
 
 ## Règle obligatoire — Synchronisation de l'index des plans
 
-- `.github/plans/README.md` est index **plans + statut global uniquement** (jamais détails phases).
-- Si tes mises à jour entraînent changement **statut global** plan, mets à jour `.github/plans/README.md` dans **même changement**.
+- `docs/plans/README.md` = index **plans + statut global uniquement** (jamais de détail de phase).
+- Mise à jour entraînant un changement de **statut global** → mettre à jour l'index dans le **même changement**.
 
 ---
 
 ## Références
 
 - 📋 Guide complet : `.github/PLANS.md`
-- 📋 Plan courant : `.github/plans/<NO>_<nom>.plan.md`
-- 📊 Rapports existants : `.github/plans/<NO>_reports/`
-- 📌 Index plans (synthétique) : `.github/plans/README.md`
+- 📊 Rapports : `docs/plans/<NO>_reports/`
+- 📌 Index : `docs/plans/README.md`

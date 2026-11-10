@@ -294,7 +294,7 @@ Statut global du plan : **Complété (tous les lots clos, documentation finalis�
 ## 7) Protocole de reporting (rapports de phase)
 
 Pour chaque phase exécutée, renseigner :
-- `.github/plans/001_reports/PHASE_<N>_COMPLETION_REPORT.md`
+- `docs/plans/001_reports/PHASE_<N>_COMPLETION_REPORT.md`
 
 **Format minimal attendu :**
 - tâches T<N>.<M> avec statut (`✅ DONE`, `🔄 IN_PROGRESS`, `❌ BLOCKED`) ;
@@ -314,5 +314,4 @@ Pour chaque phase exécutée, renseigner :
 
 1. Exécuter/valider **Phase 3 (T3.1 -> T3.5)**.
 2. Produire les rapports manquants dans `001_reports/`.
-3. Basculer le statut global du plan en **Complété** dans `.github/plans/README.md` une fois toutes les tâches closes.
-
+3. Basculer le statut global du plan en **Complété** dans `docs/plans/README.md` une fois toutes les tâches closes.

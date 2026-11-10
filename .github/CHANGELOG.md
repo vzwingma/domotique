@@ -5,10 +5,22 @@
 
 ---
 
+## AP 006 — 2026-10-15
+
+- Documentation alignée sur la projection vérifiée vers GitHub Copilot CLI uniquement.
+- Limites observées, mapping des outils/modèles, chargement des skills, contrôles, packages et scénarios
+  documentés ; aucune version d'agent modifiée.
+
+---
+
 ## ⚫ MAINa
 
 - **v1.0** : Création nouvel agent maitre-orchestrateur. Point d'entrée principal, support `/help` et `@MAINa /help`, orchestration stricte ARCos → DEVon → QALvin → DOCly avec validations humaines entre phases.
 - **v1.1** : Renommage commande `/help` → `/maina-help`. Création Skill `maina-help` (applyTo: **) pour aide orchestration. Version MAINa passe à v1.1.
+- **v1.2** : MAINa prend responsabilité création Plan d'Action (skill plan-creation). Peut consulter ARCos (et autres agents) pour analyse solutions + recommandation avant rédiger le plan. ARCos redevient expert consulté — ne crée plus le plan. Workflow mis à jour : consultation ARCos → MAINa produit plan en mode PLAN → validation humaine obligatoire → implémentation.
+- **v1.2 → v1.3** : Bloc sécurité allégé — opérations destructives + `.copilotignore` externalisés vers skills `safety-rules` et `copilotignore` (`applyTo: **`). Règle MAINa-spécifique (pas de clôture sans validations 👤) conservée.
+- **v1.3 → v1.4** : Ajout lecture `.github/instructions/orchestrator.instructions.md` au démarrage pour appliquer les spécificités projet MAINa.
+- **v1.4 → v1.5** (AP 005 P2-P8) : Frontmatter natif (`model: opus`, `tools` explicites dont `AskUserQuestion`/`Agent`/`SendMessage`, `skills: [plan-creation]`, `color`) ; retrait `applyTo`/`agents`. Conçu pour tourner en **agent principal** de session : un sous-agent n'a pas `AskUserQuestion` → gates impossibles. Gates numérotés #0→#4 et consignés dans le « Journal des gates » ; questions des sous-agents relayées via section `❓ Questions pour 👤` ; plus de parallélisation entre phases séparées par un gate. Version sortie de la description. P3 : préchargement skill `conventions-orchestrator` (remplace la lecture de `.github/instructions/orchestrator.instructions.md`). P5 : skill `gate-protocol` préchargé (preuves par gate, revue `/code-review` + `/security-review` avant Gate #2, GO/AJUSTER/STOP, journal) ; délégations exigeant le bloc `handoff` ; ADR `Proposée` avant Gate #1, `Acceptée` au GO. P8 : Plans d'Action dans `docs/plans/` (ADR 004).
 
 ---
 
@@ -30,6 +42,11 @@
 - **v4.0 → v4.1** : Externalisation changelog dans ce fichier. Réduction taille agent ~2KB.
 - **v4.1 → v4.2** : Descriptions frontmatter raccourcies. Relations inter-agents externalisées vers `.github/README.md`.
 - **v4.2 → v4.3** : ARCos recentré sur architecture/planification. MAINa devient point d'entrée orchestration.
+- **v4.3 → v4.4** : Retrait responsabilité création Plan d'Action. MAINa crée le plan après consultation ARCos. ARCos = expert archi consulté, exécute tâches T*.* assignées. Section "Créer et Exécuter un Plan d'Action" remplacée par "Exécuter les tâches assignées".
+- **v4.4 → v4.5** : Suppression contradictions résiduelles du modèle pré-MAINa (création WBS, orchestration inter-agents, « format sortie = plan »). ARCos recentré sur analyse & conception : propose un découpage candidat en entrée, MAINa crée et orchestre le Plan d'Action.
+- **v4.5 → v4.6** : Suppression des blocs inline « opérations destructives » + « `.copilotignore` » (désormais couverts par skills `safety-rules` + `copilotignore`, `applyTo: **`). Remplacés par un rappel d'une ligne.
+- **v4.6 → v4.7** : Élagage (214 → ~110 lignes) — fusion des 5 restatements du workflow (Coordination/Séquencement/Points contrôle/Cas limites), suppression des sections « Découpage travail » + « Tâches DEVon/QALvin/DOCly » du format de sortie (résidu du modèle créateur-de-plan). Corps aligné sur le frontmatter : ARCos = analyse + conception + découpage candidat en entrée à MAINa. Workflow global renvoyé à `.github/README.md` (source unique).
+- **v4.7 → v4.8** (AP 005 P2-P8) : Frontmatter natif (`model: opus`, `effort: high`, outils **lecture seule** `Read, Grep, Glob, WebFetch, WebSearch, Skill`, `skills: [adr-writing, plan-phase-execution]`) ; retrait `applyTo`/`agents`. Pas de `memory` (activerait Write/Edit). Pas d'échange direct avec 👤 : questions + point de décision rendus à MAINa (Gate #0). Rapport de phase rendu à MAINa qui l'écrit. P3 : préchargement skill `conventions-architect` (remplace la lecture de `.github/instructions/architect.instructions.md`), section parallélisation → skill `parallel-guide`. P5 : bloc `handoff` en fin de réponse. P8 : Plans d'Action dans `docs/plans/` (ADR 004).
 
 ---
 
@@ -47,6 +64,8 @@
 - **v3.1 → v4.0** : Sync depuis OpenCode v4.0. Corps mis à jour. Frontmatter Copilot conservé (model, tools). Chemins `.github/` conservés.
 - **v4.0 → v4.1** : Externalisation changelog dans ce fichier. Réduction taille agent ~2KB.
 - **v4.1 → v4.2** : Description réduite. Delegation gardee concise ; workflow global deplace vers `.github/README.md`.
+- **v4.2 → v4.3** : Suppression des blocs inline « opérations destructives » + « `.copilotignore` » (couverts par skills `safety-rules` + `copilotignore`, `applyTo: **`).
+- **v4.3 → v4.4** (AP 005 P2-P5) : Frontmatter natif (`model: sonnet`, `tools: Read, Edit, Write, Bash, Grep, Glob, TodoWrite, Skill`, `skills: [plan-phase-execution]`) ; retrait `applyTo`/`agents`. Tâches reçues du Plan d'Action (MAINa) ; preuve exigée (build + lint + tests existants) ; relais DOCly après Gate #3 uniquement ; questions via `❓ Questions pour 👤`. P3 : préchargement skill `conventions-dev` (remplace la lecture de `.github/instructions/dev.instructions.md`), section parallélisation → skill `parallel-guide`. P5 : relais via bloc `handoff` (preuves build/lint/tests).
 
 ---
 
@@ -65,6 +84,9 @@
 - **v3.1 → v4.0** : Sync depuis OpenCode v4.0. Corps mis à jour. Frontmatter Copilot conservé (model, tools). Chemins `.github/` conservés.
 - **v4.0 → v4.1** : Externalisation changelog dans ce fichier. Réduction taille agent ~2KB.
 - **v4.1 → v4.2** : Description réduite. Section relations retiree au profit de `.github/README.md`.
+- **v4.2 → v4.3** : Suppression des blocs inline « opérations destructives » + « `.copilotignore` » (couverts par skills `safety-rules` + `copilotignore`, `applyTo: **`).
+- **v4.3 → v4.4** : Agent rendu stack-neutre — React/Jest retirés du corps générique au profit de principes de test framework-agnostiques. Concret React/Testing Library conservé en exemples/placeholders dans `qa.instructions.template.md`.
+- **v4.4 → v4.5** (AP 005 P2-P5) : Frontmatter natif (`model: sonnet`, `tools: Read, Edit, Write, Bash, Grep, Glob, TodoWrite, Skill`, `skills: [plan-phase-execution]`) ; retrait `applyTo`/`agents`. Intervient après Gate #2, relais DOCly après Gate #3 ; questions via `❓ Questions pour 👤` ; séparateur parasite retiré. P3 : préchargement skill `conventions-qa` (remplace la lecture de `.github/instructions/qa.instructions.md`), section parallélisation → skill `parallel-guide`. P5 : preuves obligatoires (résultats, couverture vs seuil, détection de régression) + bloc `handoff`.
 
 ---
 
@@ -82,3 +104,5 @@
 - **v3.1 → v4.0** : Sync depuis OpenCode v4.0. Corps mis à jour. Frontmatter Copilot conservé (model, tools). Chemins `.github/` conservés.
 - **v4.0 → v4.1** : Externalisation changelog dans ce fichier. Réduction taille agent ~2KB.
 - **v4.1 → v4.2** : Description réduite. Vue transverse centralisee dans `.github/README.md`.
+- **v4.2 → v4.3** : Suppression des blocs inline « opérations destructives » + « `.copilotignore` » (couverts par skills `safety-rules` + `copilotignore`, `applyTo: **`).
+- **v4.3 → v4.4** (AP 005 P2-P5) : Frontmatter natif (`model: sonnet`, `tools: Read, Edit, Write, Grep, Glob, Skill`, `skills: [plan-phase-execution, adr-writing]`) ; retrait `applyTo`/`agents`. Intervient après Gate #3 ; questions via `❓ Questions pour 👤`. P3 : préchargement skill `conventions-doc` (remplace la lecture de `.github/instructions/doc.instructions.md`), section parallélisation → skill `parallel-guide`. P5 : bloc `handoff` ; exception : rédaction ADR `Proposée` entre Gate #0 et Gate #1.

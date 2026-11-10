@@ -6,7 +6,7 @@
 ---
 
 **Date :** [AAAA-MM-JJ]  
-**Statut :** [Proposée / Acceptée / Dépréciée / Remplacée par ADR-NNN]  
+**Statut :** [Proposée / Acceptée / Rejetée / Dépréciée / Remplacée par ADR-NNN]
 **Décideurs :** [🟠 ARCos + 👤 Développeur humain]
 
 ---
@@ -34,8 +34,8 @@
 
 ### Option 1 : [Nom de l'alternative retenue] ✅ Retenue
 
-- **Avantages** : [...]
-- **Inconvénients** : [...]
+- **Avantages** : [ex. réduit le couplage entre scripts dzVents et intégrations externes]
+- **Inconvénients** : [ex. nécessite de centraliser les mappings dans `global_data.lua`]
 
 ### Option 2 : [Nom de l'alternative]
 
@@ -54,15 +54,15 @@
 ## Conséquences
 
 ### Positives
-- [ex: Simplifie la gestion d'état dans les composants]
-- [ex: Réduit le couplage entre les couches]
+- [ex. améliore la cohérence de `scenePhase` entre les scènes et leurs consommateurs]
+- [ex. conserve les IDs Tydom dans `TYDOM_DEVICES`]
 
 ### Négatives / Compromis
-- [ex: Nécessite une migration des composants existants]
-- [ex: Courbe d'apprentissage pour l'équipe]
+- [ex. nécessite de mettre à jour plusieurs scripts dzVents et de valider les flux croisés]
+- [ex. impose une coordination avec le bridge ou la configuration Docker]
 
 ### Neutres
-- [ex: Implique de mettre à jour la documentation `docs/ARCHITECTURE.md`]
+- [ex. implique de mettre à jour `docs/ARCHITECTURE.md` ou `docs/scenarios.puml`]
 
 ---
 
@@ -70,8 +70,8 @@
 
 > Décrire comment cette décision est appliquée concrètement dans le projet.
 
-- **Fichiers impactés** : [ex: `src/services/`, `src/contexts/`]
-- **Tâches de suivi** : [ex: DEVon — refactoriser `ClientHTTP.service.ts`]
+- **Fichiers impactés** : [ex. `domoticz/scripts/dzVents/`, `_docker/`]
+- **Tâches de suivi** : [ex. DEVon — adapter les scripts consommateurs de `Scene Phase`]
 - **Date d'effet** : [ex: À partir de la version v2.0]
 
 ---
@@ -79,4 +79,4 @@
 ## Références
 
 - [Lien vers la documentation officielle, RFC, article, ou plan d'action associé]
-- [Plan d'Action associé : `.github/plans/NNN_nom.plan.md`]
+- Plan d'Action associé : `docs/plans/NNN_nom.plan.md`

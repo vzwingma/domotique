@@ -2,7 +2,7 @@
 
 ## Métadonnées
 - ID : 006
-- Fichier : `.github/plans/006_httpd_cert_persistence.plan.md`
+- Fichier : `docs/plans/006_httpd_cert_persistence.plan.md`
 - Statut global : COMPLÉTÉ
 - Date : 2026-06-16
 
@@ -63,7 +63,7 @@ Rendre le certificat TLS du frontal HTTPD stable entre les rebuilds de l'image D
 
 #### T3.1 - Mettre à jour la documentation
 - **Agent :** DOCly
-- **Fichiers :** `_docker/build_httpd/README.md`, `docs/adr/004-httpd-cert-persistence.md`, `.github/plans/README.md`
+- **Fichiers :** `_docker/build_httpd/README.md`, `docs/adr/004-httpd-cert-persistence.md`, `docs/plans/README.md`
 - **À faire :** documenter la persistance, la rotation et le plan associé.
 - **Acceptation :** le fonctionnement sans rebuild mobile est décrit clairement.
 

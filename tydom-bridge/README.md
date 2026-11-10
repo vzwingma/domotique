@@ -8,8 +8,8 @@ Le bridge expose une API REST locale protégée par Basic Auth et traduit les ap
 
 ## Prérequis
 
-- **Node.js** : `>=18` (compatible avec `tydom-client@0.13.4`)
-- **tydom-client** : `0.13.4`
+- **Node.js** : Node 26 pour la candidate Docker ARM64
+- **tydom-client** : `0.16.1` (candidate à qualifier avec la box réelle)
 
 ---
 
@@ -142,13 +142,18 @@ Le bridge écoute `SIGINT` et `SIGTERM` :
 
 ## Dépendance critique — `tydom-client`
 
-La baseline retenue est **`tydom-client@0.13.4`**, pinned en exact dans `package.json`.
+La candidate Node 26 ARM64 utilise **`tydom-client@0.16.1`**, épinglé en exact dans `package.json`.
+Cette extension du périmètre a été approuvée le 2026-11-10 ; la baseline du conteneur actuellement déployé reste `0.13.4`.
 
 Une migration vers `0.15.1` a été tentée et qualifiée en sandbox isolé. Elle a été **annulée (No-Go définitif)** en raison d'une incompatibilité fonctionnelle confirmée avec le backend Tydom réel. Un rollback complet vers `0.13.4` a été réalisé.
 
-La migration vers une version supérieure de `tydom-client` n'est pas prévue dans le backlog courant.
+L'échec historique de `0.15.1` ne prouve ni l'échec ni la compatibilité de `0.16.1`.
+Les tests automatisés simulent le client : avant toute bascule, qualifier avec la box réelle
+l'authentification, TLS/WebSocket, les lectures, les écritures réversibles autorisées et la reconnexion.
 
-> **Note :** `tydom-client@0.13.4` utilise `got` pour les appels HTTP et est compatible Node.js ≥ 18. L'image Docker officielle utilise `node:22-slim`. Vérifier la version du runtime avant tout déploiement hors conteneur.
+> **Note :** la candidate Docker utilise Node 26.13.0 bookworm-slim ARM64.
+> Le noyau NAS 4.9 reste hors support officiel Node 26, même si le démarrage fonctionne.
+> Conserver l'ancienne image par digest pour le retour arrière ; aucune migration de production n'est acquise.
 
 ---
 

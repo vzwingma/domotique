@@ -20,15 +20,15 @@ agent: agent
 
 Mission : **générer et initialiser** fichier `.github/copilot-instructions.md` pour nouveau projet, basé sur :
 
-1. **Template générique** (`.github/copilot-instructions.template.md`) présent dans dépôt transverse
+1. **Profils et procédures du harnais** (`.github/agents/`, `.github/skills/`, `.github/PLANS.md`)
 2. **Analyse code source** projet cible
 3. **Conventions réelles** appliquées dans code
 
 ## 📋 Étapes
 
-### 1. Lire le template générique
+### 1. Lire les consignes et procédures du harnais
 
-Lire intégralement `.github/copilot-instructions.template.md` pour comprendre structure base.
+Lire les profils d'agents, les procédures de planification et les instructions existantes afin de conserver leur structure utile.
 
 ### 2. Analyser le projet cible
 
@@ -42,9 +42,9 @@ Parcourir dépôt et identifier :
 - **Patterns architecturaux** : Couches (components, services, models), DDD, MVVM, etc.
 - **Conventions existantes** : Naming files, imports, styling, testing patterns, etc.
 
-### 3. Remplir les sections du template
+### 3. Rédiger les consignes du projet
 
-Pour chaque placeholder `[...]` du template, fournir valeur adaptée :
+Renseigner les éléments adaptés au projet depuis les sources vérifiées :
 
 | Placeholder | Source d'information | Exemple |
 |---|---|---|
@@ -59,19 +59,11 @@ Pour chaque placeholder `[...]` du template, fournir valeur adaptée :
 
 ### 4. Générer le fichier
 
-Créer `.github/copilot-instructions.md` en :
-1. Copiant template
-2. Remplaçant tous placeholders par valeurs projet
-3. Supprimant sections `[📌 À COMPLÉTER : ...]` si remplies
-4. Conservant sections génériques (agents, workflow, plans d'action, diagrammes)
+Créer ou mettre à jour `.github/copilot-instructions.md` en conservant les règles projet existantes et en alignant agents, workflow et plans sur les fichiers présents.
 
 ### 5. Générer les fichiers d'instructions agents
 
-Lire 4 templates dans `.github/instructions/` du dépôt transverse :
-- `architect.instructions.template.md` — template instructions pour agent ARCos
-- `dev.instructions.template.md` — template instructions pour agent DEVon
-- `qa.instructions.template.md` — template instructions pour agent QALvin
-- `doc.instructions.template.md` — template instructions pour agent DOCly
+Lire les profils d'agents correspondants dans `.github/agents/` et les consignes projet déjà présentes.
 
 Pour chaque fichier, remplir placeholders avec valeurs identifiées lors analyse (étape 2) :
 - `[NOM_DU_PROJET]` → nom projet
@@ -91,7 +83,7 @@ Si projet dispose autres fichiers référence (CONTRIBUTING.md, ARCHITECTURE.md,
 ## ✅ Checklist de Livraison
 
 - [ ] Fichier `.github/copilot-instructions.md` créé
-- [ ] Fichiers `.github/instructions/*.instructions.md` créés depuis templates `*.instructions.template.md` (4 fichiers : architect, dev, qa, doc)
+- [ ] Fichiers `.github/instructions/*.instructions.md` créés ou mis à jour pour les 5 rôles
 - [ ] Tous placeholders `[...]` remplacés par valeurs réelles
 - [ ] Placeholders critiques remplacés (minimum : NOM_DU_PROJET, stack technique)
 - [ ] Sections `[📌 À COMPLÉTER : ...]` supprimées ou complétées

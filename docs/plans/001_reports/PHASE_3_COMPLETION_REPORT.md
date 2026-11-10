@@ -266,4 +266,4 @@ Trois anomalies identifiées lors de la validation statique de `Freebox_login.lu
 
 ## Décision de passage à la phase suivante
 
-✅ **Phase 3 COMPLÉTÉE** — T3.1 ✅, T3.2 ✅, T3.3 ✅, T3.4 ✅, T3.5 ✅. Toutes les tâches closes. Plan 001 peut être basculé en **Complété** dans `.github/plans/README.md`.
+✅ **Phase 3 COMPLÉTÉE** — T3.1 ✅, T3.2 ✅, T3.3 ✅, T3.4 ✅, T3.5 ✅. Toutes les tâches closes. Plan 001 peut être basculé en **Complété** dans `docs/plans/README.md`.

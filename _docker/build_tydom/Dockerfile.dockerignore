@@ -1,0 +1,8 @@
+# Contexte tydom-bridge/ : exclure artefacts locaux (binaires Windows/AMD64), tests et donnees sensibles
+**/node_modules
+coverage
+tests
+.env
+.env.*
+*.log
+.git

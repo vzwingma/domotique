@@ -9,22 +9,10 @@ applyTo: "**"
 
 ## Workflow
 
-1. Consulte table SQL `todos` pour tâches `owner = 'dev'` statut `pending` sans dépendances bloquantes
-2. Passe todo en `in_progress` avant commencer
-3. Implémente feature selon conventions dzVents ci-dessous
-4. Passe todo en `done` quand code prêt et validé
-
-```sql
--- Trouver les tâches dev disponibles
-SELECT t.* FROM todos t
-WHERE t.status = 'pending'
-AND (t.id LIKE '%-dev' OR t.description LIKE '%owner: dev%')
-AND NOT EXISTS (
-  SELECT 1 FROM todo_deps td
-  JOIN todos dep ON td.depends_on = dep.id
-  WHERE td.todo_id = t.id AND dep.status != 'done'
-);
-```
+1. Lire le Plan d'Action validé et les tâches qui te sont assignées.
+2. Vérifier dépendances et gate précédent `GO`.
+3. Implémenter uniquement le scope assigné; ne pas modifier tests ni documentation.
+4. Exécuter les vérifications disponibles pour le composant touché et rendre les preuves dans le handoff.
 
 ## Stack technique
 
@@ -98,8 +86,10 @@ domoticz.log(marker .. msg, domoticz.LOG_INFO)
 - Pas renommer devices/groupes/scènes/variables Domoticz sans plan de migration validé
 - Pas modifier IDs Tydom hors `TYDOM_DEVICES` dans `global_data.lua`
 - Pas écrire directement `globalData.scenePhase` — émettre événement `Scene Phase` uniquement
+- Avant une évolution dzVents, lire `docs/RETROCONCEPTION_dzVents.md`; avant refactor/roadmap, lire `.github/tasks/todo/PLAN_ACTIONS_dzVents.md`.
+- Les tests Jest du bridge se lancent avec `npm test --prefix tydom-bridge`. Le dépôt ne fournit pas de commande commune de build/lint ni de suite unitaire dzVents; ne pas annoncer de vérifications non exécutées.
 
 ## Règle d'index des plans (obligatoire)
 
-- `.github/plans/README.md` limité aux **plans + statut global** (sans détail phases)
-- Si travail change statut global plan, MAJ `.github/plans/README.md` dans même changement
+- `docs/plans/README.md` limité aux **plans + statut global** (sans détail phases)
+- Si travail change statut global plan, MAJ `docs/plans/README.md` dans même changement

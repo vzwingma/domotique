@@ -1,14 +1,19 @@
 # Image Docker tydom-bridge
 
-Image Docker du bridge Tydom, basée sur `node:22-slim` (plateforme `linux/amd64`).
+Préparation de l'image candidate du bridge Tydom : **Node 26.13.0 bookworm-slim / `linux/arm64`**.
+La base est épinglée par digest dans le Dockerfile. Cette candidate n'est pas encore qualifiée avec la box Tydom.
+
+> Le NAS AS1102T utilise un noyau 4.9.119, inférieur au minimum officiel Node 26 ARM64 (4.18).
+> Son démarrage ARM64 a été observé, mais le fonctionnement sur ce NAS reste expérimental.
+> Le service GitOps NAS et son image `latest` ne sont pas modifiés par cette préparation.
 
 ---
 
 ## Contenu de l'image
 
-- **Base** : `node:22-slim` (Node.js 22 LTS, image minimale)
+- **Base** : `node:26.13.0-bookworm-slim`, épinglée par digest
 - **Application** : `tydom-bridge/app.js` — proxy REST entre Domoticz et la box Tydom
-- **Dépendances** : installées via `npm install` lors du build
+- **Dépendances** : installées via `npm ci --omit=dev` depuis le lockfile ; candidate `tydom-client@0.16.1`, qualification réelle requise
 - **Port exposé** : `9001`
 
 ---
@@ -16,16 +21,14 @@ Image Docker du bridge Tydom, basée sur `node:22-slim` (plateforme `linux/amd64
 ## Construction de l'image
 
 ```bash
-# Depuis le répertoire tydom-bridge/
-cd tydom-bridge
-docker build -t vzwingmadomatic/domoticz-tydom:latest .
+# Depuis la racine du dépôt, sans publication
+docker buildx build --platform linux/arm64 \
+  --file _docker/build_tydom/Dockerfile \
+  --tag tydom-candidate:local --load tydom-bridge
 ```
 
-> L'image est construite pour `linux/amd64`. Pour une cible ARM (Raspberry Pi) :
->
-> ```bash
-> docker buildx build --platform linux/arm64 -t vzwingmadomatic/domoticz-tydom:latest .
-> ```
+Le contexte est `tydom-bridge/` ; seuls les manifestes et `app.js` sont copiés.
+Ne pas construire depuis le dossier contenant le Dockerfile ni réutiliser des `node_modules` locaux.
 
 ---
 
@@ -60,7 +63,9 @@ docker run --name=tydom-bridge -d \
 
 ## Déploiement via Docker Compose
 
-Voir `_docker/domotique-compose.yml` :
+Le déploiement NAS existant est défini dans
+[`_docker/envs/nas/domotique-compose.yml`](../envs/nas/domotique-compose.yml).
+L'exemple historique ci-dessous utilise `latest` ; **ne pas y substituer la candidate avant qualification et autorisation de bascule** :
 
 ```yaml
 tydom-bridge:
@@ -81,7 +86,17 @@ tydom-bridge:
 
 ## CI/CD
 
-L'image est reconstruite automatiquement à chaque push sur `master` via GitHub Actions :
+Le workflow valide `main`, `master` et les branches de développement existantes :
+tests Node 26, construction ARM64 et chargement de `tydom-client` dans l'image sans accès réseau.
+Les pull requests et push ne publient aucune image.
+
+La publication éventuelle exige un lancement manuel avec `publish=true`, les validations CI et
+l'environnement `PROD`. Seul le tag `candidate-node26-arm64-<SHA complet>` est publié, avec refus
+d'écrasement d'un candidat existant. L'image à publier est testée avant le push ; son digest figure
+dans le résumé du job. Aucune publication automatique de `latest` n'est conservée pendant cette qualification.
+
+Le build CI sous QEMU ne remplace pas la qualification native sur le NAS.
+Voir le [plan 007](../../docs/plans/007_tydom_node26_arm64.plan.md) pour les gates et le retour arrière.
 
 [![Build Tydom Bridge ARM Docker Image](https://github.com/vzwingma/domotique/actions/workflows/build-tydom.yml/badge.svg?branch=master)](https://github.com/vzwingma/domotique/actions/workflows/build-tydom.yml)
 
