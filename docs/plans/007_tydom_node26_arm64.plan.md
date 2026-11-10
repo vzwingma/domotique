@@ -30,6 +30,17 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 | #0 / #1, périmètre réduit | 2026-11-10 | Préparer localement une candidate ARM64 distincte de `latest` après inventaire interactif | GO utilisateur à 15:26 | Aucune publication, aucun commit/push, aucun déploiement ; risque noyau ancien signalé |
 | #2 | 2026-11-10 | Validation préparation code/build | En attente | Tests locaux passants ; build Docker, exécution CI et qualification NAS encore à obtenir |
 | Ajustement périmètre | 2026-11-10 | Inclure `tydom-client@0.16.1` après mise à jour Renovate sur master | GO utilisateur à 16:00 | Adapter manifeste, lockfile et les deux smoke tests ; qualification réelle obligatoire, aucune autorisation de déploiement |
+| Essai direct autorisé | 2026-11-10 | Publier la candidate et modifier la stack actuelle pour essai réel | GO utilisateur à 16:21 | CI 42842530815 réussie ; risque noyau ancien signalé ; qualification réelle non encore acquise |
+| Préparation rollback | 2026-11-10 | Conserver image actuelle avant bascule | Confirmé utilisateur à 16:23 | Image ID `sha256:a521bdc0c398fbbea87470deef7d280d263b79de78587b88d5485241eb5d23a7`, tag local demandé `vzwingmadomatic/domoticz-tydom:rollback-before-node26` |
+
+### Essai direct : état d'exécution
+
+- CI de PR [42842530815](https://github.com/vzwingma/domotique/actions/runs/42842530815) réussie : tests, scan et build/smoke ARM64 ; Node 26.13.0 et client 0.16.1 chargés.
+- Publication manuelle [42843481034](https://github.com/vzwingma/domotique/actions/runs/42843481034) réussie sur `552f09d8f41e5c6d6a1ad28672a227a68ae41cfb`. Digest publié et vérifié dans les logs : `sha256:328a227210914548886c385f39705b1164c605dca7ddd5e9607f196f7bb83114`. Compose NAS épinglé sur ce digest.
+- Modification préparée du seul service Tydom dans le Compose NAS : tag `candidate-node26-arm64-552f09d8f41e5c6d6a1ad28672a227a68ae41cfb`, plateforme explicite `linux/arm64`. Aucune bascule effective observée à ce stade.
+- La stack est GitOps : l'utilisateur a confirmé et corrigé la branche suivie en `master` à 16:24. La PR #223 est encore ouverte au dernier contrôle ; les modifications locales du Compose doivent être poussées et intégrées dans `master` avant synchronisation de la stack.
+- Ne pas utiliser une mise à jour globale forçant le téléchargement de toutes les images `latest` : HTTPD et Domoticz ne font pas partie de cette bascule.
+- Rollback : rétablir l'image locale sauvegardée, retirer `platform: linux/arm64` (l'ancienne image est ARM32), ne pas forcer de pull du tag local. Conserver les mêmes variables et ports. Vérifier santé et lectures après restauration ; suspendre la synchronisation GitOps pendant la récupération si elle risque d'annuler le rollback.
 
 Les constats de la section suivante et le rapport de préparation décrivent leurs états historiques respectifs.
 La décision initiale de conserver `0.13.4` est remplacée pour la candidate par l'accord sur `0.16.1`.
