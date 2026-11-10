@@ -13,7 +13,7 @@ La base est épinglée par digest dans le Dockerfile. Cette candidate n'est pas 
 
 - **Base** : `node:26.13.0-bookworm-slim`, épinglée par digest
 - **Application** : `tydom-bridge/app.js` — proxy REST entre Domoticz et la box Tydom
-- **Dépendances** : installées via `npm ci --omit=dev` depuis le lockfile ; `tydom-client@0.13.4` conservé
+- **Dépendances** : installées via `npm ci --omit=dev` depuis le lockfile ; candidate `tydom-client@0.16.1`, qualification réelle requise
 - **Port exposé** : `9001`
 
 ---

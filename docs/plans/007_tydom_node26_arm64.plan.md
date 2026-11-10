@@ -8,7 +8,7 @@
 
 ## Objectif global
 
-Vérifier que la nouvelle plateforme Docker peut exécuter nativement le bridge Tydom en `linux/arm64`, puis qualifier et déployer une image Node 26 slim sans modifier le contrat API, les automatismes Domoticz ou la version `tydom-client@0.13.4`.
+Vérifier que la nouvelle plateforme Docker peut exécuter nativement le bridge Tydom en `linux/arm64`, puis qualifier et déployer une image Node 26 slim avec `tydom-client@0.16.1`, sans modifier le contrat API ni les automatismes Domoticz.
 
 Le déplacement du conteneur est déclaré par l'utilisateur ; les observations ci-dessous complètent l'inventaire initial. La préparation du build est autorisée, mais ni publication ni déploiement ne sont autorisés par cette validation. Le démarrage de Node 26 seul ne constitue pas une qualification du bridge.
 
@@ -29,8 +29,12 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 |---|---|---|---|---|
 | #0 / #1, périmètre réduit | 2026-11-10 | Préparer localement une candidate ARM64 distincte de `latest` après inventaire interactif | GO utilisateur à 15:26 | Aucune publication, aucun commit/push, aucun déploiement ; risque noyau ancien signalé |
 | #2 | 2026-11-10 | Validation préparation code/build | En attente | Tests locaux passants ; build Docker, exécution CI et qualification NAS encore à obtenir |
+| Ajustement périmètre | 2026-11-10 | Inclure `tydom-client@0.16.1` après mise à jour Renovate sur master | GO utilisateur à 16:00 | Adapter manifeste, lockfile et les deux smoke tests ; qualification réelle obligatoire, aucune autorisation de déploiement |
 
-Les constats de la section suivante décrivent l'état initial, avant préparation. Le rapport de phase 2 décrit les changements réellement effectués. La validation ci-dessus ne vaut pas autorisation de migrer la production.
+Les constats de la section suivante et le rapport de préparation décrivent leurs états historiques respectifs.
+La décision initiale de conserver `0.13.4` est remplacée pour la candidate par l'accord sur `0.16.1`.
+L'ancienne version reste la référence de rollback ; le No-Go historique `0.15.1` impose une qualification explicite de la nouvelle version.
+La validation ci-dessus ne vaut pas autorisation de migrer la production.
 
 ## Constats et preuves disponibles
 
@@ -117,7 +121,7 @@ Après gate #1 uniquement. Conserver une image candidate séparée de `latest` e
 - **Agent :** DEVon.
 - **Fichiers :** [Dockerfile](../../_docker/build_tydom/Dockerfile), [CI](../../.github/workflows/build-tydom.yml) ; [package.json](../../tydom-bridge/package.json) et [lockfile](../../tydom-bridge/package-lock.json) seulement si adaptation justifiée.
 - **Travail :** épingler Node 26 slim et digest ; remplacer l'installation par `npm ci --omit=dev` pour l'image runtime. Utiliser un contexte maîtrisé excluant `node_modules`, données sensibles et artefacts locaux ; ne jamais copier des binaires Windows/AMD64.
-- **Acceptation :** build propre ARM64 réussi depuis le lockfile sans mutation ; chargement réel de `tydom-client@0.13.4` ; aucune nouvelle bibliothèque système ou modification TLS sans justification. Si un module natif l'exige, documenter sa compilation et ne garder que ses bibliothèques runtime.
+- **Acceptation :** build propre ARM64 réussi depuis le lockfile sans mutation ; chargement réel de `tydom-client@0.16.1` ; aucune nouvelle bibliothèque système ou modification TLS sans justification. Si un module natif l'exige, documenter sa compilation et ne garder que ses bibliothèques runtime.
 
 ### T2.2 - Adapter publication et déploiement candidat
 
@@ -223,7 +227,7 @@ Chaque phase démarre seulement si les critères précédents sont satisfaits et
 
 1. Hôte et runtime natifs Linux ARM64 confirmés, sans émulation utilisée comme preuve.
 2. Node `v26.*` slim exécuté depuis une image identifiée par digest.
-3. Installation déterministe, `tydom-client@0.13.4` conservé, tous les tests existants passants.
+3. Installation déterministe, candidate `tydom-client@0.16.1` qualifiée et tous les tests existants passants ; ancienne image `0.13.4` conservée pour rollback.
 4. Connexion réelle Tydom et reprise après coupure validées.
 5. API, auth, corrélation et flux Domoticz inchangés ; aucune double commande.
 6. Observation de 24 h satisfaisante et rollback répété, exécutable sur une architecture compatible.

@@ -112,7 +112,7 @@ jobs:
             console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v);
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
-            if (v !== '0.13.4') throw new Error('tydom-client ' + v);
+            if (v !== '0.16.1') throw new Error('tydom-client ' + v);
           "
 
   # Publication manuelle explicite du candidat (jamais latest, jamais sur PR/push)
@@ -166,12 +166,13 @@ jobs:
             --file _docker/build_tydom/Dockerfile \
             --tag "$DOCKER_IMAGE_TAG" --load tydom-bridge
           docker run --rm --network none --platform "$DOCKER_TARGET_PLATFORM" "$DOCKER_IMAGE_TAG" node -e "
-            const v = require('tydom-client/package.json').version;
+            const fs = require('fs');
+            const v = JSON.parse(fs.readFileSync('/usr/app/node_modules/tydom-client/package.json', 'utf8')).version;
             require('tydom-client');
             console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v);
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
-            if (v !== '0.13.4') throw new Error('tydom-client ' + v);
+            if (v !== '0.16.1') throw new Error('tydom-client ' + v);
           "
       -
         name: Push verified ARM64 candidate
