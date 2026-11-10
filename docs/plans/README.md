@@ -11,7 +11,7 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 ## Plans planifiés
 
-- [007 — Qualification Tydom Node 26 ARM64](./007_tydom_node26_arm64.plan.md) — **PLANIFIÉ**
+- [007 — Qualification Tydom Node 26 ARM64](./007_tydom_node26_arm64.plan.md) — **EN COURS**
 - [008 — Harmonisation des consignes et migration des plans](./008_harmonisation-templates-et-plans.plan.md) — **EN COURS**
 
 ## Plans complétés

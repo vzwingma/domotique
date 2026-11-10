@@ -4,14 +4,19 @@ name: Build Tydom Bridge ARM Docker Image
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Validate the GitOps branch and existing development branches.
   push:
-    branches: [ master, feat/tydom, feat/tydom_resilience ]
+    branches: [ main, master, feat/tydom, feat/tydom_resilience ]
   pull_request:
-    branches: [ master, feat/tydom, feat/tydom_resilience ]
+    branches: [ main, master, feat/tydom, feat/tydom_resilience ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publier le candidat linux/arm64 (tag immuable candidate-node26-arm64-<SHA>)'
+        type: boolean
+        default: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -69,53 +74,110 @@ jobs:
           sonar.projectKey: tydom_bridge
           sonar.organization: vzwingma-github
 
-  # Push image to DockerHub
-  build-push-tydom:
-    name: Build and Push ARM Docker Image
+  # Build + smoke test du candidat (sans secrets, sans login, sans push)
+  build-candidate-tydom:
+    name: Build candidat Node 26 ARM64 (sans publication)
     runs-on: ubuntu-latest
-    environment: PROD
-    needs: 
-      - scan-sonar
-    env:      
-      DOCKER_REGISTRY: registry.hub.docker.com
-      DOCKER_IMAGE: vzwingmadomatic/domoticz-tydom
-      DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}  
-      DOCKER_TARGET_PLATFORM: linux/arm/v7
-
+    needs:
+      - test
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm64
+      LOCAL_IMAGE: tydom-candidate:local
     permissions:
       contents: read
 
     steps:
-      - 
-        name: Checkout the code  
+      -
+        name: Checkout the code
         uses: actions/checkout@v7
-      - 
+      -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v4
-      # https://github.com/docker/setup-buildx-action
-      - 
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
-      - 
+      -
+        name: Build ARM64 image (local, no push)
+        run: |
+          docker buildx build --platform "$DOCKER_TARGET_PLATFORM" \
+            --file _docker/build_tydom/Dockerfile \
+            --tag "$LOCAL_IMAGE" --load tydom-bridge
+      -
+        name: Smoke test (arch, Node, tydom-client) sans réseau
+        run: |
+          docker run --rm --network none --platform "$DOCKER_TARGET_PLATFORM" "$LOCAL_IMAGE" node -e "
+            const fs = require('fs');
+            const v = JSON.parse(fs.readFileSync('/usr/app/node_modules/tydom-client/package.json', 'utf8')).version;
+            require('tydom-client');
+            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v);
+            if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
+            if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
+            if (v !== '0.13.4') throw new Error('tydom-client ' + v);
+          "
+
+  # Publication manuelle explicite du candidat (jamais latest, jamais sur PR/push)
+  publish-candidate-tydom:
+    name: Publish candidat ARM64 (manuel)
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true }}
+    environment: PROD
+    needs:
+      - build-candidate-tydom
+      - scan-sonar
+    concurrency:
+      group: tydom-candidate-${{ github.sha }}
+      cancel-in-progress: false
+    env:
+      DOCKER_IMAGE: vzwingmadomatic/domoticz-tydom
+      DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKER_TARGET_PLATFORM: linux/arm64
+      DOCKER_IMAGE_TAG: vzwingmadomatic/domoticz-tydom:candidate-node26-arm64-${{ github.sha }}
+    permissions:
+      contents: read
+
+    steps:
+      -
+        name: Checkout the code
+        uses: actions/checkout@v7
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      -
         name: Log into registry
-        run: echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-      - 
-        name: Get image metadata
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      -
+        name: Refuse to overwrite an existing candidate tag
         run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          echo "DOCKER_IMAGE_TAG=$DOCKER_IMAGE:$VERSION" >> $GITHUB_ENV
-
-      - name: Build ARM image
+          if docker buildx imagetools inspect "$DOCKER_IMAGE_TAG" >manifest.txt 2>manifest-error.txt; then
+            echo "::error::Le tag $DOCKER_IMAGE_TAG existe déjà (immuable)"; exit 1
+          fi
+          if ! grep -Eq 'manifest unknown|not found' manifest-error.txt; then
+            cat manifest-error.txt >&2
+            echo "::error::Impossible de vérifier l'absence du candidat"; exit 1
+          fi
+      -
+        name: Build and verify ARM64 candidate before publication
         run: |
-          cp tydom-bridge/*.* _docker/build_tydom
-          cd _docker/build_tydom
-          docker buildx build --platform ${{ env.DOCKER_TARGET_PLATFORM }}  --file Dockerfile --tag ${{ env.DOCKER_IMAGE_TAG }} --output type=image,push=true .
+          docker buildx build --platform "$DOCKER_TARGET_PLATFORM" \
+            --file _docker/build_tydom/Dockerfile \
+            --tag "$DOCKER_IMAGE_TAG" --load tydom-bridge
+          docker run --rm --network none --platform "$DOCKER_TARGET_PLATFORM" "$DOCKER_IMAGE_TAG" node -e "
+            const v = require('tydom-client/package.json').version;
+            require('tydom-client');
+            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v);
+            if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
+            if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
+            if (v !== '0.13.4') throw new Error('tydom-client ' + v);
+          "
+      -
+        name: Push verified ARM64 candidate
+        run: |
+          docker push "$DOCKER_IMAGE_TAG"
+          docker buildx imagetools inspect "$DOCKER_IMAGE_TAG" | tee published-manifest.txt
+          echo "### Candidat publié" >> "$GITHUB_STEP_SUMMARY"
+          echo "Tag: $DOCKER_IMAGE_TAG" >> "$GITHUB_STEP_SUMMARY"
+          grep '^Digest:' published-manifest.txt >> "$GITHUB_STEP_SUMMARY"

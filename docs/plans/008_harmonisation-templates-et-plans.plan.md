@@ -125,6 +125,6 @@ Cette séquence documentaire déroge à l'ordre générique et nécessite le GO 
 |---|---|---|---|---|
 | #0 | 2026-11-10 | Choix de solution | ✅ GO | Option B ARCos : fusion sans perte, consignes actives uniques et migration finale vers `docs/plans/`. |
 | #1 | 2026-11-10 | Validation du plan et de l'exception DOCly → QALvin | ✅ GO | Plan accepté; exception d'ordre documentaire approuvée. ADR 005 accepté. |
-| #2 | — | Validation de la migration documentaire | ⏳ En attente | Revue du diff et chemins déplacés. |
+| #2 | 2026-11-10 | Validation de la migration documentaire | ✅ GO | 👤 GO à 15:47; revue automatique : le modèle d'architecture projet-spécifique a été remplacé par un modèle générique; 58 fichiers Markdown contrôlés, 0 lien local cassé, `git diff --check` sans erreur. |
 | #3 | — | Validation QA statique | ⏳ En attente | Liens, références, règles dzVents. |
 | #4 | — | Documentation et clôture | ⏳ En attente | ADR, index et statut global. |

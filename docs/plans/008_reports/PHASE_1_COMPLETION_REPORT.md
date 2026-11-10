@@ -18,10 +18,11 @@
 - `.github/copilot-instructions.md` et `.github/instructions/*.instructions.md` — consignes projet fusionnées; règles dzVents conservées.
 - `.github/agents/*.agent.md`, `.github/agents/README.md`, `.github/README.md`, `.github/PLANS.md`, skills et prompts — références alignées sur les consignes actives.
 - Modèles de consignes projet `.template.md` supprimés après fusion.
+- `docs/ARCHITECTURE.template.md` conservé comme modèle générique; le contexte Domoticz reste dans `docs/ARCHITECTURE.md`.
 
 **Résultats (preuves) :**
 - Les cinq rôles disposent d'instructions actives (`orchestrator`, `architect`, `dev`, `qa`, `doc`).
-- Recherche des références `*.instructions.template.md` / `copilot-instructions.template.md` à terminer dans la validation statique T2.1.
+- Recherche `rg` des références aux anciens modèles : aucune référence opérationnelle restante; seules subsistent les mentions historiques, les critères du plan 008 et la détection de l'ancien chemin dans `init-harness`.
 
 ### T1.2 — Migrer le répertoire des plans vers `docs/plans/`
 

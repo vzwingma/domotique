@@ -2,15 +2,35 @@
 
 **Document :** [007_tydom_node26_arm64.plan.md](./007_tydom_node26_arm64.plan.md)  
 **Date :** 2026-11-10  
-**Statut :** ⏳ Planifié - choix de solution et validation humaine requis  
+**Statut :** 🔄 En cours - préparation candidate ; qualification ARM64 à exécuter
 **Priorité :** HIGH  
-**Rapports futurs :** `007_reports/`, à créer au lancement de la première phase.
+**Rapports :** [007_reports/](./007_reports/PHASE_2_PREPARATION_REPORT.md).
 
 ## Objectif global
 
 Vérifier que la nouvelle plateforme Docker peut exécuter nativement le bridge Tydom en `linux/arm64`, puis qualifier et déployer une image Node 26 slim sans modifier le contrat API, les automatismes Domoticz ou la version `tydom-client@0.13.4`.
 
-Le déplacement du conteneur est déclaré par l'utilisateur, mais la configuration réellement déployée n'est pas accessible ici. Ce plan ne constitue ni une preuve de compatibilité de l'hôte ni une autorisation de déploiement. Aucun changement de code, build ou test distant n'a été exécuté.
+Le déplacement du conteneur est déclaré par l'utilisateur ; les observations ci-dessous complètent l'inventaire initial. La préparation du build est autorisée, mais ni publication ni déploiement ne sont autorisés par cette validation. Le démarrage de Node 26 seul ne constitue pas une qualification du bridge.
+
+## Inventaire confirmé et périmètre approuvé au 2026-11-10
+
+- NAS Asustor AS1102T, ADM 5.1.4.RM62, BIOS 1.14, noyau Linux 4.9.119, architecture hôte `aarch64`, 4 CPU, 967,4 Mo de RAM ; Docker Engine 29.6.2, API 1.55.
+- Aucune mise à jour ADM proposée, aucun autre serveur Linux disponible selon l'utilisateur.
+- Conteneur actuel : Node 16.20.2, `process.arch=arm`, Debian 10 Buster, `tydom-client@0.13.4`.
+- Stack Portainer GitOps `domoticz-stack` : branche `main`, commit observé `8002f4006e80c70e363ed5f43f35bd3b2f7ecd3f`, [Compose NAS](../../_docker/envs/nas/domotique-compose.yml), polling 24 h, image `vzwingmadomatic/domoticz-tydom:latest`, aucun montage de code.
+- Essai isolé rapporté par l'utilisateur avec `node:26-bookworm-slim` : `node=v26.13.0 arch=arm64 platform=linux`. Connexion réelle Tydom et compatibilité des dépendances non encore qualifiées.
+- [Prérequis officiels Node 26](https://github.com/nodejs/node/blob/v26.x/BUILDING.md) : noyau Linux ARM64 >= 4.18. Le noyau 4.9.119 reste hors support ; le chantier est expérimental, même si les tests réussissent.
+- Choix de préparation : option A ARM64 seule, Debian bookworm-slim correspondant à l'essai utilisateur, Node 26.13.0 épinglé par digest. Ni nouvelle distribution trixie ni changement de client Tydom.
+- Point ouvert avant toute bascule : récupérer le RepoDigest ou l'ID local de l'image actuellement exécutée et valider sa conservation pour rollback. Ne pas tirer à nouveau `latest` pour retrouver cette ancienne image.
+
+## Journal des gates
+
+| Gate | Date | Objet | Décision | Limites |
+|---|---|---|---|---|
+| #0 / #1, périmètre réduit | 2026-11-10 | Préparer localement une candidate ARM64 distincte de `latest` après inventaire interactif | GO utilisateur à 15:26 | Aucune publication, aucun commit/push, aucun déploiement ; risque noyau ancien signalé |
+| #2 | 2026-11-10 | Validation préparation code/build | En attente | Tests locaux passants ; build Docker, exécution CI et qualification NAS encore à obtenir |
+
+Les constats de la section suivante décrivent l'état initial, avant préparation. Le rapport de phase 2 décrit les changements réellement effectués. La validation ci-dessus ne vaut pas autorisation de migrer la production.
 
 ## Constats et preuves disponibles
 
