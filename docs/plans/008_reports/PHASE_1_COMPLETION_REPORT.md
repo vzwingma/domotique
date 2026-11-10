@@ -4,7 +4,7 @@
 **Responsable Agent :** 🟣 DOCly
 **Date Début :** 2026-11-10
 **Date Fin :** 2026-11-10
-**Statut :** ✅ COMPLÉTÉE — validation 👤 Gate #2 en attente
+**Statut :** ✅ COMPLÉTÉE — Gate #2 GO
 
 ---
 
@@ -44,5 +44,5 @@
 **Tâches complétées :** 2/2
 **Critères de réussite :** consignes fusionnées et migration documentaire effectuée; vérification statique des liens et contenus en phase 2.
 **Bloqueurs :** aucun.
-**Questions pour 👤 :** Gate #2 — valider le diff documentaire avant le lancement de QALvin.
-**Prochaine phase :** Phase 2 après Gate #2 GO.
+**Questions pour 👤 :** aucune.
+**Prochaine phase :** Phase 2 lancée après Gate #2 GO.

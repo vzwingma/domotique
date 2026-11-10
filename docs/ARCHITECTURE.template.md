@@ -1,189 +1,83 @@
-# 🏗️ Architecture — [NOM_DU_PROJET]
+# Architecture — [NOM_DU_PROJET]
 
-> **Template** : Ce fichier est un template à copier dans `docs/ARCHITECTURE.md` de votre projet.  
-> Remplacer les placeholders `[...]` par les valeurs réelles. Compléter les sections progressivement au fur et à mesure du développement.  
-> Les sections marquées **⚠️ À COMPLÉTER** sont prioritaires au démarrage.
+> Modèle à copier vers `docs/ARCHITECTURE.md`, puis à compléter depuis le code et la configuration réels.
+> Supprimer ou adapter les sections non pertinentes; ne pas conserver d'exemples comme faits du projet.
 
 ---
 
-## 🎯 Vue d'ensemble
+## Vue d'ensemble
 
-**[NOM_DU_PROJET]** est [DESCRIPTION_COURTE : 1-2 phrases décrivant ce que fait le projet et pour qui].
+**[NOM_DU_PROJET]** est [description du système, de ses utilisateurs et de sa finalité].
 
 | Propriété | Valeur |
 |---|---|
-| **Type** | [frontend / backend / fullstack / mobile / CLI / lib / API] |
-| **Stack principale** | [ex: React 18 + TypeScript, Spring Boot 3, Python FastAPI, etc.] |
-| **Plateforme cible** | [web / iOS / Android / desktop / serveur / etc.] |
-| **Cible Copilot vérifiée** | [GitHub Copilot CLI uniquement si vérifiée ; sinon « non vérifiée »] |
-| **Langue UI** | [Français / Anglais / etc.] |
-| **Statut** | [En développement / Stable / Legacy / En maintenance] |
+| Type | [service / application / bibliothèque / infrastructure / autre] |
+| Stack | [langages, frameworks et versions vérifiées] |
+| Plateformes | [cibles vérifiées] |
+| Statut | [développement / production / maintenance] |
 
----
+## Architecture
 
-## 🏢 Architecture Globale ⚠️ À COMPLÉTER
+Décrire les composants, leurs responsabilités et leurs dépendances. Remplacer le schéma par les éléments réels.
 
-> Décrire les grandes couches et leur rôle. Exemple ci-dessous pour un projet React + API.
-
-```
-[NOM_DU_PROJET]
-├── [COUCHE_UI]           # [Description : ex. Composants React, pages, écrans]
-├── [COUCHE_ETAT]         # [Description : ex. Contextes, stores, état global]
-├── [COUCHE_SERVICE]      # [Description : ex. Appels HTTP, logique métier]
-├── [COUCHE_MODELES]      # [Description : ex. Interfaces TypeScript, entités]
-└── [COUCHE_UTILS]        # [Description : ex. Helpers, constantes, config]
+```text
+[ACTEUR OU SYSTÈME SOURCE]
+        ↓
+[COMPOSANT / COUCHE 1]
+        ↓
+[COMPOSANT / COUCHE 2]
+        ↓
+[DÉPENDANCE OU SYSTÈME EXTERNE]
 ```
 
-### Flux de données principal
+### Flux principaux
 
-```
-[ACTEUR_ENTRANT]
-    → [COUCHE_1 : ex. Composant UI]
-    → [COUCHE_2 : ex. Service HTTP]  
-    → [SYSTEME_EXTERNE : ex. API Backend / BDD]
-    ← [retour]
-```
+- **[Flux]** : [déclencheur, étapes, résultat et gestion des erreurs].
+- **[Flux]** : [événements ou échanges entre composants].
 
----
+### État et données
 
-## 📂 Structure des Dossiers ⚠️ À COMPLÉTER
+- Source de vérité : [stockage ou composant responsable].
+- Cycle de vie : [création, mise à jour, restauration ou expiration].
+- Contraintes de cohérence : [invariants à préserver].
 
-```
-[RACINE_PROJET]/
-├── [DOSSIER_PRINCIPAL]/              # [Description]
-│   ├── [SOUS_DOSSIER_1]/             # [Description]
-│   ├── [SOUS_DOSSIER_2]/             # [Description]
-│   └── [SOUS_DOSSIER_3]/             # [Description]
-├── docs/                             # Documentation versionnée
-│   ├── ARCHITECTURE.md               # Ce fichier
-│   └── adr/                          # Architecture Decision Records
-├── [DOSSIER_TESTS]/                  # [Description]
-└── [FICHIERS_CONFIG]                 # [ex: package.json, pyproject.toml, etc.]
+## Structure du dépôt
+
+```text
+[RACINE]/
+├── [DOSSIER_SOURCE]/       # [responsabilité]
+├── [DOSSIER_TESTS]/        # [tests et outils]
+├── docs/                   # documentation versionnée
+│   ├── adr/                # décisions d'architecture
+│   └── plans/              # plans d'action, rapports et index
+└── [FICHIERS_CONFIG]/      # [configuration et outillage]
 ```
 
----
+## Intégrations et contrats
 
-## 🔧 Stack Technique
-
-### Dépendances principales
-
-| Catégorie | Librairie / Framework | Version | Rôle |
+| Composant | Sens du flux | Contrat / configuration | Risques ou contraintes |
 |---|---|---|---|
-| [ex: Framework UI] | [ex: React] | [ex: 18.x] | [ex: Rendu composants] |
-| [ex: Langage] | [ex: TypeScript] | [ex: 5.x] | [ex: Typage statique] |
-| [ex: Tests] | [ex: Jest] | [ex: 29.x] | [ex: Tests unitaires] |
-| [ex: Build] | [ex: Vite] | [ex: 5.x] | [ex: Bundler] |
+| [Système externe] | [entrant / sortant / bidirectionnel] | [API, fichier ou source de vérité] | [authentification, disponibilité, cohérence] |
 
-> ⚠️ Maintenir ce tableau à jour à chaque montée de version majeure.
+## Sécurité et exploitation
 
-### Variables d'environnement
+- Authentification et autorisation : [mécanismes vérifiés].
+- Secrets et données sensibles : [stockage et règles de traitement].
+- Réseau et déploiement : [composants, environnements et frontières].
+- Journaux et corrélation : [format et identifiants de suivi].
 
-| Variable | Description | Exemple |
+## Tests et validation
+
+| Composant | Commande ou vérification | Limites |
 |---|---|---|
-| `[NOM_VAR_1]` | [Description] | `[valeur_exemple]` |
-| `[NOM_VAR_2]` | [Description] | `[valeur_exemple]` |
+| [Composant] | `[COMMANDE]` | [ce que la vérification ne couvre pas] |
 
----
+Ne déclarer une couverture, une validation runtime ou un succès de déploiement que si une preuve correspondante existe.
 
-## 🔄 Intégrations Externes
+## Décisions d'architecture
 
-> Lister les systèmes externes avec lesquels le projet communique.
+Les décisions majeures sont consignées dans [`docs/adr/`](./adr/); les plans d'action et leur statut global sont indexés dans [`docs/plans/README.md`](./plans/README.md).
 
-| Système | Type | URL / Endpoint | Authentification |
+| ADR | Décision | Statut | Date |
 |---|---|---|---|
-| [ex: API Backend] | [REST / GraphQL / WebSocket] | `[URL_BASE]` | [ex: JWT Bearer] |
-| [ex: BDD] | [PostgreSQL / MongoDB / etc.] | `[connexion]` | [ex: SSL + mdp] |
-
----
-
-## 🔐 Sécurité
-
-> ⚠️ À COMPLÉTER — Décrire les mécanismes de sécurité en place.
-
-- **Authentification** : [ex: OAuth2 via [PROVIDER], tokens JWT avec refresh]
-- **Autorisation** : [ex: RBAC avec rôles USER / ADMIN]
-- **Données sensibles** : [ex: Jamais de token en localStorage, toujours httpOnly cookie]
-- **Validation entrées** : [ex: Zod côté client, Bean Validation côté serveur]
-
----
-
-## 🧪 Tests
-
-| Type | Framework | Emplacement | Couverture cible |
-|---|---|---|---|
-| Unitaires | [ex: Jest + RTL] | `[ex: src/**/*.test.ts]` | ≥80% |
-| [Intégration] | [ex: Supertest] | `[ex: tests/integration/]` | [ex: ≥60%] |
-| [E2E] | [ex: Playwright] | `[ex: e2e/]` | [ex: Scénarios critiques] |
-
-Commande pour lancer les tests : `[COMMANDE_TEST]`  
-Rapport de couverture : `[CHEMIN_RAPPORT_COVERAGE]`
-
----
-
-## 📐 Conventions et Patterns
-
-> Résumé des conventions clés — pour le détail, voir `.claude/CLAUDE.md` et les conventions par rôle.
-> Si GitHub Copilot CLI est vérifiée, la projection est générée vers `.github/` ; ne pas déduire de parité
-> pour VS Code ou cloud agent sans preuves propres.
-
-- **Nommage fichiers** : [ex: `*.component.tsx`, `*.service.ts`, `*.test.ts`]
-- **Nommage variables** : [ex: camelCase pour variables, PascalCase pour composants]
-- **Gestion d'état** : [ex: Context API uniquement, pas de Redux]
-- **Appels HTTP** : [ex: Toujours via `ClientHTTP.service.ts`, jamais `fetch` directement]
-- **Gestion erreurs** : [ex: Toujours catcher les erreurs HTTP, afficher un toast utilisateur]
-
----
-
-## 🗺️ Décisions Architecturales (ADR)
-
-> Les décisions architecturales majeures sont documentées dans `docs/adr/`.  
-> Format : `docs/adr/NNN-titre-court.md`
-
-| # | Décision | Statut | Date |
-|---|---|---|---|
-| [001] | [ex: Choix de React vs Vue] | [Acceptée / Dépréciée / Remplacée] | [AAAA-MM-JJ] |
-| [002] | [ex: Authentification OAuth2] | [Acceptée] | [AAAA-MM-JJ] |
-
-> 💡 Chaque nouvelle décision architecturale majeure doit faire l'objet d'un ADR. Voir `docs/adr/` pour les détails.
-
----
-
-## 📈 Performance
-
-> ⚠️ À COMPLÉTER si pertinent — Documenter les optimisations et contraintes de performance.
-
-- [ex: Pagination obligatoire sur toutes les listes > 50 éléments]
-- [ex: `useMemo` pour les calculs dérivés coûteux dans les composants]
-- [ex: Images optimisées via [OUTIL], formats WebP en priorité]
-
----
-
-## 🚀 Déploiement
-
-| Environnement | URL | Déclencheur |
-|---|---|---|
-| Développement | `[URL_DEV]` | [ex: Push sur `develop`] |
-| Staging | `[URL_STAGING]` | [ex: PR vers `main`] |
-| Production | `[URL_PROD]` | [ex: Tag `v*`] |
-
-Pipeline CI/CD : [ex: GitHub Actions — voir `.github/workflows/`]
-
----
-
-## 📝 Historique des Versions
-
-> Ajouter une entrée à chaque version livrée (en tête de liste).
-
-| Version | Date | Changements majeurs |
-|---|---|---|
-| [ex: v1.0.0] | [AAAA-MM-JJ] | [ex: Version initiale] |
-
----
-
-## 🔗 Ressources
-
-- **README** : [`README.md`](../README.md)
-- **Instructions des agents** : [`.claude/CLAUDE.md`](../.claude/CLAUDE.md) (Copilot CLI : `.github/copilot-instructions.md`)
-- **Plans d'Action** : [`docs/plans/`](plans/)
-- **ADRs** : [`docs/adr/`](./adr/)
-- [**[LIEN_EXTERNE_1]**]([URL]) : [Description]
+| [NNN] | [Décision] | [Proposée / Acceptée / Rejetée / Remplacée] | [AAAA-MM-JJ] |

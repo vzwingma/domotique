@@ -18,7 +18,7 @@
 - `chemin/fichier` — [description brève]
 
 **Résultats (preuves) :**
-- [critère] : ✅ atteint — [commande lancée + résultat, ex. « `npm test` : 25/25 verts, couverture 92 % »]
+- [critère] : ✅ atteint — [commande lancée + résultat réel; séparer contrôle statique et runtime]
 
 **Notes :**
 [décisions, problèmes rencontrés, hypothèses, améliorations futures non implémentées]

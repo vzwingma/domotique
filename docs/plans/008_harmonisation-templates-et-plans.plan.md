@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/008_harmonisation-templates-et-plans.plan.md`
 **Date de création :** 2026-11-10
-**Statut :** 🔄 En cours
+**Statut :** ✅ Complété
 **Priorité :** HIGH
 **ADR associé :** `docs/adr/005-plans-docs-et-instructions-projet.md` — Acceptée
 
@@ -24,7 +24,7 @@ Cette initiative est documentaire, sans code de production. L'ordre normal DEVon
 
 ## Phases
 
-### Phase 1 — Fusion des consignes et migration des plans — ✅ Complétée, Gate #2 en attente
+### Phase 1 — Fusion des consignes et migration des plans — ✅ Complétée
 
 **Contexte :** les modèles projet `.template.md` divergent des consignes `.md` actives; les agents chargent les fichiers actifs. Les plans sont actuellement sous `.github/plans/`, alors que la destination retenue est `docs/plans/`.
 
@@ -52,7 +52,7 @@ Cette initiative est documentaire, sans code de production. L'ordre normal DEVon
   - Faire de `docs/plans/README.md` l'unique index des plans et de leur statut global.
 - **Acceptation :** tous les plans 001–008 et rapports existants résident sous `docs/plans/`; aucune référence opérationnelle ne dirige vers `.github/plans/`; les références historiques du changelog ne sont pas réécrites.
 
-### Phase 2 — Vérification statique des références et contenus — ⏳ Planifiée
+### Phase 2 — Vérification statique des références et contenus — ✅ Complétée
 
 **Contexte :** vérifier la migration avant corrections de clôture; aucune exécution du système Domoticz n'est nécessaire.
 
@@ -67,7 +67,7 @@ Cette initiative est documentaire, sans code de production. L'ordre normal DEVon
 - **Couvrir :** liens Markdown relatifs, chemins de plans, existence des cibles, références restantes, conservation des règles dzVents et cohérence de l'index.
 - **Acceptation :** rapport listant les commandes de recherche/vérification et leurs résultats; zéro lien cassé et zéro référence opérationnelle à l'ancien répertoire.
 
-### Phase 3 — Corrections documentaires et clôture — ⏳ Planifiée
+### Phase 3 — Corrections documentaires et clôture — ✅ Complétée
 
 **Contexte :** appliquer les corrections issues de la vérification QA, puis confirmer l'alignement final de l'ADR, des plans et des index.
 
@@ -126,5 +126,5 @@ Cette séquence documentaire déroge à l'ordre générique et nécessite le GO 
 | #0 | 2026-11-10 | Choix de solution | ✅ GO | Option B ARCos : fusion sans perte, consignes actives uniques et migration finale vers `docs/plans/`. |
 | #1 | 2026-11-10 | Validation du plan et de l'exception DOCly → QALvin | ✅ GO | Plan accepté; exception d'ordre documentaire approuvée. ADR 005 accepté. |
 | #2 | 2026-11-10 | Validation de la migration documentaire | ✅ GO | 👤 GO à 15:47; revue automatique : le modèle d'architecture projet-spécifique a été remplacé par un modèle générique; 58 fichiers Markdown contrôlés, 0 lien local cassé, `git diff --check` sans erreur. |
-| #3 | — | Validation QA statique | ⏳ En attente | Liens, références, règles dzVents. |
-| #4 | — | Documentation et clôture | ⏳ En attente | ADR, index et statut global. |
+| #3 | 2026-11-10 | Validation QA statique | ✅ GO | 👤 GO à 15:50; QA-1 (doublon du plan 008 dans l'index) transmis à DOCly pour correction T3.1. |
+| #4 | 2026-11-10 | Documentation et clôture | ✅ GO | 👤 GO à 15:51; index sans doublon, rapports et ADR 005 cohérents, initiative clôturée. |
