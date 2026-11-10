@@ -88,12 +88,17 @@ tydom-bridge:
 
 Le workflow valide `main`, `master` et les branches de développement existantes :
 tests Node 26, construction ARM64 et chargement de `tydom-client` dans l'image sans accès réseau.
-Les pull requests et push ne publient aucune image.
+Les pull requests et les push hors `master` ne publient aucune image.
+Un push sur `master` construit, vérifie puis publie l'image ARM64 sous `vzwingmadomatic/domoticz-tydom:latest`,
+après les tests, le smoke test ARM64 et le scan Sonar.
 
-La publication éventuelle exige un lancement manuel avec `publish=true`, les validations CI et
-l'environnement `PROD`. Seul le tag `candidate-node26-arm64-<SHA complet>` est publié, avec refus
+La publication d'une candidate exige un lancement manuel avec `publish=true`, les validations CI et
+l'environnement `PROD`. Dans ce mode, seul le tag `candidate-node26-arm64-<SHA complet>` est publié, avec refus
 d'écrasement d'un candidat existant. L'image à publier est testée avant le push ; son digest figure
-dans le résumé du job. Aucune publication automatique de `latest` n'est conservée pendant cette qualification.
+dans le résumé du job. Les deux modes de publication utilisent l'environnement `PROD`.
+
+Le Compose NAS reste épinglé sur le digest candidat : une nouvelle publication de `latest`
+ne modifie donc pas cette stack. Tout changement de référence déployée est une opération distincte.
 
 Le build CI sous QEMU ne remplace pas la qualification native sur le NAS.
 Voir le [plan 007](../../docs/plans/007_tydom_node26_arm64.plan.md) pour les gates et le retour arrière.

@@ -32,6 +32,7 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 | Ajustement périmètre | 2026-11-10 | Inclure `tydom-client@0.16.1` après mise à jour Renovate sur master | GO utilisateur à 16:00 | Adapter manifeste, lockfile et les deux smoke tests ; qualification réelle obligatoire, aucune autorisation de déploiement |
 | Essai direct autorisé | 2026-11-10 | Publier la candidate et modifier la stack actuelle pour essai réel | GO utilisateur à 16:21 | CI 42842530815 réussie ; risque noyau ancien signalé ; qualification réelle non encore acquise |
 | Préparation rollback | 2026-11-10 | Conserver image actuelle avant bascule | Confirmé utilisateur à 16:23 | Image ID `sha256:a521bdc0c398fbbea87470deef7d280d263b79de78587b88d5485241eb5d23a7`, tag local demandé `vzwingmadomatic/domoticz-tydom:rollback-before-node26` |
+| Ajustement CI | 2026-11-10 | Rétablir le build/push automatique de production après fusion | Demandé utilisateur à 16:32 | Push `master` publie `latest` après tests, smoke et Sonar ; PR sans publication ; candidate manuelle conservée ; Compose NAS reste épinglé, aucune qualification réelle présumée |
 
 ### Essai direct : état d'exécution
 
