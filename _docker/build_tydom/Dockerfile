@@ -3,6 +3,11 @@ LABEL vzwingma.domatic.tydom.image.authors="vincent.zwingmann@github.com"
 
 ENV NODE_ENV=production
 
+# La box Tydom impose la renégociation TLS legacy, refusée par défaut par OpenSSL 3 (Node 26).
+# Périmètre limité à ce conteneur.
+RUN mkdir -p /usr/local/etc && printf '%s\n' 'openssl_conf = openssl_init' '' '[openssl_init]' 'ssl_conf = ssl_sect' '' '[ssl_sect]' 'system_default = system_default_sect' '' '[system_default_sect]' 'Options = UnsafeLegacyRenegotiation' > /usr/local/etc/tydom-openssl.cnf
+ENV OPENSSL_CONF=/usr/local/etc/tydom-openssl.cnf
+
 WORKDIR /usr/app
 
 COPY package.json package-lock.json ./
