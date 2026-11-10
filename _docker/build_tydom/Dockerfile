@@ -1,4 +1,4 @@
-FROM node:26.13.0-slim
+FROM node:lts-slim
 # Construit à partir de Node
 LABEL vzwingma.domatic.tydom.image.authors="vincent.zwingmann@github.com"
 
