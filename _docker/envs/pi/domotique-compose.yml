@@ -4,8 +4,8 @@ services:
   deconz:
     image: deconzcommunity/deconz:latest
     ports:
-      - 9102:9102
-      - 9143:9143
+      - "192.168.1.83:9102:9102"
+      - "192.168.1.83:9143:9143"
     environment:
       - DECONZ_WS_PORT=9143
       - DECONZ_WEB_PORT=9102

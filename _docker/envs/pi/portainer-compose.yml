@@ -5,7 +5,7 @@ services:
     image: portainer/agent:latest
     privileged: true    
     ports:
-      - 9001:9001
+      - "192.168.1.83:9001:9001"
     environment:
       - AGENT_CLUSTER_ADDR=tasks.portainer_agent
     volumes:

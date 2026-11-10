@@ -1,6 +1,6 @@
 #/bin/bash
 HOME_PATH=/home/pi/appli
-DOCKER_PATH=$HOME_PATH/_docker
+DOCKER_PATH=$HOME_PATH/_docker/portainer
 
 echo ""
 echo "## Mise à jour des images docker ##"
