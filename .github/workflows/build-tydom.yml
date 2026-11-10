@@ -115,24 +115,24 @@ jobs:
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
           "
 
-  # Publication manuelle explicite du candidat (jamais latest, jamais sur PR/push)
+  # Production on master pushes; candidate publication remains manual.
   publish-candidate-tydom:
-    name: Publish candidat ARM64 (manuel)
+    name: Build and push ARM64 image
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/master') || (github.event_name == 'workflow_dispatch' && inputs.publish == true) }}
     environment: PROD
     needs:
       - build-candidate-tydom
       - scan-sonar
     concurrency:
-      group: tydom-candidate-${{ github.sha }}
+      group: tydom-publication-${{ github.event_name == 'push' && 'latest' || github.sha }}
       cancel-in-progress: false
     env:
       DOCKER_IMAGE: vzwingmadomatic/domoticz-tydom
       DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
       DOCKER_TARGET_PLATFORM: linux/arm64
-      DOCKER_IMAGE_TAG: vzwingmadomatic/domoticz-tydom:candidate-node26-arm64-${{ github.sha }}
+      DOCKER_IMAGE_TAG: ${{ github.event_name == 'push' && 'vzwingmadomatic/domoticz-tydom:latest' || format('vzwingmadomatic/domoticz-tydom:candidate-node26-arm64-{0}', github.sha) }}
     permissions:
       contents: read
 
@@ -151,6 +151,7 @@ jobs:
         run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       -
         name: Refuse to overwrite an existing candidate tag
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           if docker buildx imagetools inspect "$DOCKER_IMAGE_TAG" >manifest.txt 2>manifest-error.txt; then
             echo "::error::Le tag $DOCKER_IMAGE_TAG existe déjà (immuable)"; exit 1
@@ -160,7 +161,7 @@ jobs:
             echo "::error::Impossible de vérifier l'absence du candidat"; exit 1
           fi
       -
-        name: Build and verify ARM64 candidate before publication
+        name: Build and verify ARM64 image before publication
         run: |
           docker buildx build --platform "$DOCKER_TARGET_PLATFORM" \
             --file _docker/build_tydom/Dockerfile \
@@ -175,10 +176,10 @@ jobs:
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
           "
       -
-        name: Push verified ARM64 candidate
+        name: Push verified ARM64 image
         run: |
           docker push "$DOCKER_IMAGE_TAG"
           docker buildx imagetools inspect "$DOCKER_IMAGE_TAG" | tee published-manifest.txt
-          echo "### Candidat publié" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Image ARM64 publiée" >> "$GITHUB_STEP_SUMMARY"
           echo "Tag: $DOCKER_IMAGE_TAG" >> "$GITHUB_STEP_SUMMARY"
           grep '^Digest:' published-manifest.txt >> "$GITHUB_STEP_SUMMARY"
