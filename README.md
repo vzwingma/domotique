@@ -28,7 +28,7 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
                        │
         ┌──────────────▼───────────┐
         │    tydom-bridge          │
-        │    (Node.js 22)          │
+        │    (Node.js 26 ARM64)    │
         │    port 9001 / 9101      │
         └──────────┬───────────────┘
                    │
@@ -73,7 +73,7 @@ Le **routeur Freebox** assure le NAT : le port public `38243` est redirigé vers
 | Composant | Rôle | Technologie |
 |---|---|---|
 | [`domoticz/`](domoticz/README.md) | Moteur d'automatisation + scripts Lua dzVents | Domoticz + dzVents |
-| [`tydom-bridge/`](tydom-bridge/README.md) | Pont Domoticz ↔ box Tydom (Delta Dore) — volets et thermostat | Node.js 22 |
+| [`tydom-bridge/`](tydom-bridge/README.md) | Pont Domoticz ↔ box Tydom (Delta Dore) — volets et thermostat | Node.js 26 (ARM64) |
 | [`deCONZ/`](deCONZ/README.md) | Intégration des capteurs Zigbee via passerelle deCONZ | deCONZ (Phoscon) |
 | [`_docker/build_httpd/`](_docker/build_httpd/README.md) | Proxy Apache frontal : TLS, filtrage User-Agent, deux VirtualHosts | Apache 2.4 (Alpine) |
 | [`_docker/`](_docker/build_domoticz/README.md) | Images Docker custom et manifests de déploiement | Docker Compose |
