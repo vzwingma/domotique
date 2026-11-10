@@ -14,13 +14,15 @@ La base est épinglée par digest dans le Dockerfile. Qualification avec la box 
 - **Base** : `node:26.13.0-bookworm-slim`, épinglée par digest
 - **Application** : `tydom-bridge/app.js` — proxy REST entre Domoticz et la box Tydom
 - **Dépendances** : installées via `npm ci --omit=dev` depuis le lockfile ; candidate `tydom-client@0.16.1`, qualification réelle requise
-- **TLS legacy** : `OPENSSL_CONF=/usr/local/etc/tydom-openssl.cnf`, générée au build, active `UnsafeLegacyRenegotiation`
+- **TLS legacy** : `OPENSSL_CONF=/usr/local/etc/tydom-openssl.cnf`, générée au build, active `UnsafeLegacyRenegotiation` et `CipherString = DEFAULT:@SECLEVEL=0`
 - **Port exposé** : `9001`
 
 > La box Tydom locale exige la renégociation TLS legacy, refusée par défaut par OpenSSL 3 (Node 26) :
 > sans cette configuration, `fetch failed` / `ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED`.
+> Son certificat auto-signé a une clé trop courte (< 1024 bits, `EE certificate key too weak` jusqu'à `SECLEVEL=1`) : le niveau 0 est nécessaire.
 > Ce choix affaiblit TLS pour tout le processus du conteneur, et pour lui seul. Ne pas réutiliser cette image pour d'autres flux.
 > Le fichier [`openssl.cnf`](openssl.cnf) en est la version de référence lisible ; il n'est pas copié par le build (contexte `tydom-bridge/`).
+> La section racine doit s'appeler `nodejs_conf` : Node ignore `openssl_conf` sauf avec `--openssl-shared-config`.
 
 ---
 

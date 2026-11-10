@@ -7,18 +7,9 @@ on:
   # Validate the GitOps branch and existing development branches.
   # Push: image sources only, so that Compose/docs commits on master do not republish `latest`.
   push:
-    branches: [ main, master, feat/tydom, feat/tydom_resilience ]
-    paths:
-      - 'tydom-bridge/**'
-      - '_docker/build_tydom/**'
-      - '!**/*.md'
+    branches: [ main, master, feat/tydom ]
   pull_request:
-    branches: [ main, master, feat/tydom, feat/tydom_resilience ]
-    paths:
-      - 'tydom-bridge/**'
-      - '_docker/build_tydom/**'
-      - '.github/workflows/build-tydom.yml'
-      - '!**/*.md'
+    branches: [ main, master, feat/tydom ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -124,7 +115,8 @@ jobs:
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
-            if (!c || !fs.readFileSync(c, 'utf8').includes('UnsafeLegacyRenegotiation')) throw new Error('OPENSSL_CONF ' + c);
+            const o = c ? fs.readFileSync(c, 'utf8') : '';
+            if (!/^nodejs_conf\s*=/m.test(o) || !o.includes('UnsafeLegacyRenegotiation') || !o.includes('@SECLEVEL=0')) throw new Error('OPENSSL_CONF ' + c);
           "
 
   # Production on master pushes; candidate publication remains manual.
@@ -187,7 +179,8 @@ jobs:
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
-            if (!c || !fs.readFileSync(c, 'utf8').includes('UnsafeLegacyRenegotiation')) throw new Error('OPENSSL_CONF ' + c);
+            const o = c ? fs.readFileSync(c, 'utf8') : '';
+            if (!/^nodejs_conf\s*=/m.test(o) || !o.includes('UnsafeLegacyRenegotiation') || !o.includes('@SECLEVEL=0')) throw new Error('OPENSSL_CONF ' + c);
           "
       -
         name: Push verified ARM64 image
