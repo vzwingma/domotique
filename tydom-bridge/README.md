@@ -8,8 +8,8 @@ Le bridge expose une API REST locale protégée par Basic Auth et traduit les ap
 
 ## Prérequis
 
-- **Node.js** : Node 26 pour la candidate Docker ARM64
-- **tydom-client** : `0.16.1` (candidate à qualifier avec la box réelle)
+- **Node.js** : Node 26 (image Docker ARM64)
+- **tydom-client** : `0.16.1`
 
 ---
 
@@ -144,18 +144,14 @@ Le bridge écoute `SIGINT` et `SIGTERM` :
 
 ## Dépendance critique — `tydom-client`
 
-La candidate Node 26 ARM64 utilise **`tydom-client@0.16.1`**, épinglé en exact dans `package.json`.
-Cette extension du périmètre a été approuvée le 2026-11-10 ; la baseline du conteneur actuellement déployé reste `0.13.4`.
+Le bridge utilise **`tydom-client@0.16.1`**, épinglé en exact dans `package.json` (la CI vérifie que l'image embarque cette version).
+Son fonctionnement avec la box réelle a été confirmé le 2026-11-10 sur le NAS, sous Node 26 ARM64.
 
-Une migration vers `0.15.1` a été tentée et qualifiée en sandbox isolé. Elle a été **annulée (No-Go définitif)** en raison d'une incompatibilité fonctionnelle confirmée avec le backend Tydom réel. Un rollback complet vers `0.13.4` a été réalisé.
+Une migration vers `0.15.1` avait été tentée puis **annulée (No-Go)** pour incompatibilité avec le backend Tydom réel.
+Toute montée de version doit donc être requalifiée avec la box réelle : les tests automatisés simulent le client.
 
-L'échec historique de `0.15.1` ne prouve ni l'échec ni la compatibilité de `0.16.1`.
-Les tests automatisés simulent le client : avant toute bascule, qualifier avec la box réelle
-l'authentification, TLS/WebSocket, les lectures, les écritures réversibles autorisées et la reconnexion.
-
-> **Note :** la candidate Docker utilise Node 26.13.0 bookworm-slim ARM64.
-> Le noyau NAS 4.9 reste hors support officiel Node 26, même si le démarrage fonctionne.
-> Conserver l'ancienne image par digest pour le retour arrière ; aucune migration de production n'est acquise.
+> **Note :** l'image Docker utilise Node 26.13.0 bookworm-slim ARM64 ; le noyau NAS 4.9 reste hors support officiel Node 26.
+> Voir [ADR 006](../docs/adr/006-tydom-node26-arm64-tls-legacy.md).
 
 ---
 

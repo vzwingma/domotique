@@ -2,7 +2,7 @@
 
 **Document :** [007_tydom_node26_arm64.plan.md](./007_tydom_node26_arm64.plan.md)  
 **Date :** 2026-11-10  
-**Statut :** 🔄 En cours - préparation candidate ; qualification ARM64 à exécuter
+**Statut :** ✅ Complété - Node 26 ARM64 en production NAS (`latest`), `tydom-client@0.16.1` validé ; [ADR 006](../adr/006-tydom-node26-arm64-tls-legacy.md)
 **Priorité :** HIGH  
 **Rapports :** [007_reports/](./007_reports/PHASE_2_PREPARATION_REPORT.md).
 
@@ -28,13 +28,15 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 | Gate | Date | Objet | Décision | Limites |
 |---|---|---|---|---|
 | #0 / #1, périmètre réduit | 2026-11-10 | Préparer localement une candidate ARM64 distincte de `latest` après inventaire interactif | GO utilisateur à 15:26 | Aucune publication, aucun commit/push, aucun déploiement ; risque noyau ancien signalé |
-| #2 | 2026-11-10 | Validation préparation code/build | En attente | Tests locaux passants ; build Docker, exécution CI et qualification NAS encore à obtenir |
+| #2 | 2026-11-10 | Validation préparation code/build | GO (CI 42842530815 puis PR #225-#227) | Tests locaux passants ; build Docker, exécution CI et qualification NAS encore à obtenir |
 | Ajustement périmètre | 2026-11-10 | Inclure `tydom-client@0.16.1` après mise à jour Renovate sur master | GO utilisateur à 16:00 | Adapter manifeste, lockfile et les deux smoke tests ; qualification réelle obligatoire, aucune autorisation de déploiement |
 | Essai direct autorisé | 2026-11-10 | Publier la candidate et modifier la stack actuelle pour essai réel | GO utilisateur à 16:21 | CI 42842530815 réussie ; risque noyau ancien signalé ; qualification réelle non encore acquise |
 | Préparation rollback | 2026-11-10 | Conserver image actuelle avant bascule | Confirmé utilisateur à 16:23 | Image ID `sha256:a521bdc0c398fbbea87470deef7d280d263b79de78587b88d5485241eb5d23a7`, tag local demandé `vzwingmadomatic/domoticz-tydom:rollback-before-node26` |
 | Ajustement CI | 2026-11-10 | Rétablir le build/push automatique de production après fusion | Demandé utilisateur à 16:32 | Push `master` publie `latest` après tests, smoke et Sonar ; PR sans publication ; candidate manuelle conservée ; Compose NAS reste épinglé, aucune qualification réelle présumée |
 | Correctif TLS legacy | 2026-11-10 | Activer la renégociation TLS legacy dans l'image Tydom (Node 26 / OpenSSL 3) | Validé par test manuel utilisateur (`HTTP 404` avec `OPENSSL_CONF`), PR #225 fusionnée | Affaiblissement TLS limité au conteneur Tydom ; qualification fonctionnelle encore à obtenir |
 | Référence Compose NAS | 2026-11-10 | Suivre `latest` (sans digest) avec `platform: linux/arm64` | Choix utilisateur à 17:25, digest épinglé proposé et écarté | Déploiement par pull explicite de la seule image Tydom ; push `master` limité aux sources de l'image pour éviter une republication par un commit Compose/doc |
+| #3 / #4 Qualification et bascule | 2026-11-10 | Node 26 ARM64 + OpenSSL `nodejs_conf` / `SECLEVEL=0` déployé sur le NAS | GO utilisateur à 18:41 : bridge fonctionnel, `tydom-client@0.16.1` validé | Configuration hors support officiel (noyau 4.9) ; rollback ARM32 conservé localement |
+| Finalisation CI | 2026-11-10 | Retrait de la logique candidate du workflow | Demandé utilisateur à 18:41 | Jobs `build-tydom` / `publish-tydom` ; vérification d'image unique ; version `tydom-client` lue dans `package.json` ; publication `latest` depuis `master` uniquement |
 
 ### Essai direct : état d'exécution
 
@@ -52,11 +54,12 @@ Le déplacement du conteneur est déclaré par l'utilisateur ; les observations 
 - Correctif ([Dockerfile](../../_docker/build_tydom/Dockerfile)) : génération de `/usr/local/etc/tydom-openssl.cnf` au build et `ENV OPENSSL_CONF`. Premier essai en échec CI (`/etc/ssl` absent de l'image slim), corrigé.
 - PR #225 fusionnée (`534c1c9`) ; run [42851269177](https://github.com/vzwingma/domotique/actions/runs/42851269177) : `latest` = `sha256:886366859bdf970bd8edd85b16c043e0aecc9f3ee45c314543a3f300ab0ec1a3` (`linux/arm64`, `OPENSSL_CONF` présent dans la configuration de l'image, vérifié sur le registre).
 - Le Compose NAS pointait encore sur la candidate `328a2272…` (sans correctif) : il référence désormais `latest` avec `platform: linux/arm64` (choix utilisateur, sans digest).
-- CI ajustée : push limité à `tydom-bridge/**` et `_docker/build_tydom/**` (PR : + workflow), smoke tests vérifiant `OPENSSL_CONF`.
+- CI ajustée : push limité à `tydom-bridge/**` et `_docker/build_tydom/**` (PR : + workflow), smoke tests vérifiant `OPENSSL_CONF` (filtre de chemins retiré ensuite par l'utilisateur, commit `01df4f9` : tout push `master` republie `latest`).
 - Le tag `latest` de Docker Hub n'est plus l'image ARM32 Node 16 : le retour arrière dépend uniquement de l'image locale `sha256:a521bdc0…` sur le NAS (tag `rollback-before-node26`), à ne pas purger.
-- Reste à faire : pull explicite de la seule image Tydom, recréation du conteneur, vérification du digest déployé, puis qualification (`/health/ready`, lectures, reconnexion, flux Domoticz) et surveillance 24 h.
+- Déploiement : pull explicite de la seule image Tydom, puis « Pull and redeploy » sans re-pull global.
 - Test NAS de `latest` `886366…` : `OPENSSL_CONF` présent, mais toujours `ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED`. Cause : section racine renommée à tort en `openssl_conf`, que Node ignore sans `--openssl-shared-config`. Rétablie en `nodejs_conf` ; les smoke tests exigent désormais cette section.
 - Test NAS avec `nodejs_conf` : renégociation acceptée, puis `EE certificate key too weak` (clé du certificat de la box < 1024 bits). `SECLEVEL=1` insuffisant, `SECLEVEL=0` passe à l'étape suivante (certificat auto-signé, toléré par `NODE_TLS_REJECT_UNAUTHORIZED=0` d'`app.js`). `CipherString = DEFAULT:@SECLEVEL=0` ajouté à l'image et contrôlé en CI. Compromis : TLS fortement affaibli pour le seul conteneur Tydom (réseau local).
+- Résultat final (18:41) : bridge connecté et fonctionnel sur le NAS, `tydom-client@0.16.1` validé par l'utilisateur. Plan clôturé ; décision consignée dans l'[ADR 006](../adr/006-tydom-node26-arm64-tls-legacy.md). Suivi : surveillance d'exploitation et purge ultérieure de l'image de rollback ARM32.
 
 Les constats de la section suivante et le rapport de préparation décrivent leurs états historiques respectifs.
 La décision initiale de conserver `0.13.4` est remplacée pour la candidate par l'accord sur `0.16.1`.

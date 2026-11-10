@@ -1,27 +1,31 @@
-# This is a basic workflow to help you get started with Actions
+name: Build Tydom Bridge ARM64 Docker Image
 
-name: Build Tydom Bridge ARM Docker Image
-
-# Controls when the action will run. 
 on:
-  # Validate the GitOps branch and existing development branches.
-  # Push: image sources only, so that Compose/docs commits on master do not republish `latest`.
   push:
     branches: [ main, master, feat/tydom ]
   pull_request:
     branches: [ main, master, feat/tydom ]
-
-  # Allows you to run this workflow manually from the Actions tab
+  # Manual run: on master, rebuilds and republishes `latest`; elsewhere, validation only.
   workflow_dispatch:
-    inputs:
-      publish:
-        description: 'Publier le candidat linux/arm64 (tag immuable candidate-node26-arm64-<SHA>)'
-        type: boolean
-        default: false
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  DOCKER_TARGET_PLATFORM: linux/arm64
+  # Image checks without network: arch, Node, tydom-client version, OpenSSL config required by the Tydom box
+  # (legacy renegotiation + weak certificate key, see _docker/build_tydom/README.md).
+  IMAGE_CHECK_JS: |
+    const fs = require('fs');
+    const expected = process.env.EXPECTED_TYDOM_CLIENT;
+    const v = JSON.parse(fs.readFileSync('/usr/app/node_modules/tydom-client/package.json', 'utf8')).version;
+    require('tydom-client');
+    const c = process.env.OPENSSL_CONF;
+    console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v, 'openssl_conf=' + c);
+    if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
+    if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
+    if (!expected || v !== expected) throw new Error('tydom-client ' + v + ' attendu ' + expected);
+    const o = c ? fs.readFileSync(c, 'utf8') : '';
+    if (!/^nodejs_conf\s*=/m.test(o) || !o.includes('UnsafeLegacyRenegotiation') || !o.includes('@SECLEVEL=0')) throw new Error('OPENSSL_CONF ' + c);
+
 jobs:
-  # Run unit tests
   test:
     name: Tests unitaires
     runs-on: ubuntu-latest
@@ -45,23 +49,19 @@ jobs:
         working-directory: tydom-bridge
         run: npm test
 
-  # Scan to Sonar
   scan-sonar:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
     needs: [ test ]
-
     steps:
       - 
         name: Checkout the code  
         uses: actions/checkout@v7
-      # Setup Node.js (for Sonar)
       - 
         name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: '26' 
-      # Run the Sonar scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v8
         with:
@@ -75,18 +75,15 @@ jobs:
           sonar.projectKey: tydom_bridge
           sonar.organization: vzwingma-github
 
-  # Build + smoke test du candidat (sans secrets, sans login, sans push)
-  build-candidate-tydom:
-    name: Build candidat Node 26 ARM64 (sans publication)
+  # Build and check without secrets, login or push
+  build-tydom:
+    name: Build et vérification image ARM64
     runs-on: ubuntu-latest
-    needs:
-      - test
+    needs: [ test ]
     env:
-      DOCKER_TARGET_PLATFORM: linux/arm64
-      LOCAL_IMAGE: tydom-candidate:local
+      LOCAL_IMAGE: tydom-bridge:ci
     permissions:
       contents: read
-
     steps:
       -
         name: Checkout the code
@@ -104,42 +101,28 @@ jobs:
             --file _docker/build_tydom/Dockerfile \
             --tag "$LOCAL_IMAGE" --load tydom-bridge
       -
-        name: Smoke test (arch, Node, tydom-client) sans réseau
+        name: Check image (arch, Node, tydom-client, OpenSSL) without network
         run: |
-          docker run --rm --network none --platform "$DOCKER_TARGET_PLATFORM" "$LOCAL_IMAGE" node -e "
-            const fs = require('fs');
-            const v = JSON.parse(fs.readFileSync('/usr/app/node_modules/tydom-client/package.json', 'utf8')).version;
-            require('tydom-client');
-            const c = process.env.OPENSSL_CONF;
-            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v, 'openssl_conf=' + c);
-            if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
-            if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
-            if (v !== '0.16.1') throw new Error('tydom-client ' + v);
-            const o = c ? fs.readFileSync(c, 'utf8') : '';
-            if (!/^nodejs_conf\s*=/m.test(o) || !o.includes('UnsafeLegacyRenegotiation') || !o.includes('@SECLEVEL=0')) throw new Error('OPENSSL_CONF ' + c);
-          "
+          EXPECTED_TYDOM_CLIENT=$(jq -r '.dependencies["tydom-client"]' tydom-bridge/package.json)
+          docker run --rm --network none --platform "$DOCKER_TARGET_PLATFORM" \
+            -e EXPECTED_TYDOM_CLIENT="$EXPECTED_TYDOM_CLIENT" "$LOCAL_IMAGE" node -e "$IMAGE_CHECK_JS"
 
-  # Production on master pushes; candidate publication remains manual.
-  publish-candidate-tydom:
-    name: Build and push ARM64 image
+  # Publication of `latest`: master only (push or manual run)
+  publish-tydom:
+    name: Build and push ARM64 image (latest)
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/master') || (github.event_name == 'workflow_dispatch' && inputs.publish == true) }}
+    if: ${{ github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
     environment: PROD
-    needs:
-      - build-candidate-tydom
-      - scan-sonar
+    needs: [ build-tydom, scan-sonar ]
     concurrency:
-      group: tydom-publication-${{ github.event_name == 'push' && 'latest' || github.sha }}
+      group: tydom-publication-latest
       cancel-in-progress: false
     env:
-      DOCKER_IMAGE: vzwingmadomatic/domoticz-tydom
       DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
-      DOCKER_TARGET_PLATFORM: linux/arm64
-      DOCKER_IMAGE_TAG: ${{ github.event_name == 'push' && 'vzwingmadomatic/domoticz-tydom:latest' || format('vzwingmadomatic/domoticz-tydom:candidate-node26-arm64-{0}', github.sha) }}
+      DOCKER_IMAGE_TAG: vzwingmadomatic/domoticz-tydom:latest
     permissions:
       contents: read
-
     steps:
       -
         name: Checkout the code
@@ -154,36 +137,16 @@ jobs:
         name: Log into registry
         run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       -
-        name: Refuse to overwrite an existing candidate tag
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          if docker buildx imagetools inspect "$DOCKER_IMAGE_TAG" >manifest.txt 2>manifest-error.txt; then
-            echo "::error::Le tag $DOCKER_IMAGE_TAG existe déjà (immuable)"; exit 1
-          fi
-          if ! grep -Eq 'manifest unknown|not found' manifest-error.txt; then
-            cat manifest-error.txt >&2
-            echo "::error::Impossible de vérifier l'absence du candidat"; exit 1
-          fi
-      -
-        name: Build and verify ARM64 image before publication
+        name: Build and check ARM64 image before publication
         run: |
           docker buildx build --platform "$DOCKER_TARGET_PLATFORM" \
             --file _docker/build_tydom/Dockerfile \
             --tag "$DOCKER_IMAGE_TAG" --load tydom-bridge
-          docker run --rm --network none --platform "$DOCKER_TARGET_PLATFORM" "$DOCKER_IMAGE_TAG" node -e "
-            const fs = require('fs');
-            const v = JSON.parse(fs.readFileSync('/usr/app/node_modules/tydom-client/package.json', 'utf8')).version;
-            require('tydom-client');
-            const c = process.env.OPENSSL_CONF;
-            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v, 'openssl_conf=' + c);
-            if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
-            if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
-            if (v !== '0.16.1') throw new Error('tydom-client ' + v);
-            const o = c ? fs.readFileSync(c, 'utf8') : '';
-            if (!/^nodejs_conf\s*=/m.test(o) || !o.includes('UnsafeLegacyRenegotiation') || !o.includes('@SECLEVEL=0')) throw new Error('OPENSSL_CONF ' + c);
-          "
+          EXPECTED_TYDOM_CLIENT=$(jq -r '.dependencies["tydom-client"]' tydom-bridge/package.json)
+          docker run --rm --network none --platform "$DOCKER_TARGET_PLATFORM" \
+            -e EXPECTED_TYDOM_CLIENT="$EXPECTED_TYDOM_CLIENT" "$DOCKER_IMAGE_TAG" node -e "$IMAGE_CHECK_JS"
       -
-        name: Push verified ARM64 image
+        name: Push checked ARM64 image
         run: |
           docker push "$DOCKER_IMAGE_TAG"
           docker buildx imagetools inspect "$DOCKER_IMAGE_TAG" | tee published-manifest.txt
