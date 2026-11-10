@@ -5,10 +5,20 @@ name: Build Tydom Bridge ARM Docker Image
 # Controls when the action will run. 
 on:
   # Validate the GitOps branch and existing development branches.
+  # Push: image sources only, so that Compose/docs commits on master do not republish `latest`.
   push:
     branches: [ main, master, feat/tydom, feat/tydom_resilience ]
+    paths:
+      - 'tydom-bridge/**'
+      - '_docker/build_tydom/**'
+      - '!**/*.md'
   pull_request:
     branches: [ main, master, feat/tydom, feat/tydom_resilience ]
+    paths:
+      - 'tydom-bridge/**'
+      - '_docker/build_tydom/**'
+      - '.github/workflows/build-tydom.yml'
+      - '!**/*.md'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -109,10 +119,12 @@ jobs:
             const fs = require('fs');
             const v = JSON.parse(fs.readFileSync('/usr/app/node_modules/tydom-client/package.json', 'utf8')).version;
             require('tydom-client');
-            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v);
+            const c = process.env.OPENSSL_CONF;
+            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v, 'openssl_conf=' + c);
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
+            if (!c || !fs.readFileSync(c, 'utf8').includes('UnsafeLegacyRenegotiation')) throw new Error('OPENSSL_CONF ' + c);
           "
 
   # Production on master pushes; candidate publication remains manual.
@@ -170,10 +182,12 @@ jobs:
             const fs = require('fs');
             const v = JSON.parse(fs.readFileSync('/usr/app/node_modules/tydom-client/package.json', 'utf8')).version;
             require('tydom-client');
-            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v);
+            const c = process.env.OPENSSL_CONF;
+            console.log('arch=' + process.arch, 'node=' + process.version, 'tydom-client=' + v, 'openssl_conf=' + c);
             if (process.arch !== 'arm64') throw new Error('arch ' + process.arch);
             if (!process.version.startsWith('v26.')) throw new Error('node ' + process.version);
             if (v !== '0.16.1') throw new Error('tydom-client ' + v);
+            if (!c || !fs.readFileSync(c, 'utf8').includes('UnsafeLegacyRenegotiation')) throw new Error('OPENSSL_CONF ' + c);
           "
       -
         name: Push verified ARM64 image

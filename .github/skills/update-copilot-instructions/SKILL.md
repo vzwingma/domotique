@@ -1,21 +1,8 @@
 ---
 name: update-copilot-instructions
-description: >
-  Audite le code source et les fichiers de bonnes pratiques pour compléter et
-  amender le fichier copilot-instructions.md. Utiliser quand : "mets à jour les
-  instructions Copilot", "complète copilot-instructions depuis le code",
-  "synchronise les instructions avec le projet", "ajoute les bonnes pratiques
-  aux instructions Copilot".
-agent: agent
-tools:
-  - read_file
-  - file_search
-  - grep_search
-  - semantic_search
-  - replace_string_in_file
-  - multi_replace_string_in_file
+description: "Audite le code source et les fichiers de bonnes pratiques pour compléter et amender le fichier copilot-instructions.md. Utiliser quand : \"mets à jour les instructions Copilot\", \"complète copilot-instructions depuis le code\", \"synchronise les instructions avec le projet\", \"ajoute les bonnes pratiques aux instructions Copilot\"."
+disable-model-invocation: true
 ---
-
 # Mise à jour de `copilot-instructions.md`
 
 Mission: auditer code source et fichiers référence, puis compléter/amender `.github/copilot-instructions.md` pour refléter état réel projet et bonnes pratiques.
