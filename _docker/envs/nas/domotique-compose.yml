@@ -37,20 +37,3 @@ services:
     depends_on:
       - tydom-bridge
     restart: always
-  deconz:
-    image: deconzcommunity/deconz:latest
-    ports:
-      - "9102:9102"
-      - "9143:9143"
-    environment:
-      - DECONZ_WS_PORT=9143
-      - DECONZ_WEB_PORT=9102
-    devices:
-      - /dev/ttyAMA0:/dev/ttyAMA0
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-     # - /home/pi/appli/deCONZ:/opt/deCONZ
-    security_opt:
-      - no-new-privileges:true
-    restart: unless-stopped
