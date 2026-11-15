@@ -6,7 +6,11 @@ services:
     ports:
       - "192.168.1.83:9102:9102"
       - "192.168.1.83:9143:9143"
+      - 5900:5900      
     environment:
+      - DECONZ_VNC_MODE=1
+      - DECONZ_VNC_PORT=5900
+      - DECONZ_VNC_PASSWORD=unMotDePasse
       - DECONZ_WS_PORT=9143
       - DECONZ_WEB_PORT=9102
       # --- NOUVEAU : ConBee III ---
