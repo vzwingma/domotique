@@ -4,9 +4,9 @@ DOCKER_PATH=$HOME_PATH/_docker/portainer
 
 echo ""
 echo "## Mise à jour des images docker ##"
-docker-compose -f $DOCKER_PATH/portainer-compose.yml pull
+docker compose -f $DOCKER_PATH/portainer-compose.yml pull
 echo ""
 echo "## (Re)création des conteneurs ## "
 
-docker-compose -f $DOCKER_PATH/portainer-compose.yml down --remove-orphans
-docker-compose -f $DOCKER_PATH/portainer-compose.yml up -d
+docker compose -f $DOCKER_PATH/portainer-compose.yml down --remove-orphans
+docker compose -f $DOCKER_PATH/portainer-compose.yml up -d

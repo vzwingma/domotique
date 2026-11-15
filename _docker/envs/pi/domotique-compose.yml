@@ -2,14 +2,22 @@ services:
 # deCONZ
   deconz:
     image: deconzcommunity/deconz:latest
+    container_name: deconz    
     ports:
       - "192.168.1.83:9102:9102"
       - "192.168.1.83:9143:9143"
     environment:
       - DECONZ_WS_PORT=9143
       - DECONZ_WEB_PORT=9102
+      # --- NOUVEAU : ConBee III ---
+      - DECONZ_DEVICE=/dev/ttyUSB0          # chemin TEL QU'IL EST VU DANS le conteneur (cf. devices)
+      - DECONZ_BAUDRATE=115200              # obligatoire pour ConBee III (38400 = RaspBee II)
+      - DECONZ_UPNP=0                       # optionnel, évite le bruit réseau
     devices:
-      - /dev/ttyAMA0:/dev/ttyAMA0
+      # chemin hôte stable (by-id) -> chemin fixe dans le conteneur
+      - /dev/serial/by-id/usb-dresden_elektronik_ConBee_III_DE03475794-if00-port0:/dev/ttyUSB0
+    group_add:
+      - dialout                             # le conteneur tourne en uid 1000 ; accès au tty
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro

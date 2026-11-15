@@ -1,4 +1,3 @@
-version: "3.9"
 services:
 # Portainer agent vers le Portainer NAS
   portainer_agent:
