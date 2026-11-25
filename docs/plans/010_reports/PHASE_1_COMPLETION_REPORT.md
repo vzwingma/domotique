@@ -63,3 +63,34 @@
 **Bloqueurs :** Aucun
 **❓ Questions pour 👤 :** Aucune bloquante. À confirmer : version de l'application Renovate hébergée ≥ v40 (sinon repli `fileMatch`).
 **Prochaine phase :** Gate P1-#2 (MAINa) puis 🟢 QALvin T1.3 (`workflow_dispatch` sur la branche, comparaison d'octets des artefacts). Phase 2 après validation 👤.
+
+---
+
+## 🟢 Section QALvin — T1.3 Valider le build épinglé
+
+**Statut :** ✅ DONE (5/5 contrôles ✅) — Gate P1-#2 = GO (2026-11-25)
+**Run CI :** https://github.com/vzwingma/domotique/actions/runs/45600293531 (`workflow_dispatch`, branche `ci/linky_fork_pin`, commit `433e146d00a890ac838b8f8ca59b6c6e2ff71561`, conclusion `success`)
+**Périmètre :** lecture seule (aucune modification du code de production ni de la doc, pas de commit/push).
+
+| # | Contrôle | Commande | Résultat | |
+|---|----------|----------|----------|---|
+| 1 | Run `success` | `gh workflow run build-domoticz.yml --repo vzwingma/domotique --ref ci/linky_fork_pin` ; `gh run watch 45600293531 --exit-status` ; `gh run view 45600293531 --json conclusion,status` | exit 0 ; `conclusion: success`, `status: completed` ; 3 jobs ✓ : Download Linky Script, Download DeCONZ Script, Build and Push ARM Docker Image (1 m 41 s) | ✅ |
+| 2 | Provenance (SHA + version) | `gh run view 45600293531 --log` filtré sur « Trace » / « Checkout » ; `Select-String 'version="…"'` sur les artefacts | Étapes « Trace Linky provenance » et « Trace deCONZ provenance » exécutées ✓. Checkout Linky : `vzwingma/DomoticzLinky`, `git checkout … f3df2584ab398110eefe8d65df1b83d9a9d95395`, `rev-parse HEAD` = `f3df2584…`. Checkout deCONZ : `git checkout … 95b8f8baf6aacda21f2e3aec18d75ac705fd0b8a`, `rev-parse HEAD` = `95b8f8ba…`. `version="2.6.1"` (artefact Linky), `version="1.0.35"` (artefact deCONZ). | ✅ (voir note 1) |
+| 3 | Artefact `linky-plugin` | `gh run download 45600293531 --repo vzwingma/domotique -n linky-plugin -D $env:TEMP\linky` ; `git hash-object --no-filters …\plugin.py` ; `git -C <fork> rev-parse v2.6.1:plugin.py` | 1 seul fichier `plugin.py` (123 479 octets). Blob artefact = `6767ab67c25131519cdb529d8df407191925c1a1` = blob `v2.6.1:plugin.py` du fork (identique) ; `git rev-list -n1 v2.6.1` = `f3df2584ab398110eefe8d65df1b83d9a9d95395` | ✅ |
+| 4 | Artefact `deconz-plugin` | `gh run download 45600293531 -n deconz-plugin -D $env:TEMP\deconz` ; `git hash-object --no-filters` par fichier ; `gh api repos/Smanar/Domoticz-deCONZ/git/trees/95b8f8baf6aacda21f2e3aec18d75ac705fd0b8a` (entrées `*.py`) | 4 fichiers, blobs identiques au tag 1.0.35 : `API_KEY.py` `d94e8290…108a` ; `fonctions.py` `8a508f9c…ee76` ; `plugin.py` `5833061b…7625` ; `widget.py` `d2dc20ba…008f` (4/4 type `blob`, ensembles égaux, pas de fichier en trop/manquant) | ✅ |
+| 5 | Tag d'image ≠ `latest` | logs étapes « Get image metadata » / « Build and Push ARM Docker Image » | `VERSION` dérivée de `refs/heads/ci/linky_fork_pin` → `DOCKER_IMAGE_TAG=vzwingmadomatic/domoticz:linky_fork_pin` ; commande `docker buildx build … --tag vzwingmadomatic/domoticz:linky_fork_pin --output type=image,push=true` ✓ ; aucun tag `latest` (la règle `master → latest` ne s'applique pas) | ✅ (voir note 2) |
+| — | Nettoyage | `Remove-Item -Recurse -Force $env:TEMP\linky,$env:TEMP\deconz` ; `Test-Path` | `False` / `False` | ✅ |
+
+**Notes :**
+1. Les étapes « Trace … provenance » écrivent dans `$GITHUB_STEP_SUMMARY` (et non dans le log) : leur sortie n'est pas exposée par `gh run view --log` ni par l'API REST. La preuve est donc reconstituée par des éléments équivalents et indépendants : exécution ✓ de l'étape, SHA exact du `git checkout`/`rev-parse` dans le log du checkout, et `version="…"` lue dans le contenu réel des artefacts. La lecture visuelle du Step Summary (onglet Summary du run) reste possible à titre de confirmation, non bloquante.
+2. L'étape « Get image metadata » est un script bash (pas `docker/metadata-action`) ; le tag est calculé à partir du nom de branche. Le tag `linky_fork_pin` est une image jetable poussée sur Docker Hub (non nettoyée ici : hors périmètre ; suppression éventuelle par 👤).
+3. Régression : la détection d'écart d'octets repose sur une égalité d'identifiants de blob git (SHA-1) — aucune différence de fin de ligne (hash `--no-filters`).
+
+### T1.6 - Preuve Renovate (différée)
+
+**Statut :** ⏳ DIFFÉRÉ après merge de `ci/linky_fork_pin` sur `master`.
+- `gh issue list --repo vzwingma/domotique --search "Dependency Dashboard" --state open` → #139 « Dependency Dashboard » (dernière mise à jour 2026-11-25T08:27:35Z, scan de `master`).
+- `gh issue view 139` : la section `.github/workflows/build-domoticz.yml (9)` ne liste que les dépendances `github-actions` ; `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` **absents** → attendu (Renovate ne scanne pas la branche). À re-vérifier après merge (si toujours absents : retour T1.2, regex / `managerFilePatterns`).
+- Point d'attention : le dashboard affiche « Config Migration Needed » (migration de config proposée par Renovate sur `master`) ; à examiner par 👤/MAINa, sans lien démontré avec ce changement.
+
+**Synthèse QALvin :** 5/5 contrôles ✅, T1.6 différée. Aucun bloqueur.
