@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/010_linky_suites.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phase 1 ✅ ; Phase 2 en cours
+**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phases 1-3 ✅ ; Phase 4 : T4.2 (tag 👤) en attente
 **Objectif Prioritaire :** MEDIUM (S3 sécurité : HIGH dans le lot)
 **ADR associé :** `docs/adr/007-plugins-domoticz-provenance-epinglee.md` — `Acceptée` (Gate #1, 2026-11-25)
 **Annexe obligatoire :** [`010_reports/ANALYSE_ARCOS.md`](./010_reports/ANALYSE_ARCOS.md) — analyse 🟠 ARCos complète (code actuel / code cible, lignes, commandes). **Les références « § x.y » de ce plan renvoient à cette annexe.**
@@ -206,7 +206,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Agent :** 🟢 QALvin / ⚫ MAINa
 - **Acceptation :** issue « Dependency Dashboard » de `vzwingma/domotique` liste `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` (`gh issue list --repo vzwingma/domotique --search "Dependency Dashboard"` puis `gh issue view <n>`). Si absent → corriger la regex (retour T1.2).
 
-### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — ✅ Complétée (merge 👤 en attente)
+### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — ✅ Complétée (PR #235)
 **Dépend de :** Phase 0 (U1/U2, Q1, Q4), Gate #1. Indépendante de la phase 1.
 **Critères de réussite :**
 - ✅ 3 fichiers Lua modifiés, 0 PRM dans le diff
@@ -232,7 +232,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Fichier(s) (annexe § 4.4) :** `domoticz/README.md` (5 → 6 indicateurs, 2 endroits) ; `docs/ARCHITECTURE.md` § 5.4 (retirer « aucun script dzVents ne les référence » / « aucune supervision ») et § 6.2 (ligne 6) ; `docs/RETROCONCEPTION_dzVents.md` (l. ~40 « quatre » **déjà faux** → « six » + points 5 et 6 ; tableaux ~l. 106 et ~l. 437 ; section `Config_check`) ; `.github/copilot-instructions.md` § DEV-5 (6 indicateurs + seuil Linky) ; `.github/instructions/qa.instructions.md` (seuils Health check) ; fork `docs/RETROCONCEPTION.md` § 15 (supervision livrée — commit fork séparé ou phase 4).
 - **Acceptation :** `rg -n "5 indicateurs|cinq indicateurs|quatre indicateurs" README.md docs domoticz .github` → 0.
 
-### Phase 3 — S3 + S2 : correctifs du plugin (fork, branche `fix/v2.7.0`) — 🔄 En cours
+### Phase 3 — S3 + S2 : correctifs du plugin (fork, branche `fix/v2.7.0`) — ✅ Complétée (fork#3, T3.6 `client_secret` inclus)
 **Dépend de :** Phase 0 (#2 mergée, Q2, U3), Gate #1. Branche créée depuis `master` du fork à jour.
 **Exception de séquencement (décision 10 = Q1) :** 🟢 QALvin pose **d'abord** le harnais et des tests de bug en `xfail(strict=True)` (preuve des bugs), puis 🔵 DEVon corrige, puis 🟢 QALvin retire les `xfail`. **Validé par 👤 au Gate #1 (2026-11-25).**
 **Critères de réussite :**
@@ -276,7 +276,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Couvrir :** retrait de tous les `xfail` ; `py_compile` + `ruff` + `pytest` (local et CI) ; revue du diff (persistance inchangée, D12 inchangé, pas de `.py` racine supplémentaire) ; non-régression consentement.
 - **Acceptation :** 0 échec, 0 `xfail` ; lien du run CI vert ; résultats dans `PHASE_3_COMPLETION_REPORT.md`.
 
-### Phase 4 — Documentation et publication du fork — ⏳ Planifié
+### Phase 4 — Documentation et publication du fork — 🔄 En cours (T4.1 ✅, T4.2 👤)
 **Dépend de :** Gate P3-#3.
 **Critères de réussite :**
 - ✅ Rétrodoc, `CHANGELOG.md`, readme du fork à jour
@@ -400,3 +400,5 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 | P3-#2 | 2026-11-25 | Validation code phase 3 (T3.1-T3.4) | ✅ GO (option A) | Harnais 42 verts + 45 `xfail` (CI fork run 45607810574 ✅) ; `plugin.py` +69/−20, `--runxfail` 87/87 ; code-review : 1 moyen préexistant (D17 `Debugging(1)`) → avertissement doc T4.1 + backlog ; D18 `setConfigItem/checksum` → backlog. Python 3.11 NAS non confirmé (CI 3.11 fait foi) ; post-gate : 👤 confirme Python **3.13.5** sur le NAS → CI fork en matrice 3.11 + 3.13 (T3.5) ; runtime NAS phase 2 confirmé OK par 👤 |
 | P2-#4 | 2026-11-25 | Validation docs phase 2 (T2.3) | ✅ GO | 5 docs (README dzVents, ARCHITECTURE § 5.4/6.1/6.2, RETROCONCEPTION_dzVents, copilot-instructions DEV-5, qa.instructions) ; `rg` 5/cinq/quatre indicateurs → 0 (docs vivantes) ; `.github/tasks/todo/INSTRUCTIONS_TRAVAUX_dzVents.md` laissé (historique DEV-5) ; volet fork § 15 → T4.1 |
 | P3-#3 | 2026-11-25 | Validation tests phase 3 (T3.5) | ✅ GO | 0 `xfail` ; 88 tests verts sous 3.11.9/3.13.15/3.14.7 ; CI fork run 45611721347 matrice 3.11 + 3.13 ✅ ; 20/20 mutations non équivalentes détectées. 👤 : corriger **maintenant** `client_secret` non masqué (défense en profondeur, T3.6) avant T4.1 |
+| T3.6 | 2026-11-25 | Correctif `client_secret` (demande 👤 P3-#3) | ✅ | fork `aaf9e6e` : `SENSITIVE_KEYS` + 2 motifs ; +23 tests (111 verts) ; mutations détectées (22 échecs si retiré) ; CI run 45612874175 ✅ (3.11 + 3.13) |
+| P4-#4 | 2026-11-25 | Validation docs fork (T4.1) | ✅ GO | fork `b950888` : RETROCONCEPTION (§ 1/3/9.4/11-15), `CHANGELOG.md` 2.7.0, readme « Paramètres du plugin » + avertissements `/tmp` et D17 ; 0 « non épinglé », 0 PRM ajouté, liens externes ADR 007/ARCHITECTURE OK ; droits du fichier debug décrits comme `tempfile` par défaut (non vérifié NAS) ; pas de traduction EN. fork#3 passée *ready for review* |
