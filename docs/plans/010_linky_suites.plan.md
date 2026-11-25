@@ -2,9 +2,9 @@
 
 **Document :** `docs/plans/010_linky_suites.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** ⏳ Planifié — **Gate #0 à tenir en début de session d'exécution**
+**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phase 1 en cours
 **Objectif Prioritaire :** MEDIUM (S3 sécurité : HIGH dans le lot)
-**ADR associé :** `docs/adr/007-plugins-domoticz-provenance-epinglee.md` — à rédiger en `Proposée` (T0.3) → `Acceptée` au Gate #1
+**ADR associé :** `docs/adr/007-plugins-domoticz-provenance-epinglee.md` — `Acceptée` (Gate #1, 2026-11-25)
 **Annexe obligatoire :** [`010_reports/ANALYSE_ARCOS.md`](./010_reports/ANALYSE_ARCOS.md) — analyse 🟠 ARCos complète (code actuel / code cible, lignes, commandes). **Les références « § x.y » de ce plan renvoient à cette annexe.**
 **Plan d'origine :** [`009_retrodoc_domoticzlinky.plan.md`](./009_retrodoc_domoticzlinky.plan.md) (section « Suites identifiées » S1-S4)
 
@@ -65,7 +65,7 @@ Traiter les 4 suites du plan 009 :
 | Id | Suite | Dépôt |
 |---|---|---|
 | **S1** | CI : consommer le fork `vzwingma/DomoticzLinky` (et deCONZ) **épinglé par SHA + tag**, mises à jour via PR Renovate **sans automerge** — ADR 007 | `domotique` |
-| **S2** | Corriger les bugs avérés du plugin (D1, D2, D3, D5, D16 ; D4 commentaire ; D11 selon décision) → version **2.6.2** | fork |
+| **S2** | Corriger les bugs avérés du plugin (D1, D2, D3, D5, D16 ; D4 commentaire) → version **2.7.0** | fork |
 | **S3** | Ne plus écrire tokens / `Authorization` / `refresh_token` / `device_code` en clair dans les logs (masquage) | fork |
 | **S4** | 6ᵉ indicateur `Health_check_dzVents.lua` : supervision des devices `Linky <PRM>` (+ prérequis `Config_check.lua`) | `domotique` |
 
@@ -73,7 +73,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 
 ### Solution retenue (Gate #0)
 
-⏳ **À décider en début de session d'exécution.** Recommandations ARCos (annexe § 8) : ordonnancement O-B, pin SHA + commentaire tag, Renovate regex `automerge:false`, deCONZ inclus, S2 = D1a/D2/D3/D5/D16 + D4 commentaire (D11 selon Q2), S3 = masquage M1, pickle hors périmètre, tests Q1 (pytest + stub Domoticz + ruff minimal + CI fork), S4 = identification I1 par préfixe `'Linky '`, version 2.6.2.
+✅ **GO 👤 du 2026-11-25** — recommandations ARCos (annexe § 8) retenues, avec 2 ajustements : ordonnancement O-B, pin SHA + commentaire tag, Renovate regex `automerge:false`, deCONZ inclus, S2 = D1a/D2/D3/D5/D16 + D4 commentaire, **D11 au backlog** (`Mode2` = 7 en production, ≤ 35 j : bug sans effet), S3 = masquage M1, pickle hors périmètre, tests Q1 (pytest + stub Domoticz + ruff minimal + CI fork), S4 = identification I1 par préfixe `'Linky '`, **version 2.7.0** (au lieu de 2.6.2). `Mode3` n'a jamais été activé en production : pas de rotation des jetons. Ajout 👤 : documenter les paramètres `Mode1`-`Mode6` côté fork, de façon lisible par un utilisateur (T4.1).
 
 ### Sources et non-régression (dzVents — phase 2)
 
@@ -86,7 +86,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 
 - Pas de modification des **clés ni du format de persistance** du plugin (`setConfigItem`/`getConfigItem`) : le retour arrière au pin v2.6.1 doit rester sûr.
 - Lots séparés par dépôt et par nature (CI / dzVents / plugin) : une PR par lot (cf. `copilot-instructions` « À éviter »).
-- Merges de PR, tag `v2.6.2` et release GitHub : réalisés par 👤 (sauf décision contraire Q6).
+- Merges de PR, tag `v2.7.0` et release GitHub : réalisés par 👤 (sauf décision contraire Q6).
 - Ne jamais recopier une sortie contenant un PRM ou un token dans un fichier versionné.
 
 ---
@@ -95,11 +95,11 @@ Résultats mesurables : voir « Critères de succès globaux ».
 
 | # | Décision | Options | Reco ARCos |
 |---|---|---|---|
-| 1 | Ordonnancement | O-A : S3+S2 → v2.6.2 → S1 pin v2.6.2 → S4 · **O-B** : S1 pin v2.6.1 + S4, puis S3+S2 → v2.6.2 → montée de pin | O-B |
+| 1 | Ordonnancement | O-A : S3+S2 → v2.7.0 → S1 pin v2.7.0 → S4 · **O-B** : S1 pin v2.6.1 + S4, puis S3+S2 → v2.7.0 → montée de pin | O-B |
 | 2 | S1 forme du pin | **SHA + `# tag`** · tag seul · branche fork | SHA + tag |
 | 3 | S1 mise à jour | **Renovate regex `automerge:false`** · manuel · Renovate + `dependencyDashboardApproval` | Renovate sans automerge |
 | 4 | deCONZ | **Inclus** (pin `1.0.35` = `95b8f8b…`) · hors périmètre | Inclus |
-| 5 | Périmètre S2 | D1, D2, D3 (+`KeyError` + `except`), D5, D16 maintenant ; D4 commentaire ; D12 inchangé ; D6/D7/D10/D13/D14/D15 backlog ; **D11 oui/non** | D11 selon Q2 |
+| 5 | Périmètre S2 | D1, D2, D3 (+`KeyError` + `except`), D5, D16 maintenant ; D4 commentaire ; D12 inchangé ; D6/D7/D10/D13/D14/D15 backlog ; **D11 oui/non** | D11 → backlog (`Mode2` = 7) |
 | 6 | D1 | **D1a** méthodes vides dans `BasePlugin` · D1b suppression des callbacks module | D1a |
 | 7 | D2 version Domoticz non reconnue | **Arrêt explicite** (`iVersion = 0` + erreur) · supposer récente | Arrêt explicite |
 | 8 | S3 masquage | **M1** clé + regex (dans `dumpDictToLog` et `my*()`) · M2 clé seule · M3 suppression des dumps ; PRM non masqué | M1 |
@@ -108,7 +108,17 @@ Résultats mesurables : voir « Critères de succès globaux ».
 | 11 | S4 identification device | **I1** préfixe `'Linky '` · I2 nom complet (PRM versionné ❌) · I3 variable utilisateur · I4 hardwareName | I1 |
 | 12 | S4 règles | 0 device / `lastUpdate` > 36 h / `timedOut` → ERROR + notification ; log par `idx` | Oui |
 | 13 | S4 dans `Config_check.lua` | Ajout contrôle « au moins un device préfixé » | Oui |
-| 14 | Version fork | `2.6.2` + `externallink` → fork + `CHANGELOG.md` | Oui |
+| 14 | Version fork | `2.7.0` + `externallink` → fork + `CHANGELOG.md` | Oui |
+
+**Réponses 👤 (2026-11-25)** :
+- **Q1** — Matériel nommé « Linky ». **Correction U1 (JSON `getdevices`) : le device réel s'appelle exactement `Linky`** (le PRM n'est que dans `ID`/`Description`, le nom `Linky <PRM>` créé par le plugin l. 643 a été renommé). Le préfixe `'Linky '` (avec espace) ne le trouverait pas → **ajustement I1 : préfixe `'Linky'` sans espace** (couvre `Linky`, `Linky <PRM>`, `Linky A / B`).
+- **Q1 (complément)** — Aucun autre device dont le nom commence par « Linky » : pas de collision de préfixe.
+- **Q2** — `Mode2` = 7 → D11 au backlog. `Mode3` = 0, debug jamais activé en production → pas de rotation des jetons.
+- **Q3** — Dépôt public (vérifié `gh repo view` → `PUBLIC`) : I2 exclu.
+- **Q4** — Synchronisation manuelle des scripts dzVents vers le NAS : validation runtime S4 après copie par 👤.
+- **Q5** — Oui (vérifié : Python 3.14.7, Node v26.12.1). CI du fork reste en Python 3.11.
+- **Q6** — Oui : merges et tag réalisés par 👤. **Prochaine version du fork : `v2.7.0`**.
+- T0.1 : #232 et vzwingma/DomoticzLinky#2 `MERGED` (vérifié 2026-11-25) ; `master` à jour dans les deux dépôts (fork : `b90ea14`, tag `v2.6.1` inchangé sur `f3df258`).
 
 **Questions 👤 (annexe § 11)** : Q1 noms exacts des devices/matériel Linky, collision de préfixe « Linky » ? · Q2 valeurs `Mode2` (→ D11) et `Mode3`, debug déjà activé en prod (→ rotation des jetons) ? · Q3 `vzwingma/domotique` public ? · Q4 synchronisation des scripts dzVents vers le NAS (`/volume1/home/vinz/domoticz/scripts/dzVents`) ? · Q5 Python ≥ 3.11 / Node disponibles en local (`python --version`, `node --version`) ? · Q6 merges + tag faits par 👤 ?
 
@@ -116,9 +126,9 @@ Résultats mesurables : voir « Critères de succès globaux ».
 
 ## 🛠️ Phases
 
-> Ordonnancement présenté selon la reco **O-B**. Chaque phase de code suit le cycle **code → Gate #2 → QA → Gate #3 → docs → Gate #4** (gates numérotés par phase dans le journal, ex. `P1-#2`). Les phases 2 et 3 sont indépendantes (dépôts différents) et peuvent être menées en parallèle **uniquement** si 👤 l'accepte au Gate #1 ; jamais de franchissement de gate implicite.
+> Ordonnancement présenté selon la reco **O-B**. Chaque phase de code suit le cycle **code → Gate #2 → QA → Gate #3 → docs → Gate #4** (gates numérotés par phase dans le journal, ex. `P1-#2`). **Exécution séquentielle P1 → P2 → P3 (choix 👤 au Gate #1)** ; jamais de franchissement de gate implicite.
 
-### Phase 0 — Prérequis, ADR, levée d'incertitudes — ⏳ Planifié
+### Phase 0 — Prérequis, ADR, levée d'incertitudes — ✅ Complétée (2026-11-25)
 **Contexte :** la doc à modifier (§ 5.4, tableau « Provenance des plugins ») n'existe sur `master` qu'après merge de #232 ; les liens publiés vers `DomoticzLinky/blob/master/docs/RETROCONCEPTION.md` exigent le merge de #2.
 **Critères de réussite :**
 - ✅ #232 et vzwingma/DomoticzLinky#2 `MERGED`
@@ -147,8 +157,9 @@ Résultats mesurables : voir « Critères de succès globaux ».
   - U2 `HaveTimeout` exposé et `false` en nominal.
   - U3 `onNotification` enregistre le plugin comme canal de notification (Paramètres > Notifications) ou `AttributeError … onNotification` dans le log.
 - **Acceptation :** 3 résultats booléens consignés, **aucune sortie brute recopiée** (contient le PRM). Si U2 infirmé → repli S4 sur `lastUpdate` > 36 h seul (ajuster T2.1).
+- **Résultats (2026-11-25, 👤, Domoticz 2026.4) :** U1 ✅ `LastUpdate` rafraîchi en < 1 min sans nouvelle donnée (`Touch()` confirmé → `lastUpdate` = vivacité du plugin, seuil 36 h = « plugin arrêté ») · U2 ✅ `HaveTimeout` exposé, `false` en nominal (`timedOut` utilisable) · U3 ❌ aucun canal « Linky » dans Paramètres > Notifications (le `onNotification` module n'expose pas de canal ; D1a reste valable pour `onCommand`). Constat additionnel : nom réel du device = `Linky` (→ T2.1 préfixe `'Linky'`). Trace : `010_reports/PHASE_0_COMPLETION_REPORT.md`.
 
-### Phase 1 — S1 : provenance CI épinglée (`domotique`, branche `ci/linky_fork_pin`) — ⏳ Planifié
+### Phase 1 — S1 : provenance CI épinglée (`domotique`, branche `ci/linky_fork_pin`) — 🔄 En cours
 **Dépend de :** Phase 0, Gate #1.
 **Critères de réussite :**
 - ✅ 0 occurrence `guillaumezin|refs/heads/master` dans `build-domoticz.yml` ; 2 pins `ref: <sha40> # <tag>`
@@ -205,10 +216,10 @@ Résultats mesurables : voir « Critères de succès globaux ».
 #### T2.1 - Implémenter l'indicateur Linky
 - **Agent :** 🔵 DEVon
 - **Fichier(s) (annexe § 4.3, code cible fourni) :**
-  - `domoticz/scripts/dzVents/global_data.lua` : constante `DEVICE_LINKY_PREFIX = 'Linky '` (après `DEVICE_STATUT_PHASE`) + helper `getLinkyDevices(domoticz)` (filtre `domoticz.devices()` par préfixe).
+  - `domoticz/scripts/dzVents/global_data.lua` : constante `DEVICE_LINKY_PREFIX = 'Linky'` (**sans espace** : le device de production s'appelle exactement `Linky`, cf. T0.4 ; aucun autre device « Linky… » — Q1) (après `DEVICE_STATUT_PHASE`) + helper `getLinkyDevices(domoticz)` (filtre `domoticz.devices()` par préfixe, `string.sub(d.name, 1, #prefix) == prefix`).
   - `domoticz/scripts/dzVents/Health_check_dzVents.lua` : bloc **6** entre le bloc 5 (jours fériés) et `-- Résumé`, dans un `pcall` : 0 device → `warn` ; `lastUpdate.minutesAgo > 36*60` → `warn` « plugin inactif » ; `elseif d.timedOut` → `warn` « aucune donnée Enedis > 1,5 j » ; sinon `LOG_DEBUG`. Messages avec `idx`, jamais le nom.
-  - `domoticz/scripts/dzVents/Config_check.lua` : contrôle « 1bis » (au moins un device préfixé, sinon `PREREQUIS MANQUANT [Device] : Linky <PRM>` + `nbErrors`).
-- **Contraintes :** triggers/évènements/marker inchangés ; `tostring()` ; `uuid` ; pas d'effet de bord hors notification existante. Adapter si Q1 révèle une collision de préfixe (repli I3 : variable utilisateur) ou si U2 infirmé.
+  - `domoticz/scripts/dzVents/Config_check.lua` : contrôle « 1bis » (au moins un device préfixé, sinon `PREREQUIS MANQUANT [Device] : Linky*` + `nbErrors`).
+- **Contraintes :** triggers/évènements/marker inchangés ; `tostring()` ; `uuid` ; pas d'effet de bord hors notification existante. U1/U2 confirmés (T0.4) : règles `lastUpdate` > 36 h + `timedOut` conservées.
 - **Acceptation :** `rg -n "DEVICE_LINKY_PREFIX|getLinkyDevices" domoticz/scripts/dzVents` → 3 fichiers ; `git diff --stat` = 3 fichiers ; `rg -n "Linky [0-9]{14}" domoticz` → 0 ; `luac -p` sur les 3 fichiers si `luac -v` disponible.
 
 #### T2.2 - Valider S4
@@ -221,17 +232,17 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Fichier(s) (annexe § 4.4) :** `domoticz/README.md` (5 → 6 indicateurs, 2 endroits) ; `docs/ARCHITECTURE.md` § 5.4 (retirer « aucun script dzVents ne les référence » / « aucune supervision ») et § 6.2 (ligne 6) ; `docs/RETROCONCEPTION_dzVents.md` (l. ~40 « quatre » **déjà faux** → « six » + points 5 et 6 ; tableaux ~l. 106 et ~l. 437 ; section `Config_check`) ; `.github/copilot-instructions.md` § DEV-5 (6 indicateurs + seuil Linky) ; `.github/instructions/qa.instructions.md` (seuils Health check) ; fork `docs/RETROCONCEPTION.md` § 15 (supervision livrée — commit fork séparé ou phase 4).
 - **Acceptation :** `rg -n "5 indicateurs|cinq indicateurs|quatre indicateurs" README.md docs domoticz .github` → 0.
 
-### Phase 3 — S3 + S2 : correctifs du plugin (fork, branche `fix/v2.6.2`) — ⏳ Planifié
+### Phase 3 — S3 + S2 : correctifs du plugin (fork, branche `fix/v2.7.0`) — ⏳ Planifié
 **Dépend de :** Phase 0 (#2 mergée, Q2, U3), Gate #1. Branche créée depuis `master` du fork à jour.
-**Exception de séquencement (décision 10 = Q1) :** 🟢 QALvin pose **d'abord** le harnais et des tests de bug en `xfail(strict=True)` (preuve des bugs), puis 🔵 DEVon corrige, puis 🟢 QALvin retire les `xfail`. À valider explicitement au Gate #1.
+**Exception de séquencement (décision 10 = Q1) :** 🟢 QALvin pose **d'abord** le harnais et des tests de bug en `xfail(strict=True)` (preuve des bugs), puis 🔵 DEVon corrige, puis 🟢 QALvin retire les `xfail`. **Validé par 👤 au Gate #1 (2026-11-25).**
 **Critères de réussite :**
 - ✅ CI du fork verte : `py_compile`, `ruff check`, `pytest` ; 0 `xfail` résiduel
 - ✅ Aucun secret sentinelle dans les sorties capturées
-- ✅ `plugin.py` : clés/format de persistance inchangés ; D12 inchangé ; `version="2.6.2"`
+- ✅ `plugin.py` : clés/format de persistance inchangés ; D12 inchangé ; `version="2.7.0"`
 
 #### T3.1 - Poser le harnais de tests et la CI du fork
 - **Agent :** 🟢 QALvin
-- **Fichier(s) (annexe § 6) :** `tests/conftest.py` (stub module `Domoticz` : `Log/Error/Status/Debug` capturés, `Debugging`, `Configuration` à état, `Connection`/`Device` = `MagicMock` ; chargement `plugin.py` via `importlib.util.spec_from_file_location` ; injection `Parameters`/`Devices` ; fixture `plugin` avec `fDebug = io.StringIO()`) ; `tests/test_callbacks.py` (D1, D2) ; `tests/test_merge_counters.py` (D3) ; `tests/test_devices.py` (D5) ; `tests/test_cache.py` (D4 caractérisation 12 h vs 11 h, D11 si GO) ; `tests/test_secrets_masking.py` (S3, sentinelles `TOK-ACCESS-SENTINEL` etc.) ; `requirements-dev.txt` (`pytest`, `ruff` en versions exactes stables du jour) ; `ruff.toml` (`target-version = "py311"`, `builtins = ["Parameters","Devices"]`, `select = ["E9","F63","F7","F82"]`) ; `.gitignore` (`__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `.venv/`) ; `.github/workflows/ci.yml` (push `master`, `pull_request`, `workflow_dispatch` ; `permissions: contents: read` ; `actions/checkout@v7` ; `actions/setup-python` dernière majeure **vérifiée** ; Python `3.11` — confirmer avec `docker compose exec domoticz python3 --version` sur le NAS).
+- **Fichier(s) (annexe § 6) :** `tests/conftest.py` (stub module `Domoticz` : `Log/Error/Status/Debug` capturés, `Debugging`, `Configuration` à état, `Connection`/`Device` = `MagicMock` ; chargement `plugin.py` via `importlib.util.spec_from_file_location` ; injection `Parameters`/`Devices` ; fixture `plugin` avec `fDebug = io.StringIO()`) ; `tests/test_callbacks.py` (D1, D2) ; `tests/test_merge_counters.py` (D3) ; `tests/test_devices.py` (D5) ; `tests/test_cache.py` (D4 caractérisation 12 h vs 11 h) ; `tests/test_secrets_masking.py` (S3, sentinelles `TOK-ACCESS-SENTINEL` etc.) ; `requirements-dev.txt` (`pytest`, `ruff` en versions exactes stables du jour) ; `ruff.toml` (`target-version = "py311"`, `builtins = ["Parameters","Devices"]`, `select = ["E9","F63","F7","F82"]`) ; `.gitignore` (`__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `.venv/`) ; `.github/workflows/ci.yml` (push `master`, `pull_request`, `workflow_dispatch` ; `permissions: contents: read` ; `actions/checkout@v7` ; `actions/setup-python` dernière majeure **vérifiée** ; Python `3.11` — confirmer avec `docker compose exec domoticz python3 --version` sur le NAS).
 - **Interdit :** tout `.py` à la racine du fork autre que `plugin.py` (constat C4).
 - **Acceptation :** `python -m pytest -q` → tests de caractérisation verts + tests de bug en `xfail` attendus ; `python -m py_compile plugin.py` OK ; `python -m ruff check plugin.py tests` OK (F821 existants triés : bug réel ou ajout `builtins`) ; run CI fork vert (`gh run list --repo vzwingma/DomoticzLinky --limit 1`). Si Python local absent (Q5) : la CI fait foi.
 
@@ -251,14 +262,14 @@ Résultats mesurables : voir « Critères de succès globaux ».
   - D5 : test d'unité pleine **après** la boucle `range(1, 256)` dans `getOrCreateDevice()`.
   - D16 : `onStop()` ferme `fDebug` et le remet à `None`.
   - D4 : commentaire explicatif seulement (comportement inchangé).
-  - D11 : seulement si GO décision 5 (`setHistoryDays()` restaure `iHistoryDaysForDaysView`).
+  - D11 : **hors périmètre** (Gate #0 : `Mode2` = 7, backlog).
   - **Ne pas toucher** : D12 (contournement volontaire), clés/format de persistance.
 - **Acceptation :** tests correspondants verts une fois `xfail` retirés ; `git diff master -- plugin.py` sans modification des appels `setConfigItem`/`getConfigItem` ni des clés.
 
-#### T3.4 - Passer en version 2.6.2
+#### T3.4 - Passer en version 2.7.0
 - **Agent :** 🔵 DEVon
-- **Fichier(s) :** `plugin.py` (bloc XML : `version="2.6.2"`, `externallink="https://github.com/vzwingma/DomoticzLinky"`)
-- **Acceptation :** `rg -n 'version="2.6.2"' plugin.py` → 1.
+- **Fichier(s) :** `plugin.py` (bloc XML : `version="2.7.0"`, `externallink="https://github.com/vzwingma/DomoticzLinky"`)
+- **Acceptation :** `rg -n 'version="2.7.0"' plugin.py` → 1.
 
 #### T3.5 - Valider S2/S3
 - **Agent :** 🟢 QALvin (après Gate P3-#2)
@@ -269,40 +280,40 @@ Résultats mesurables : voir « Critères de succès globaux ».
 **Dépend de :** Gate P3-#3.
 **Critères de réussite :**
 - ✅ Rétrodoc, `CHANGELOG.md`, readme du fork à jour
-- ✅ Tag `v2.6.2` publié sur le commit de merge
+- ✅ Tag `v2.7.0` publié sur le commit de merge
 
 #### T4.1 - Mettre à jour la documentation du fork
 - **Agent :** 🟣 DOCly
-- **Fichier(s) :** `DomoticzLinky/docs/RETROCONCEPTION.md` (§ 1 version 2.6.2 en conservant le SHA historique `1ef6adf` ; § 11 masquage ; § 13 colonne Statut : fuites tokens « Corrigé v2.6.2 », pickle « Accepté », fichier debug « 0600 via mkstemp » — corriger la mention « non protégé » ; § 14 colonne Statut D1-D16 selon décisions ; § 15 provenance épinglée + supervision si non fait en T1.4/T2.3) ; `DomoticzLinky/CHANGELOG.md` (nouveau, Keep a Changelog, entrée 2.6.2) ; `DomoticzLinky/readme.md` (section fork : mention `tests/` + CI ; guide utilisateur inchangé).
+- **Fichier(s) :** `DomoticzLinky/docs/RETROCONCEPTION.md` (§ 1 version 2.7.0 en conservant le SHA historique `1ef6adf` ; § 11 masquage ; § 13 colonne Statut : fuites tokens « Corrigé v2.7.0 », pickle « Accepté », fichier debug « 0600 via mkstemp » — corriger la mention « non protégé » ; § 14 colonne Statut D1-D16 selon décisions ; § 15 provenance épinglée + supervision si non fait en T1.4/T2.3) ; `DomoticzLinky/CHANGELOG.md` (nouveau, Keep a Changelog, entrée 2.7.0) ; `DomoticzLinky/readme.md` (section fork : mention `tests/` + CI ; **nouvelle section « Paramètres du plugin »** demandée au Gate #0 : tableau lisible `Mode1`-`Mode6` (nom technique, libellé affiché dans Domoticz, rôle, valeurs, défaut) avec les effets de `Mode3` (debug, reset consentement/cache, faux clients) et l'avertissement « debug = fichiers `/tmp` », renvoi vers `docs/RETROCONCEPTION.md` § 3 pour le détail ; reste du guide utilisateur inchangé).
 - **Acceptation :** liens relatifs valides ; aucune affirmation contraire au code ; PR fork mergée par 👤.
 
-#### T4.2 - Publier v2.6.2
+#### T4.2 - Publier v2.7.0
 - **Agent :** 👤
-- **Acceptation :** `git tag v2.6.2 <sha-merge>` + `git push origin v2.6.2` + release GitHub ; `git ls-remote --tags https://github.com/vzwingma/DomoticzLinky v2.6.2` → SHA.
+- **Acceptation :** `git tag v2.7.0 <sha-merge>` + `git push origin v2.7.0` + release GitHub ; `git ls-remote --tags https://github.com/vzwingma/DomoticzLinky v2.7.0` → SHA.
 
-### Phase 5 — Montée de pin v2.6.2 et vérification production (`domotique`) — ⏳ Planifié
+### Phase 5 — Montée de pin v2.7.0 et vérification production (`domotique`) — ⏳ Planifié
 **Dépend de :** Phase 1 complétée (pin + Renovate) et T4.2.
 **Critères de réussite :**
 - ✅ PR Renovate (ou manuelle) **non auto-mergée** ; diff d'une ligne
-- ✅ Artefact = `v2.6.2:plugin.py` ; plugin 2.6.2 opérationnel en production
+- ✅ Artefact = `v2.7.0:plugin.py` ; plugin 2.7.0 opérationnel en production
 
 #### T5.1 - Monter le pin
 - **Agent :** 🔵 DEVon (ou validation de la PR Renovate)
-- **Fichier(s) :** `.github/workflows/build-domoticz.yml` (`ref: <sha v2.6.2> # v2.6.2`), branche `ci/linky_v2.6.2` si manuel
-- **Acceptation :** diff d'une ligne ; SHA = `git -C <fork> rev-list -n1 v2.6.2` ; si PR Renovate : preuve qu'elle n'a **pas** été auto-mergée (règle `automerge:false` effective).
+- **Fichier(s) :** `.github/workflows/build-domoticz.yml` (`ref: <sha v2.7.0> # v2.7.0`), branche `ci/linky_v2.7.0` si manuel
+- **Acceptation :** diff d'une ligne ; SHA = `git -C <fork> rev-list -n1 v2.7.0` ; si PR Renovate : preuve qu'elle n'a **pas** été auto-mergée (règle `automerge:false` effective).
 
-#### T5.2 - Valider le build v2.6.2
+#### T5.2 - Valider le build v2.7.0
 - **Agent :** 🟢 QALvin
-- **Acceptation :** procédure T1.3 avec `v2.6.2` (blob identique, résumé `version="2.6.2"`).
+- **Acceptation :** procédure T1.3 avec `v2.7.0` (blob identique, résumé `version="2.7.0"`).
 
 #### T5.3 - Vérifier en production
 - **Agent :** 👤 (trace 🟢 QALvin)
-- **Couvrir :** après merge + redéploiement : log Domoticz au démarrage du plugin = 2.6.2 ; collecte suivante réussie (« Prochaine connexion » au lendemain) ; aucune `AttributeError` ; health check Linky OK. Optionnel S3 : `Mode3=1`, redémarrer le matériel dans la plage 8h-22h, `docker compose -f domotique-compose.yml exec domoticz sh -c 'grep -cE "(access_token|refresh_token|device_code)=[^*&]|Bearer [^*]" /tmp/DomoticzLinky_*.log'` → `0`, puis `Mode3=0` et suppression des fichiers `/tmp/DomoticzLinky_*.log`. Si Q2 indique un debug passé en prod : refaire le consentement (`Mode3=3`) pour faire tourner les jetons.
+- **Couvrir :** après merge + redéploiement : log Domoticz au démarrage du plugin = 2.7.0 ; collecte suivante réussie (« Prochaine connexion » au lendemain) ; aucune `AttributeError` ; health check Linky OK. Optionnel S3 : `Mode3=1`, redémarrer le matériel dans la plage 8h-22h, `docker compose -f domotique-compose.yml exec domoticz sh -c 'grep -cE "(access_token|refresh_token|device_code)=[^*&]|Bearer [^*]" /tmp/DomoticzLinky_*.log'` → `0`, puis `Mode3=0` et suppression des fichiers `/tmp/DomoticzLinky_*.log`. Pas de rotation des jetons (Q2 : debug jamais activé en production).
 - **Acceptation :** résultats booléens consignés (pas de sortie brute).
 
 #### T5.4 - Documenter la version déployée
 - **Agent :** 🟣 DOCly
-- **Fichier(s) :** `docs/ARCHITECTURE.md` § 5.4 (v2.6.2), `_docker/build_domoticz/README.md`.
+- **Fichier(s) :** `docs/ARCHITECTURE.md` § 5.4 (v2.7.0), `_docker/build_domoticz/README.md`.
 
 ### Phase 6 — Clôture — ⏳ Planifié
 - ⚫ MAINa : ADR 007 `Acceptée` (déjà au Gate #1) vérifié ; plan `✅ Complété` ; `docs/plans/README.md` → **COMPLÉTÉ** ; backlog résiduel (D6, D7 hors harnais, D9 pickle, D10, D13, D14, D15) reporté dans la section « Suites » ci-dessous.
@@ -330,9 +341,9 @@ Phase 1 (S1 pin v2.6.1)   code → P1-#2 → QA → P1-#3 → doc → P1-#4
 Phase 2 (S4 dzVents)      code → P2-#2 → QA → P2-#3 → doc → P2-#4     (indépendante de P1)
 Phase 3 (S3+S2 fork)      harnais+xfail → code → P3-#2 → QA → P3-#3   (indépendante de P1/P2)
     ↓ GO
-Phase 4 (docs fork + tag v2.6.2)                      → P4-#4
+Phase 4 (docs fork + tag v2.7.0)                      → P4-#4
     ↓ GO (+ Phase 1 complétée)
-Phase 5 (pin v2.6.2 + prod) code → P5-#2 → QA → P5-#3 → doc → P5-#4
+Phase 5 (pin v2.7.0 + prod) code → P5-#2 → QA → P5-#3 → doc → P5-#4
     ↓ GO
 Phase 6 (clôture)
 ```
@@ -342,8 +353,8 @@ Phase 6 (clôture)
 ## ✅ Critères de Succès Globaux
 
 1. `build-domoticz.yml` : 0 référence `guillaumezin` / `refs/heads/master` ; 2 pins `ref: <sha40> # <tag>`.
-2. Blob de l'artefact Linky = blob `plugin.py` du tag épinglé (v2.6.1 puis v2.6.2).
-3. Renovate détecte les 2 dépendances ; la PR de montée v2.6.2 n'est **pas** auto-mergée.
+2. Blob de l'artefact Linky = blob `plugin.py` du tag épinglé (v2.6.1 puis v2.7.0).
+3. Renovate détecte les 2 dépendances ; la PR de montée v2.7.0 n'est **pas** auto-mergée.
 4. CI du fork verte (`py_compile`, `ruff`, `pytest`), 0 `xfail` résiduel.
 5. Aucun secret sentinelle dans les sorties capturées ; contrôle runtime `grep` → 0 (si réalisé).
 6. Health check : 6 indicateurs, `Santé dzVents OK` en production, aucun PRM dans le dépôt.
@@ -362,7 +373,7 @@ Phase 6 (clôture)
 | U1/U2 infirmés | Seuils robustes aux deux cas ; repli `lastUpdate` > 36 h seul |
 | Collision préfixe « Linky » | Q1 ; repli I3 (variable utilisateur) |
 | Images `:<branche>` / `:merge` poussées par les validations | Accepté (≠ `latest`) ; nettoyage Docker Hub facultatif |
-| Jetons déjà exposés par un debug passé | Q2 → rotation via `Mode3=3` + purge `/tmp` et logs |
+| Jetons déjà exposés par un debug passé | Écarté (Q2 : `Mode3` jamais activé en production) |
 
 **Retours arrière :** S1 → `git revert` du commit workflow + build `master` (ou digest d'image précédent sur le NAS : `docker image ls --digests vzwingmadomatic/domoticz`) ; S2/S3 → pin `f3df2584ab398110eefe8d65df1b83d9a9d95395 # v2.6.1` ; S4 → `git revert` des 3 fichiers Lua + resynchronisation du montage NAS.
 
@@ -370,7 +381,7 @@ Phase 6 (clôture)
 
 ## 🔭 Suites (backlog hors périmètre)
 
-D6 `except:` nus restants · D7 découpage du monolithe · D9 `pickle.loads` avant checksum (risque accepté) · D10 dépendance au proxy tiers RUSSANDOL · D13 Mode3 = 19 sans faux client · D14 jours fériés / préfixe `p` de Mode4 · D15 code mort · images `:merge` poussées par les PR `domotique`.
+D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant que `Mode2` ≤ 35) · D7 découpage du monolithe · D9 `pickle.loads` avant checksum (risque accepté) · D10 dépendance au proxy tiers RUSSANDOL · D13 Mode3 = 19 sans faux client · D14 jours fériés / préfixe `p` de Mode4 · D15 code mort · images `:merge` poussées par les PR `domotique`.
 
 ---
 
@@ -378,5 +389,5 @@ D6 `except:` nus restants · D7 découpage du monolithe · D9 `pickle.loads` ava
 
 | Gate | Date | Objet | Décision 👤 | Notes |
 |---|---|---|---|---|
-| #0 | — | Choix de solution (14 décisions + Q1-Q6) | ⏳ En attente | Analyse ARCos du 2026-11-25 en annexe ; à tenir en début de session d'exécution |
-| #1 | — | Validation plan + ADR 007 `Proposée` | ⏳ En attente | — |
+| #0 | 2026-11-25 | Choix de solution (14 décisions + Q1-Q6) | ✅ GO | Reco ARCos retenue ; ajustements : version 2.7.0, D11 backlog (`Mode2`=7), pas de rotation jetons (`Mode3` jamais activé), doc utilisateur des `Mode1`-`Mode6` ajoutée en T4.1. État initial revérifié (SHA v2.6.1/1.0.35 OK, PR #232 et fork#2 `MERGED`) |
+| #1 | 2026-11-25 | Validation plan + ADR 007 `Proposée` | ✅ GO | Phase 0 complétée (U1 ✅, U2 ✅, U3 ❌) ; T2.1 ajusté (préfixe `'Linky'` sans espace, device réel nommé `Linky`) ; exécution séquentielle P1 → P2 → P3 ; séquence `xfail` phase 3 validée ; ADR 007 → `Acceptée` |
