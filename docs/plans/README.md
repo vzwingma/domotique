@@ -5,6 +5,10 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 > Les détails des phases restent dans les fichiers `*.plan.md` et les rapports `*_reports/`.
 > Guide de référence : [`.github/PLANS.md`](../../.github/PLANS.md)
 
+## Plans planifiés / en cours
+
+- [009 — Rétrodocumentation technique du plugin DomoticzLinky](./009_retrodoc_domoticzlinky.plan.md) — **EN COURS**
+
 ## Plans suspendus
 
 - [004 — Migration Let's Encrypt](./004_letsencrypt_migration.plan.md) — **SUSPENDU / BLOQUÉ** (domaine personnel requis)
