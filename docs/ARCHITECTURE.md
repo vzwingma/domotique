@@ -1,6 +1,6 @@
 # Architecture — Système domotique Domoticz / dzVents
 
-> Document de référence architecture. Dernière mise à jour : juin 2026.
+> Document de référence architecture. Dernière mise à jour : novembre 2026.
 
 ---
 
@@ -64,6 +64,7 @@ Le système domotique repose sur **Domoticz** comme plateforme centrale, avec de
 | **Tydom Bridge** | Pilotage volets + thermostat Delta Dore | HTTP REST local |
 | **Freebox** | Détection présence réseau (smartphones) | HTTP REST local |
 | **API Jours Fériés** | Calendrier officiel des jours fériés français | HTTPS REST public |
+| **Plugins Python (Linky, deCONZ)** | Compteur Enedis ; passerelle Zigbee — exécutés dans Domoticz (voir [§ 5.4](#54-plugins-python-domoticz-linky-deconz)) | API Enedis via proxy tiers (HTTPS) ; API deCONZ (HTTP local) |
 
 ---
 
@@ -337,6 +338,41 @@ API publique officielle du gouvernement français listant les jours fériés en 
 ```
 
 **Intégration :** `JoursFeries_API.lua` transforme ce dictionnaire en table de lookup Lua `{ ['2025-01-01'] = true, ... }` stockée dans `globalData.joursFeries`. Le helper `isJourFerie(domoticz)` effectue la consultation et déclenche un rechargement automatique si la liste est vide.
+
+### 5.4 Plugins Python Domoticz (Linky, deCONZ)
+
+Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzwingmadomatic/domoticz`) : **Linky** (compteur Enedis) et **deCONZ** (Zigbee). Contrairement aux bridges 5.1 et 5.2, ils s'exécutent **dans le processus Domoticz** (framework de plugins Python) et **aucun script dzVents ne les référence** (ni `Config_check.lua` ni `Health_check_dzVents.lua`).
+
+| Plugin | Rôle | Source embarquée par la CI | Documentation |
+|---|---|---|---|
+| **Linky** (`key="linky"`, v2.6.1 dans le fork) | Consommation / production Enedis (courbe de charge, pics, HP/HC) → dispositif `Linky <PRM>` | `guillaumezin/DomoticzLinky`, branche `master`, **non épinglée** | [Rétroconception du plugin](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) (fork `vzwingma/DomoticzLinky`, **maintenu** ; l'upstream n'est plus maintenu) |
+| **deCONZ** | Passerelle Zigbee (ConBee) | `Smanar/Domoticz-deCONZ`, branche `master`, **non épinglée** | [`deCONZ/README.md`](../deCONZ/README.md) |
+
+**Chaîne de construction et de déploiement :**
+
+```
+  GitHub (upstream, master)           .github/workflows/build-domoticz.yml
+  guillaumezin/DomoticzLinky   ──►    jobs download-linky / download-deconz
+  Smanar/Domoticz-deCONZ                    │ artefacts linky-plugin / deconz-plugin
+                                            ▼
+                                  _docker/build_domoticz/linky | deconz
+                                            │ Dockerfile : COPY linky/plugin.py, COPY deconz/*.py
+                                            ▼
+                                  image vzwingmadomatic/domoticz
+                                  /opt/domoticz/userdata/plugins/DomoticzLinky/ (et deCONZ)
+                                            │
+                                            ▼
+                                  _docker/envs/nas/domotique-compose.yml (service domoticz)
+```
+
+**Points d'attention :**
+
+- **Provenance non épinglée** : la CI récupère la tête de `master` des dépôts amont à chaque build ; une régression amont se retrouve dans l'image sans changement de ce dépôt. Le fork `vzwingma/DomoticzLinky` n'est **pas** consommé aujourd'hui.
+- **Proxy Enedis tiers** : Linky n'appelle pas Enedis directement ; l'authentification (OAuth2 Device Flow) et les données transitent par un proxy hébergé par un tiers (voir la rétrodoc du plugin, § 2.2 et § 13).
+- **Persistance** : jetons OAuth et cache du plugin sont stockés par Domoticz (`Domoticz.Configuration`) dans `domoticz.db`. Le compose NAS ne monte que `domoticz.db` et `scripts/dzVents` : les plugins restent ceux de l'image. Monter tout `/opt/domoticz/userdata` masquerait `plugins/` (voir [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md)).
+- **Plateforme** : le workflow construit l'image Domoticz en `linux/arm/v7` (`DOCKER_TARGET_PLATFORM`) ; le job Tydom construit en `linux/arm64`.
+- **deCONZ** : le plugin Domoticz communique avec l'API deCONZ ; le conteneur deCONZ (ConBee III) est défini dans `_docker/envs/pi/domotique-compose.yml`, sur un hôte distinct de celui de Domoticz (`envs/nas`).
+- **Supervision** : aucune vérification automatique de la fraîcheur du dispositif Linky (le plugin met le dispositif en `TimedOut` après 1,5 jour sans données).
 
 ---
 

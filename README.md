@@ -75,6 +75,7 @@ Le **routeur Freebox** assure le NAT : le port public `38243` est redirigé vers
 | [`domoticz/`](domoticz/README.md) | Moteur d'automatisation + scripts Lua dzVents | Domoticz + dzVents |
 | [`tydom-bridge/`](tydom-bridge/README.md) | Pont Domoticz ↔ box Tydom (Delta Dore) — volets et thermostat | Node.js 26 (ARM64) |
 | [`deCONZ/`](deCONZ/README.md) | Intégration des capteurs Zigbee via passerelle deCONZ | deCONZ (Phoscon) |
+| Plugin Linky ([fork `vzwingma/DomoticzLinky`](https://github.com/vzwingma/DomoticzLinky), [rétrodoc](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md)) | Plugin Python Domoticz : consommation / production du compteur Linky (Enedis, via proxy tiers). Embarqué dans l'image Domoticz par la CI (aujourd'hui depuis l'upstream `guillaumezin/DomoticzLinky`, branche `master` non épinglée) — voir [`docs/ARCHITECTURE.md` § 5.4](docs/ARCHITECTURE.md#54-plugins-python-domoticz-linky-deconz) | Python 3 (plugin Domoticz) |
 | [`_docker/build_httpd/`](_docker/build_httpd/README.md) | Proxy Apache frontal : TLS, filtrage User-Agent, deux VirtualHosts | Apache 2.4 (Alpine) |
 | [`_docker/`](_docker/build_domoticz/README.md) | Images Docker custom et manifests de déploiement | Docker Compose |
 
@@ -89,16 +90,19 @@ Le **routeur Freebox** assure le NAT : le port public `38243` est redirigé vers
 ```bash
 # Cloner le dépôt
 git clone https://github.com/vzwingma/domotique.git
-cd domotique/_docker
+cd domotique/_docker/envs/nas   # ou envs/pi pour deCONZ
 
-# Éditer domotique-compose.yml et renseigner les variables d'environnement :
+# Variables du bridge Tydom : déclarées dans stack.env (lu via env_file par le
+# service tydom-bridge du compose NAS ; elles ne sont pas dans domotique-compose.yml).
+# stack.env les référence sous forme de placeholders `${NOM}` : fournir leurs valeurs
+# via l'environnement de déploiement ou en les renseignant dans stack.env (sans le commiter) :
 #   MAC, PASSWD, AUTHAPI, PASSWDAPI pour le bridge Tydom
 
 # Démarrer la stack complète
 docker compose -f domotique-compose.yml up -d
 ```
 
-> **Watchtower** est intégré à la stack : il surveille et met à jour automatiquement les images toutes les 60 secondes.
+> **Watchtower** : mentionné comme mécanisme de mise à jour automatique des images, mais **aucun service Watchtower n'est défini** dans les fichiers compose versionnés (`_docker/envs/nas`, `_docker/envs/pi`). À déployer séparément si souhaité.
 
 ## CI/CD
 
@@ -127,5 +131,7 @@ Lien vers le wiki : https://github.com/vzwingma/domotique/wiki/
 - [tydom-bridge — README détaillé](tydom-bridge/README.md)
 - [domoticz — Scripts dzVents](domoticz/README.md)
 - [deCONZ — Capteurs Zigbee](deCONZ/README.md)
+- [Plugins Python Domoticz (Linky, deCONZ) — Architecture](docs/ARCHITECTURE.md#54-plugins-python-domoticz-linky-deconz)
+- [Plugin Linky — Rétroconception technique (fork)](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md)
 - [Docker — Image Domoticz](_docker/build_domoticz/README.md)
 - [Docker — Proxy httpd](_docker/build_httpd/README.md)

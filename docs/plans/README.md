@@ -5,6 +5,10 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 > Les détails des phases restent dans les fichiers `*.plan.md` et les rapports `*_reports/`.
 > Guide de référence : [`.github/PLANS.md`](../../.github/PLANS.md)
 
+## Plans planifiés / en cours
+
+- [010 — Plugin Linky : provenance CI épinglée, correctifs, sécurité des logs, supervision](./010_linky_suites.plan.md) — **PLANIFIÉ**
+
 ## Plans suspendus
 
 - [004 — Migration Let's Encrypt](./004_letsencrypt_migration.plan.md) — **SUSPENDU / BLOQUÉ** (domaine personnel requis)
@@ -18,3 +22,4 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 - [006 — Persistance du certificat HTTPD](./006_httpd_cert_persistence.plan.md) — **COMPLÉTÉ**
 - [007 — Qualification Tydom Node 26 ARM64](./007_tydom_node26_arm64.plan.md) — **COMPLÉTÉ**
 - [008 — Harmonisation des consignes et migration des plans](./008_harmonisation-templates-et-plans.plan.md) — **COMPLÉTÉ**
+- [009 — Rétrodocumentation technique du plugin DomoticzLinky](./009_retrodoc_domoticzlinky.plan.md) — **COMPLÉTÉ**
