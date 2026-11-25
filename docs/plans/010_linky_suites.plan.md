@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/010_linky_suites.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phases 1-4 ✅ ; Phase 5 en cours (T5.1 montée manuelle)
+**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phases 1-4 ✅ ; Phase 5 en cours (T5.1-T5.2 ✅, #237 mergée ; T5.3 production 👤)
 **Objectif Prioritaire :** MEDIUM (S3 sécurité : HIGH dans le lot)
 **ADR associé :** `docs/adr/007-plugins-domoticz-provenance-epinglee.md` — `Acceptée` (Gate #1, 2026-11-25)
 **Annexe obligatoire :** [`010_reports/ANALYSE_ARCOS.md`](./010_reports/ANALYSE_ARCOS.md) — analyse 🟠 ARCos complète (code actuel / code cible, lignes, commandes). **Les références « § x.y » de ce plan renvoient à cette annexe.**
@@ -404,3 +404,4 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 | P4-#4 | 2026-11-25 | Validation docs fork (T4.1) | ✅ GO | fork `b950888` : RETROCONCEPTION (§ 1/3/9.4/11-15), `CHANGELOG.md` 2.7.0, readme « Paramètres du plugin » + avertissements `/tmp` et D17 ; 0 « non épinglé », 0 PRM ajouté, liens externes ADR 007/ARCHITECTURE OK ; droits du fichier debug décrits comme `tempfile` par défaut (non vérifié NAS) ; pas de traduction EN. fork#3 passée *ready for review* |
 | T4.2 | 2026-11-25 | Publication v2.7.0 (👤) | ✅ | fork#3 mergée (`a7b2320`) ; tag `v2.7.0` → `a7b232042a0ac725390583416043e327882510d5` ; release publiée 12:29Z ; blob `plugin.py` = `7317790b` ; run Renovate forcé (Dependency Dashboard #139, 12:35Z) sans PR v2.7.0 (cache tags) → T5.1 en montée manuelle, branche `ci/linky_v2.7.0_pin` (`ci/linky_v2.7.0` déjà mergée via #236) |
 | P5-#2 | 2026-11-25 | Validation code phase 5 (T5.1) | ✅ GO | `build-domoticz.yml` ligne 30 (+1/−1) → `a7b2320… # v2.7.0` = SHA du tag distant ; regex Renovate : 2 matches (Linky v2.7.0, deCONZ 1.0.35) ; CRLF préservés ; PR manuelle (pas d'automerge) ; revue : relecture MAINa (diff 1 ligne) |
+| P5-#3 | 2026-11-25 | Validation build v2.7.0 (T5.2) | ✅ GO | Run PR 45616307786 ✅ ; blob artefact `plugin.py` = `7317790b` (= `v2.7.0:plugin.py`), `version="2.7.0"`, checkout `a7b2320` ; deCONZ 4/4 blobs = 1.0.35 ; image PR `:merge` (≠ `latest`) ; `autoMergeRequest` null ; tous checks PR ✅. #237 mergée par 👤 (`79398a7`) ; run `master` 45617174637 ✅ → `vzwingmadomatic/domoticz:latest` |
