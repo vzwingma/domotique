@@ -10,6 +10,7 @@
 
 ## 📝 Tâches
 
+> Sections par agent : 🔵 DEVon (T1.1, T1.2), 🟢 QALvin (T1.3, T1.6), 🟣 DOCly (T1.4, en fin de fichier).
 ### T1.1 - Épingler les plugins dans le workflow
 
 **Statut :** ✅ DONE
@@ -94,3 +95,27 @@
 - Point d'attention : le dashboard affiche « Config Migration Needed » (migration de config proposée par Renovate sur `master`) ; à examiner par 👤/MAINa, sans lien démontré avec ce changement.
 
 **Synthèse QALvin :** 5/5 contrôles ✅, T1.6 différée. Aucun bloqueur.
+
+---
+
+## 🟣 Section DOCly — T1.4 Documenter la provenance épinglée
+
+**Statut :** ✅ DONE — Gate P1-#3 = GO (2026-11-25). Pas de commit ni de push ; branche `ci/linky_fork_pin` inchangée.
+
+**Fichiers modifiés (dépôt `domotique` uniquement) :**
+- `docs/ARCHITECTURE.md` § 5.4 : tableau « Source embarquée » (Linky : fork `vzwingma/DomoticzLinky` épinglé `f3df258…` / `v2.6.1` ; deCONZ : `95b8f8b…` / `1.0.35`) ; schéma de chaîne (sources épinglées par SHA) ; puce « Provenance non épinglée » remplacée par « Provenance épinglée » (lien [ADR 007](../../adr/007-plugins-domoticz-provenance-epinglee.md), traçabilité Step Summary, `if-no-files-found: error`, mention historique « avant l'ADR 007 ») ; nouvelle puce « Mise à jour des plugins » (Renovate, **sans automerge**, lien vers la procédure).
+- `_docker/build_domoticz/README.md` : tableau « Provenance des plugins » (dépôt, `ref`, tag) ; paragraphe **Reproductibilité** ; nouvelle sous-section « Montée de version d'un plugin » (tag publié → PR Renovate ou modification manuelle `ref: <sha> # <tag>` avec `git rev-list -n1 <tag>` → revue → merge ; **retour arrière** = revert / re-pin) ; avertissement « non reproductible » supprimé.
+- `README.md` (racine) : ligne composant Linky — fork épinglé sur le tag `v2.6.1`, mises à jour par PR Renovate revue manuellement, lien ADR 007.
+- Autres docs vérifiées (hors `docs/plans/`, `docs/adr/`) : `deCONZ/README.md`, `domoticz/README.md`, `.github/copilot-instructions.md`, `docs/RETROCONCEPTION_tydom-bridge.md` ne décrivent pas l'état de provenance → aucune modification.
+
+**Hors périmètre (reporté) :** fork `DomoticzLinky/docs/RETROCONCEPTION.md` § 1 (avertissement « Upstream non épinglé ») et § 15 → **T4.1** ; le fork n'a pas été touché.
+
+**Vérifications :**
+- Acceptation : `rg -n "non épingl|guillaumezin/DomoticzLinky.*master" README.md docs/ARCHITECTURE.md _docker/build_domoticz/README.md` → **0 occurrence**.
+- SHA/tags documentés = ceux du workflow et du rapport T1.1 (`f3df2584ab398110eefe8d65df1b83d9a9d95395` / `v2.6.1` ; `95b8f8baf6aacda21f2e3aec18d75ac705fd0b8a` / `1.0.35`) ; preuve QA : run [45600293531](https://github.com/vzwingma/domotique/actions/runs/45600293531).
+- Liens relatifs : `docs/adr/007-plugins-domoticz-provenance-epinglee.md`, `renovate.json`, `.github/workflows/build-domoticz.yml`, `_docker/build_domoticz/README.md`, ancres `#54-plugins-python-domoticz-linky-deconz` et `#montée-de-version-dun-plugin` → cibles existantes.
+- Aucun PRM, token ni sortie brute dans les ajouts.
+
+**Notes :**
+- Les fichiers de doc sont en attente de commit (à inclure dans la PR `ci/linky_fork_pin`, T1.5).
+- Le détail « Dependency Dashboard liste les 2 dépendances » reste à prouver en T1.6 après merge ; la doc affirme la détection par Renovate selon la config (non encore observée).
