@@ -4,11 +4,28 @@
     "config:recommended"
   ],
   "dependencyDashboard": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Plugins Python Domoticz épinglés (SHA + tag) dans build-domoticz.yml — ADR 007",
+      "managerFilePatterns": ["/^\\.github/workflows/build-domoticz\\.yml$/"],
+      "matchStrings": [
+        "repository:\\s*(?<depName>[\\w.-]+/[\\w.-]+)\\s*\\n\\s*ref:\\s*(?<currentDigest>[0-9a-f]{40})\\s*#\\s*(?<currentValue>[\\w.-]+)"
+      ],
+      "datasourceTemplate": "github-tags"
+    }
+  ],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
+    },
+    {
+      "description": "Plugins Domoticz : mise à jour volontaire, jamais d'automerge (ADR 007)",
+      "matchManagers": ["custom.regex"],
+      "matchDepNames": ["vzwingma/DomoticzLinky", "Smanar/Domoticz-deCONZ"],
+      "automerge": false
     }
   ]
 }

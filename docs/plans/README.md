@@ -7,7 +7,7 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 ## Plans planifiés / en cours
 
-- [010 — Plugin Linky : provenance CI épinglée, correctifs, sécurité des logs, supervision](./010_linky_suites.plan.md) — **PLANIFIÉ**
+- [010 — Plugin Linky : provenance CI épinglée, correctifs, sécurité des logs, supervision](./010_linky_suites.plan.md) — **EN COURS**
 
 ## Plans suspendus
 

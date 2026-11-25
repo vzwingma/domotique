@@ -16,14 +16,26 @@ L'image est construite depuis `Dockerfile` et embarque :
 
 ### Provenance des plugins
 
-Les plugins ne sont pas versionnés dans ce dépôt : le workflow [`build-domoticz.yml`](../../.github/workflows/build-domoticz.yml) les télécharge à chaque build (jobs `download-linky` et `download-deconz`, artefacts déposés dans `linky/` et `deconz/`).
+Les plugins ne sont pas versionnés dans ce dépôt : le workflow [`build-domoticz.yml`](../../.github/workflows/build-domoticz.yml) les télécharge à chaque build (jobs `download-linky` et `download-deconz`, artefacts déposés dans `linky/` et `deconz/`), **épinglés sur le SHA de commit d'un tag** ([ADR 007](../../docs/adr/007-plugins-domoticz-provenance-epinglee.md)).
 
-| Plugin | Dépôt source | Référence | Remarque |
-|---|---|---|---|
-| Linky | `guillaumezin/DomoticzLinky` (upstream) | `refs/heads/master` — **non épinglée** | Upstream non maintenu ; le fork maintenu `vzwingma/DomoticzLinky` n'est **pas** consommé aujourd'hui. Rétrodoc : [RETROCONCEPTION.md](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) |
-| deCONZ | `Smanar/Domoticz-deCONZ` | `refs/heads/master` — **non épinglée** | — |
+| Plugin | Dépôt source | Référence (`ref:` du workflow) | Tag | Remarque |
+|---|---|---|---|---|
+| Linky | `vzwingma/DomoticzLinky` (fork maintenu) | `f3df2584ab398110eefe8d65df1b83d9a9d95395` | `v2.6.1` | L'upstream (`guillaumezin`) n'est plus maintenu ni consommé (avant l'ADR 007, la CI reprenait sa branche `master`). Rétrodoc : [RETROCONCEPTION.md](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) |
+| deCONZ | `Smanar/Domoticz-deCONZ` | `95b8f8baf6aacda21f2e3aec18d75ac705fd0b8a` | `1.0.35` | — |
 
-> ⚠️ Un build reprend la tête de `master` des dépôts amont : le contenu de l'image n'est pas reproductible à l'identique. Voir [`docs/ARCHITECTURE.md` § 5.4](../../docs/ARCHITECTURE.md#54-plugins-python-domoticz-linky-deconz).
+**Reproductibilité** : un SHA de commit est immuable ; deux builds du même commit de ce dépôt embarquent donc exactement les mêmes plugins. Chaque job trace dans son *Step Summary* le SHA récupéré et la `version=` du `plugin.py`, et l'upload de l'artefact échoue s'il est vide (`if-no-files-found: error`). Voir aussi [`docs/ARCHITECTURE.md` § 5.4](../../docs/ARCHITECTURE.md#54-plugins-python-domoticz-linky-deconz).
+
+### Montée de version d'un plugin
+
+La montée de version est **toujours volontaire et revue** : Renovate n'a pas d'automerge sur ces deux dépendances.
+
+1. **Publier un tag** sur le dépôt du plugin (pour Linky : tag `vX.Y.Z` sur le fork `vzwingma/DomoticzLinky`).
+2. **PR Renovate** : Renovate (customManager regex sur `build-domoticz.yml`, datasource `github-tags`, configuré dans [`renovate.json`](../../renovate.json)) détecte le nouveau tag et propose une PR qui met à jour la ligne `ref: <sha> # <tag>`.
+   *Alternative manuelle* : modifier la ligne `ref:` qui suit `repository:` dans le job concerné, au format `ref: <sha40> # <tag>`, avec `SHA = git rev-list -n1 <tag>` (SHA du **commit**, pas de l'objet tag annoté). Conserver `ref:` immédiatement après `repository:` (requis par la regex Renovate).
+3. **Revue** de la PR : écart entre l'ancien et le nouveau tag, SHA = commit du tag.
+4. **Merge** sur `master` : le build reconstruit l'image `latest` avec le nouveau plugin ; vérifier la version dans le log Domoticz après redéploiement.
+
+**Retour arrière** : `git revert` du commit de montée de version (ou re-pin manuel sur l'ancien couple `<sha> # <tag>`), puis merge ; l'image est reconstruite avec le plugin précédent.
 
 ---
 

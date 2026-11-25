@@ -345,15 +345,15 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 
 | Plugin | Rôle | Source embarquée par la CI | Documentation |
 |---|---|---|---|
-| **Linky** (`key="linky"`, v2.6.1 dans le fork) | Consommation / production Enedis (courbe de charge, pics, HP/HC) → dispositif `Linky <PRM>` | `guillaumezin/DomoticzLinky`, branche `master`, **non épinglée** | [Rétroconception du plugin](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) (fork `vzwingma/DomoticzLinky`, **maintenu** ; l'upstream n'est plus maintenu) |
-| **deCONZ** | Passerelle Zigbee (ConBee) | `Smanar/Domoticz-deCONZ`, branche `master`, **non épinglée** | [`deCONZ/README.md`](../deCONZ/README.md) |
+| **Linky** (`key="linky"`, v2.6.1 dans le fork) | Consommation / production Enedis (courbe de charge, pics, HP/HC) → dispositif `Linky <PRM>` | Fork `vzwingma/DomoticzLinky`, **épinglé** sur le commit `f3df258…` (tag `v2.6.1`) | [Rétroconception du plugin](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) (fork **maintenu** ; l'upstream `guillaumezin/DomoticzLinky` n'est plus maintenu ni consommé) |
+| **deCONZ** | Passerelle Zigbee (ConBee) | `Smanar/Domoticz-deCONZ`, **épinglé** sur le commit `95b8f8b…` (tag `1.0.35`) | [`deCONZ/README.md`](../deCONZ/README.md) |
 
 **Chaîne de construction et de déploiement :**
 
 ```
-  GitHub (upstream, master)           .github/workflows/build-domoticz.yml
-  guillaumezin/DomoticzLinky   ──►    jobs download-linky / download-deconz
-  Smanar/Domoticz-deCONZ                    │ artefacts linky-plugin / deconz-plugin
+  GitHub (SHA de commit épinglé)      .github/workflows/build-domoticz.yml
+  vzwingma/DomoticzLinky @ v2.6.1 ──► jobs download-linky / download-deconz
+  Smanar/Domoticz-deCONZ @ 1.0.35           │ artefacts linky-plugin / deconz-plugin
                                             ▼
                                   _docker/build_domoticz/linky | deconz
                                             │ Dockerfile : COPY linky/plugin.py, COPY deconz/*.py
@@ -367,7 +367,8 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 
 **Points d'attention :**
 
-- **Provenance non épinglée** : la CI récupère la tête de `master` des dépôts amont à chaque build ; une régression amont se retrouve dans l'image sans changement de ce dépôt. Le fork `vzwingma/DomoticzLinky` n'est **pas** consommé aujourd'hui.
+- **Provenance épinglée** ([ADR 007](adr/007-plugins-domoticz-provenance-epinglee.md)) : la CI récupère chaque plugin au **SHA de commit** de son tag (`ref: <sha> # <tag>` dans `build-domoticz.yml`) ; le SHA et la version sont tracés dans le Step Summary du job, et un artefact vide fait échouer le build (`if-no-files-found: error`). L'image est ainsi reproductible et une fusion amont n'atteint plus la production sans changement de ce dépôt. Avant l'ADR 007, la CI reprenait la tête de `master` des dépôts amont (upstream `guillaumezin` pour Linky).
+- **Mise à jour des plugins** : Renovate (customManager regex, datasource `github-tags`) détecte les nouveaux tags et ouvre une PR, **sans automerge** : la montée de version est toujours revue manuellement. Procédure : [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md#montée-de-version-dun-plugin).
 - **Proxy Enedis tiers** : Linky n'appelle pas Enedis directement ; l'authentification (OAuth2 Device Flow) et les données transitent par un proxy hébergé par un tiers (voir la rétrodoc du plugin, § 2.2 et § 13).
 - **Persistance** : jetons OAuth et cache du plugin sont stockés par Domoticz (`Domoticz.Configuration`) dans `domoticz.db`. Le compose NAS ne monte que `domoticz.db` et `scripts/dzVents` : les plugins restent ceux de l'image. Monter tout `/opt/domoticz/userdata` masquerait `plugins/` (voir [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md)).
 - **Plateforme** : le workflow construit l'image Domoticz en `linux/arm/v7` (`DOCKER_TARGET_PLATFORM`) ; le job Tydom construit en `linux/arm64`.
