@@ -91,6 +91,18 @@ return {
         end
 
         -- -----------------------------------------------
+        -- 1bis. Device(s) plugin Linky (nom préfixé, PRM non versionné)
+        -- -----------------------------------------------
+        local okLinky, linkyDevices = pcall(domoticz.helpers.getLinkyDevices, domoticz)
+        if not okLinky or #linkyDevices == 0 then
+            domoticz.log(
+                'PREREQUIS MANQUANT [Device] : ' .. domoticz.helpers.DEVICE_LINKY_PREFIX .. '*',
+                domoticz.LOG_ERROR
+            )
+            nbErrors = nbErrors + 1
+        end
+
+        -- -----------------------------------------------
         -- 2. Groupes Domoticz critiques
         -- -----------------------------------------------
         local requiredGroups = {

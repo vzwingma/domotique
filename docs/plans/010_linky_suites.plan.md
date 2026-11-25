@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/010_linky_suites.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phase 1 en cours
+**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phase 1 ✅ ; Phase 2 en cours
 **Objectif Prioritaire :** MEDIUM (S3 sécurité : HIGH dans le lot)
 **ADR associé :** `docs/adr/007-plugins-domoticz-provenance-epinglee.md` — `Acceptée` (Gate #1, 2026-11-25)
 **Annexe obligatoire :** [`010_reports/ANALYSE_ARCOS.md`](./010_reports/ANALYSE_ARCOS.md) — analyse 🟠 ARCos complète (code actuel / code cible, lignes, commandes). **Les références « § x.y » de ce plan renvoient à cette annexe.**
@@ -159,7 +159,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Acceptation :** 3 résultats booléens consignés, **aucune sortie brute recopiée** (contient le PRM). Si U2 infirmé → repli S4 sur `lastUpdate` > 36 h seul (ajuster T2.1).
 - **Résultats (2026-11-25, 👤, Domoticz 2026.4) :** U1 ✅ `LastUpdate` rafraîchi en < 1 min sans nouvelle donnée (`Touch()` confirmé → `lastUpdate` = vivacité du plugin, seuil 36 h = « plugin arrêté ») · U2 ✅ `HaveTimeout` exposé, `false` en nominal (`timedOut` utilisable) · U3 ❌ aucun canal « Linky » dans Paramètres > Notifications (le `onNotification` module n'expose pas de canal ; D1a reste valable pour `onCommand`). Constat additionnel : nom réel du device = `Linky` (→ T2.1 préfixe `'Linky'`). Trace : `010_reports/PHASE_0_COMPLETION_REPORT.md`.
 
-### Phase 1 — S1 : provenance CI épinglée (`domotique`, branche `ci/linky_fork_pin`) — 🔄 En cours
+### Phase 1 — S1 : provenance CI épinglée (`domotique`, branche `ci/linky_fork_pin`) — ✅ Complétée (PR #233)
 **Dépend de :** Phase 0, Gate #1.
 **Critères de réussite :**
 - ✅ 0 occurrence `guillaumezin|refs/heads/master` dans `build-domoticz.yml` ; 2 pins `ref: <sha40> # <tag>`
@@ -206,7 +206,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Agent :** 🟢 QALvin / ⚫ MAINa
 - **Acceptation :** issue « Dependency Dashboard » de `vzwingma/domotique` liste `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` (`gh issue list --repo vzwingma/domotique --search "Dependency Dashboard"` puis `gh issue view <n>`). Si absent → corriger la regex (retour T1.2).
 
-### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — ⏳ Planifié
+### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — 🔄 En cours
 **Dépend de :** Phase 0 (U1/U2, Q1, Q4), Gate #1. Indépendante de la phase 1.
 **Critères de réussite :**
 - ✅ 3 fichiers Lua modifiés, 0 PRM dans le diff
@@ -394,3 +394,5 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 | P1-#2 | 2026-11-25 | Validation code phase 1 (T1.1, T1.2) | ✅ GO | 2 fichiers (+34/−5) ; 0 `guillaumezin`/`refs/heads/master`, 2 pins SHA ; YAML/JSON OK ; `renovate-config-validator@44.262.1` OK ; regex testée LF/CRLF ; code-review : 0 bloquant, 0 non bloquant |
 | P1-#3 | 2026-11-25 | Validation tests phase 1 (T1.3) | ✅ GO | Run 45600293531 `success` ; blob `plugin.py` = `v2.6.1:plugin.py` ; 4 `*.py` deCONZ = tag 1.0.35 ; image `:linky_fork_pin` (≠ `latest`) ; T1.6 différée après merge. Volet fork de T1.4 reporté en T4.1 (une seule PR fork) |
 | P1-#4 | 2026-11-25 | Validation docs phase 1 (T1.4) | ✅ GO | `ARCHITECTURE.md` § 5.4, `_docker/build_domoticz/README.md` (procédure de montée de version), `README.md` ; `rg` d'acceptation → 0 ; restent T1.5 (merge 👤 + build `master`) et T1.6 (Dependency Dashboard) |
+| P1-✅ | 2026-11-25 | Clôture phase 1 (T1.5, T1.6) | ✅ | PR #233 mergée (`e9574e3`) ; run `master` 45601836698 `success` ; `latest` redéployée par 👤, plugin Linky 2.6.1 au démarrage ; Dependency Dashboard #139 (`regex`) liste `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` |
+| P2-#2 | 2026-11-25 | Validation code phase 2 (T2.1) | ✅ GO | 3 fichiers Lua (+52) ; `rg` préfixe → 3 fichiers ; 0 nombre à 14 chiffres dans le diff ; `luaparse` OK ×3 (`luac` absent) ; code-review : 0 finding ; préfixe `'Linky'` sans espace |

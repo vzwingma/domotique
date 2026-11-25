@@ -51,6 +51,8 @@ return {
         DEVICE_STATUT_NAS = 'NAS',
         DEVICE_STATUT_PERSONNAL_DEVICES = 'Equipements Personnels',
         DEVICE_STATUT_PHASE = 'Phase',
+        -- Énergie : plugin Python Linky (device nommé 'Linky' ; PRM non versionné)
+        DEVICE_LINKY_PREFIX = 'Linky',
 
         -- # Groupes #
         GROUPE_TOUS_VOLETS = '[Grp] Tous Volets',
@@ -208,6 +210,20 @@ return {
                  -- Si état=Off, le niveau est 0
                 return 0
             end
+        end,
+
+        -- # Retourne la liste des devices dont le nom commence par DEVICE_LINKY_PREFIX
+        -- @param domoticz : instance dzVents
+        -- @return table (éventuellement vide) de devices
+        getLinkyDevices = function(domoticz)
+            local prefix = domoticz.helpers.DEVICE_LINKY_PREFIX
+            local found = {}
+            domoticz.devices().forEach(function(d)
+                if string.sub(tostring(d.name), 1, #prefix) == prefix then
+                    table.insert(found, d)
+                end
+            end)
+            return found
         end,
         
         -- # Fonction d'envoi de notification
