@@ -26,14 +26,20 @@ jobs:
         name: Checkout the code Linky
         uses: actions/checkout@v7
         with:
-            repository: guillaumezin/DomoticzLinky
-            ref: refs/heads/master
+            repository: vzwingma/DomoticzLinky
+            ref: f3df2584ab398110eefe8d65df1b83d9a9d95395 # v2.6.1
+      - 
+        name: Trace Linky provenance
+        run: |
+          echo "Linky : vzwingma/DomoticzLinky @ $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          grep -m1 -o 'version="[^"]*"' plugin.py >> "$GITHUB_STEP_SUMMARY"
       # Upload plugin Linky
       - uses: actions/upload-artifact@v7
         name: Upload Python script
         with:
             name: linky-plugin
-            path: /home/runner/work/domotique/domotique/*.py
+            path: ${{ github.workspace }}/plugin.py
+            if-no-files-found: error
   # Download DeCONZ Script
   download-deconz:
     name: Download DeCONZ Script
@@ -46,13 +52,19 @@ jobs:
         uses: actions/checkout@v7
         with:
             repository: Smanar/Domoticz-deCONZ
-            ref: refs/heads/master
+            ref: 95b8f8baf6aacda21f2e3aec18d75ac705fd0b8a # 1.0.35
+      - 
+        name: Trace deCONZ provenance
+        run: |
+          echo "deCONZ : Smanar/Domoticz-deCONZ @ $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          grep -m1 -o 'version="[^"]*"' plugin.py >> "$GITHUB_STEP_SUMMARY"
       # Upload plugin deCONZ
       - uses: actions/upload-artifact@v7
         name: Upload Python scripts
         with:
             name: deconz-plugin
-            path: /home/runner/work/domotique/domotique/*.py
+            path: ${{ github.workspace }}/*.py
+            if-no-files-found: error
   # Push image to DockerHub
   build-push-domoticz:
     name: Build and Push ARM Docker Image

@@ -391,3 +391,4 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 |---|---|---|---|---|
 | #0 | 2026-11-25 | Choix de solution (14 décisions + Q1-Q6) | ✅ GO | Reco ARCos retenue ; ajustements : version 2.7.0, D11 backlog (`Mode2`=7), pas de rotation jetons (`Mode3` jamais activé), doc utilisateur des `Mode1`-`Mode6` ajoutée en T4.1. État initial revérifié (SHA v2.6.1/1.0.35 OK, PR #232 et fork#2 `MERGED`) |
 | #1 | 2026-11-25 | Validation plan + ADR 007 `Proposée` | ✅ GO | Phase 0 complétée (U1 ✅, U2 ✅, U3 ❌) ; T2.1 ajusté (préfixe `'Linky'` sans espace, device réel nommé `Linky`) ; exécution séquentielle P1 → P2 → P3 ; séquence `xfail` phase 3 validée ; ADR 007 → `Acceptée` |
+| P1-#2 | 2026-11-25 | Validation code phase 1 (T1.1, T1.2) | ✅ GO | 2 fichiers (+34/−5) ; 0 `guillaumezin`/`refs/heads/master`, 2 pins SHA ; YAML/JSON OK ; `renovate-config-validator@44.262.1` OK ; regex testée LF/CRLF ; code-review : 0 bloquant, 0 non bloquant |
