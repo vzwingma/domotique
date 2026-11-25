@@ -20,7 +20,7 @@ Les plugins ne sont pas versionnés dans ce dépôt : le workflow [`build-domoti
 
 | Plugin | Dépôt source | Référence (`ref:` du workflow) | Tag | Remarque |
 |---|---|---|---|---|
-| Linky | `vzwingma/DomoticzLinky` (fork maintenu) | `f3df2584ab398110eefe8d65df1b83d9a9d95395` | `v2.6.1` | L'upstream (`guillaumezin`) n'est plus maintenu ni consommé (avant l'ADR 007, la CI reprenait sa branche `master`). Rétrodoc : [RETROCONCEPTION.md](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) |
+| Linky | `vzwingma/DomoticzLinky` (fork maintenu) | `a7b232042a0ac725390583416043e327882510d5` | `v2.7.0` | Pin initial : `v2.6.1` (`f3df2584…`) ; monté en `v2.7.0` le 2026-11-25 (masquage des secrets dans les logs, correctifs). L'upstream (`guillaumezin`) n'est plus maintenu ni consommé (avant l'ADR 007, la CI reprenait sa branche `master`). Rétrodoc : [RETROCONCEPTION.md](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) |
 | deCONZ | `Smanar/Domoticz-deCONZ` | `95b8f8baf6aacda21f2e3aec18d75ac705fd0b8a` | `1.0.35` | — |
 
 **Reproductibilité** : un SHA de commit est immuable ; deux builds du même commit de ce dépôt embarquent donc exactement les mêmes plugins. Chaque job trace dans son *Step Summary* le SHA récupéré et la `version=` du `plugin.py`, et l'upload de l'artefact échoue s'il est vide (`if-no-files-found: error`). Voir aussi [`docs/ARCHITECTURE.md` § 5.4](../../docs/ARCHITECTURE.md#54-plugins-python-domoticz-linky-deconz).
