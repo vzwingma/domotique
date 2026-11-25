@@ -91,6 +91,31 @@ Copier : `global_data.lua`, `Health_check_dzVents.lua`, `Config_check.lua` (doss
 
 **Statut runtime : ⏳ en attente 👤** (critères plan « Chargement sans erreur », « Contrôle de configuration OK », « Santé dzVents OK au 08:00 suivant »).
 
+### T2.3 - Documenter S4 (🟣 DOCly)
+
+**Statut :** ✅ DONE (Gate P2-#3 GO ; mises à jour ciblées, aucun commit/push)
+
+**Source de vérité :** code `global_data.lua` (`DEVICE_LINKY_PREFIX = 'Linky'`, `getLinkyDevices`), `Health_check_dzVents.lua` (bloc 6, l. 103-123), `Config_check.lua` (contrôle 1bis). Comportement documenté : aucun device préfixé → anomalie ; `lastUpdate` > 36 h → « plugin inactif » ; sinon `timedOut` (plugin : aucune donnée Enedis > 1,5 j) → anomalie ; sinon OK ; messages avec `idx` uniquement ; erreur interne → « Linky inaccessible » ; limite post-redémarrage (`timedOut` faux ≤ 1,5 j, couverte par la règle 36 h).
+
+**Fichiers de doc modifiés (5) :**
+
+| Fichier | Changement |
+|---|---|
+| `domoticz/README.md` | Section `Config_check.lua` : puce contrôle par préfixe `Linky*` ; « 5 → 6 indicateurs » (intro de liste **et** ligne du tableau d'inventaire) ; nouveau point 6 (règles, `idx` seul, « Linky inaccessible », limite) ; ligne `Config_check.lua` du tableau complétée |
+| `docs/ARCHITECTURE.md` | § 5.4 : retrait de « aucun script dzVents ne les référence (ni `Config_check.lua` ni `Health_check_dzVents.lua`) » (remplacé : Linky supervisé, deCONZ non) et réécriture du point « Supervision » (plus de « aucune vérification ») ; § 6.1 : contrôle 1bis par préfixe ; § 6.2 : « 5 → 6 indicateurs », ligne 6 du tableau, note `idx`/limite 36 h |
+| `docs/RETROCONCEPTION_dzVents.md` | « quatre » (déjà faux) → « six » ; ajout des points 5 (jours fériés, qui manquait) et 6 (Linky) ; puce Config_check par préfixe ; tableau d'inventaire (Config_check + Health_check, 6 indicateurs) ; tableau « lot DEV-5 » : seuil Freebox corrigé 5 → 10 min (écart préexistant) + indicateurs jours fériés et Linky |
+| `.github/copilot-instructions.md` | § DEV-5 : « 5 → 6 indicateurs », ligne Linky (seuil 36 h puis `timedOut`, `idx` uniquement), rappel prérequis `Linky*` de `Config_check.lua` |
+| `.github/instructions/qa.instructions.md` | Ligne « Polling » : seuil Linky (`lastUpdate` < 36 h puis `timedOut` faux) ajouté aux seuils Health check |
+
+(5 fichiers de doc + ce rapport.) Non touchés : fork `DomoticzLinky` (T4.1), scripts Lua, `PHASE_3_COMPLETION_REPORT.md`, `docs/plans/README.md` (aucun changement de statut global de plan).
+
+**Vérifications :**
+- `rg -n "5 indicateurs|cinq indicateurs|quatre indicateurs" README.md docs domoticz .github` : **0 occurrence dans la documentation vivante**. Restent (historique, non modifiés) : `docs/plans/010_linky_suites.plan.md` l. 50 (état initial) et l. 232-233 (énoncé T2.3), `docs/plans/010_reports/ANALYSE_ARCOS.md` l. 474-479, ce rapport (l. 24), et **`.github/tasks/todo/INSTRUCTIONS_TRAVAUX_dzVents.md` l. 154** (« quatre indicateurs », ordre de travaux historique du lot DEV-5 — **hors périmètre T2.3, laissé en l'état ; à trancher par MAINa**).
+- Aucun nombre à 14 chiffres ajouté (`rg "[0-9]{14}"` sur les 5 fichiers modifiés : 0 ; les seuls résultats globaux sont préexistants : SVG, plans 007/009).
+- Liens : seuls ajouts = ancres internes `#6-supervision-et-observabilité` et `#62-health_check_dzventslua-quotidien-0800` (titres § 6 et § 6.2 existants de `docs/ARCHITECTURE.md`) ; aucun nouveau lien externe/relatif.
+- Aucun exemple de code ajouté ; aucune valeur de PRM/nom de device réel dans la doc (préfixe constant `Linky*` uniquement).
+- Reste hors périmètre (T4.1) : rétrodoc du fork § 15 (« supervision » → livré).
+
 ---
 
 ## 📊 Synthèse de Phase (section DEVon)
@@ -99,7 +124,7 @@ Copier : `global_data.lua`, `Health_check_dzVents.lua`, `Config_check.lua` (doss
 **Critères de réussite :**
 - ✅ 3 fichiers Lua modifiés, 0 PRM dans le diff (preuves statiques ci-dessus).
 - ⏳ Chargement sans erreur, `Contrôle de configuration OK`, `Santé dzVents OK` à 08:00 : runtime différé (T2.2, après synchronisation NAS — Q4) ; `luac -p` non disponible (analyse `luaparse` seulement).
-- ⏳ Documentation « 6 indicateurs » : T2.3 (DOCly) après Gate P2-#3.
+- ✅ Documentation « 6 indicateurs » : T2.3 (DOCly) livrée (5 fichiers de doc, cf. section T2.3).
 
 **Synthèse 🟢 QALvin (T2.2 — statique) :** 19/19 contrôles ✅ ; simulation 30/30 assertions + 6 mutations détectées ; `rg "[0-9]{14}" domoticz` → 0 ; aucun script de prod modifié. **Runtime : ⏳ en attente 👤** (chargement sans erreur, `Contrôle de configuration OK`, `Santé dzVents OK` à 08:00) — checklist ci-dessus. Phase 2 non clôturable avant retour 👤 sur le runtime.
 

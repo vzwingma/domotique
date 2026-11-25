@@ -32,10 +32,11 @@ L'architecture est organisée implicitement par familles de scripts.
 - `Config_check.lua`
   - déclenché une fois au boot (`systemStart`) ;
   - vérifie la présence de tous les devices, groupes, scènes Domoticz et variables utilisateur critiques ;
+  - vérifie aussi la présence du device du plugin Linky par **préfixe** : au moins un device dont le nom commence par `Linky` (prérequis `Linky*`, constante `DEVICE_LINKY_PREFIX` de `global_data.lua`) ;
   - émet un `LOG_ERROR` pour chaque prérequis absent, puis un résumé global ;
   - n'interrompt aucun flux : les erreurs sont purement informatives.
 
-| `Health_check_dzVents.lua` décrit ci-dessus, 5 indicateurs sont contrôlés quotidiennement (à 08:00) :
+| `Health_check_dzVents.lua` décrit ci-dessus, 6 indicateurs sont contrôlés quotidiennement (à 08:00) :
 1. `scenePhase` : valeur exploitable (pas `nil` ni `'Inconnue'`) ;
    si `'Inconnue'` mais device `Phase` < 25h → état transitoire probable après redémarrage (LOG_INFO) ;
    si `'Inconnue'` et device `Phase` >= 25h → panne avérée (LOG_ERROR) ;
@@ -43,7 +44,15 @@ L'architecture est organisée implicitement par familles de scripts.
 3. device `Freebox` : dernière mise à jour < 10 minutes (polling Freebox ~1 min) ;
    seuil relevé de 5 à 10 min pour absorber les délais de polling après redémarrage nocturne ;
 4. device `Tydom Temperature` : dernière mise à jour < 90 minutes (polling Tydom ~60 min) ;
-5. `globalData.joursFeries` : liste non vide ; si vide, émission de l'événement `JoursFeries Refresh` pour forcer le rechargement.
+5. `globalData.joursFeries` : liste non vide ; si vide, émission de l'événement `JoursFeries Refresh` pour forcer le rechargement ;
+6. plugin Linky (devices dont le nom commence par `Linky`, via `getLinkyDevices`) :
+   - aucun device préfixé `Linky` → anomalie ;
+   - dernière mise à jour > 36 heures → anomalie « plugin inactif » (le plugin rafraîchit le device environ toutes les 50 s) ;
+   - sinon `timedOut` (le plugin met le device en `TimedOut` après 1,5 jour sans donnée Enedis) → anomalie ;
+   - sinon nominal ;
+   - les messages ne citent que l'`idx` du device (le PRM figure dans son nom, son ID et sa description : jamais journalisé) ;
+   - erreur interne lors du contrôle → anomalie « Linky inaccessible » (n'empêche pas le résumé) ;
+   - limite connue : après un redémarrage de Domoticz, `timedOut` reste faux jusqu'à 1,5 jour (le plugin réarme son délai) ; la règle des 36 heures couvre ce cas.
 
 Chaque indicateur dégradé produit un `LOG_ERROR` corrélé à un `uuid` et déclenche une notification Signal.
 
@@ -104,8 +113,8 @@ Ces scripts jouent la partition temporelle de la maison et diffusent la phase co
 |---|---|---|---|
 | `global_data.lua` | Référentiel de constantes, helpers, table `TYDOM_DEVICES` et wrappers HTTP | Chargement global | Fonctions partagées, `globalData.scenePhase`, IDs Tydom centralisés |
 | `global_HTTP_response.lua` | Callback HTTP générique | `httpResponses` | Logs succès/erreur |
-| `Config_check.lua` | Contrôle de prérequis Domoticz au démarrage | `systemStart` | `LOG_ERROR` par prérequis absent, résumé global |
-| `Health_check_dzVents.lua` | Contrôle quotidien de santé des automatismes (scenePhase, scènes, Freebox, Tydom, jours fériés) — 5 indicateurs | timer `at 08:00` | `LOG_ERROR` + notification Signal si indicateur dégradé ; `LOG_INFO` résumé si tout est nominal |
+| `Config_check.lua` | Contrôle de prérequis Domoticz au démarrage (dont device `Linky*` par préfixe) | `systemStart` | `LOG_ERROR` par prérequis absent, résumé global |
+| `Health_check_dzVents.lua` | Contrôle quotidien de santé des automatismes (scenePhase, scènes, Freebox, Tydom, jours fériés, plugin Linky) — 6 indicateurs | timer `at 08:00` | `LOG_ERROR` + notification Signal si indicateur dégradé ; `LOG_INFO` résumé si tout est nominal |
 | `JoursFeries_API.lua` | Chargement des jours fériés français depuis l'API officielle `calendrier.api.gouv.fr` | timer annuel (1/1 00:05), timer mensuel (1er du mois 00:10), customEvent `JoursFeries Refresh` | `globalData.joursFeries` = table de lookup `{ ['YYYY-MM-DD'] = true }` |
 | `Freebox_login.lua` | Authentification Freebox et gestion de session | timer minute, custom events, callbacks HTTP/shell | Événement `freebox_session`, logout |
 | `Freebox_statut.lua` | Supervision du WAN Freebox | custom event `freebox_session`, callback HTTP | mise à jour capteur Freebox |

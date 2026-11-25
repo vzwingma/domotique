@@ -132,9 +132,71 @@
 
 ---
 
+### T3.5 — Valider S2/S3 (🟢 QALvin)
+
+**Statut :** ✅ DONE côté QA (changements **non commités, non poussés** — à committer par ⚫ MAINa ; preuve CI verte = après push). Base : `b7e939d` (correctifs, non poussé) sur `9b0cb51` (harnais, poussé). `plugin.py` **non modifié**.
+
+**Fichiers modifiés (fork `DomoticzLinky`, `git diff --stat` : 5 fichiers, +15 / −27) :**
+- `tests/test_callbacks.py`, `tests/test_devices.py`, `tests/test_merge_counters.py`, `tests/test_secrets_masking.py` : retrait des **22 décorateurs** `@pytest.mark.xfail(strict=True, …)` (= les **45 cas** : 21 fonctions simples + 1 fonction paramétrée `test_message_libre_masque` = 6 gabarits × 4 méthodes = 24 cas ; soit 22 marqueurs) et des mentions « xfail » des docstrings de module. Rien d'autre affaibli (diff filtré : seules lignes supprimées = décorateurs + 4 lignes de docstring reformulées).
+- `tests/test_secrets_masking.py` : **+1 test** `test_dump_authorization_sans_schema_masque_par_la_cle` (voir mutation « Authorization » ci-dessous).
+- `.github/workflows/ci.yml` (décision MAINa, 👤 a confirmé **Python 3.13.5 sur le NAS**) : job `test` passé en matrice `python-version: ["3.11", "3.13"]` (3.13 = production, 3.11 = compatibilité minimale), `fail-fast: false`, nom de job `test (Python ${{ matrix.python-version }})`, `setup-python` lit `${{ matrix.python-version }}`. `ruff.toml` **inchangé** (`target-version = "py311"`). YAML relu avec PyYAML : `strategy = {'fail-fast': False, 'matrix': {'python-version': ['3.11', '3.13']}}`.
+
+**Preuves :**
+| Commande | Résultat |
+|---|---|
+| `.venv\Scripts\python -m py_compile plugin.py` (3.14.7) | rc 0 |
+| `.venv\Scripts\python -m ruff check plugin.py tests` | `All checks passed!` |
+| `.venv\Scripts\python -m pytest -q -rxX` (3.14.7) | **88 passed**, 0 xfail / xpass / skip / échec |
+| `rg -n "xfail" tests` | 0 ligne (rc 1) |
+| **Python 3.11.9** (venv temporaire hors dépôt, pytest 9.2.0 / ruff 0.17.6) : `py_compile`, `ruff check`, `pytest -q -rxX` | rc 0 / `All checks passed!` / **88 passed** |
+| **Python 3.13.15** (idem) : `py_compile`, `ruff check`, `pytest -q -rxX` (+ `-W error::DeprecationWarning`) | rc 0 / `All checks passed!` / **88 passed**, 0 avertissement |
+
+Écart de comptage : 87 tests (demande) + 1 test ajouté = 88. Les venv temporaires (`%TEMP%\qal311`, `qal313`) et copies de mutation ont été supprimés. La CI GitHub (matrice 3.11 + 3.13) reste à constater après push : `gh run list --repo vzwingma/DomoticzLinky --limit 1`.
+
+**Revue du diff `b7e939d` (`git --no-pager show b7e939d -U4`) :**
+- **Persistance inchangée** : aucune ligne `+/-` ne touche un appel `setConfigItem`/`getConfigItem` ni un nom de clé ; seule la **chaîne du message d'erreur** de `setConfigItem` change (`str(Value)` → `(type <Nom>)`) ; `pickle`/base64/`blake2s`/`sha512` intacts. Les 10 tests de `test_persistence.py` (clés `usage_points_id`, `token_type`, `refresh_token`, `access_token`, `expires_at`, `cache`, `cache_checksum`, `history_days`) sont verts ; mutation « clé `cache_checksum` renommée » détectée.
+- **D12 inchangé** : aucun hunk dans la gestion du 500 en production ; `test_d12_production_500.py` (2) vert.
+- **Clair conservé** : `user_code` + URL de consentement + PRM + `Verb`/`URL`/`Host` toujours journalisés en clair (`TestNonRegressionEnClair`, 3 tests verts) ; `device_code` jamais journalisé.
+- **Couverture du masquage** : `SENSITIVE_KEYS` = `authorization`, `access_token`, `refresh_token`, `device_code`, `id_token`, `cookie`, `set-cookie` (comparaison `casefold`, 3 profondeurs de `dumpDictToLog`) ; motifs : `clé=valeur` (URL-encodé), JSON `"clé":"valeur"`, `Bearer|Basic <jeton>`. Les 4 `my*()` filtrent le message (idempotent). `Domoticz.Log/Status/Error/Debug` appelés directement **uniquement** dans les `my*()` (l. 348-374) ; aucun `print`/`logging`. Aucune sentinelle dans les sorties capturées (tests `assert_no_leak` sur journaux + fichier de debug).
+- ⚠️ **Écart vs demande : `client_secret` n'est PAS masqué** (ni clé sensible, ni motif) — vérifié : `maskSecrets("client_secret=ABC123&x=1")` et JSON `"client_secret"` inchangés. **Sans impact actuel** : `client_secret` n'apparaît **nulle part** dans `plugin.py` (`rg client_secret plugin.py` → 0 ; flux device-code avec seulement `client_id`), donc aucun chemin de fuite. Recommandation défense en profondeur (non bloquante, à arbitrer par MAINa/👤) : ajouter `client_secret` à `SENSITIVE_KEYS` et aux 2 motifs. Aucun test n'a été écrit pour ce comportement non livré (pas de test en échec).
+- Observation (cosmétique) : `setConfigItem`, ligne du `myError` → `str(Key)             + "\" (type "` : espaces superflus avant `+` (valide, sans effet).
+- D17 (`Domoticz.Debugging(1)`, Mode3 ≥ 2 → jetons exposés par le framework, l. 2031) et D18 (`setConfigItem`/`checksum` → `UnboundLocalError`) : **BACKLOG** (décision 👤), non testés comme bugs. D4/D11 : hors périmètre.
+- **Compat Python 3.11** : aucune syntaxe 3.12+ (pas de f-string imbriquée, pas de `type X =`, pas de génériques PEP 695) ; **prouvée** par exécution réelle sous 3.11.9 (compilation + 88 tests + ruff) et 3.13.15.
+- Pas de `.py` supplémentaire à la racine (`plugin.py` seul).
+
+**Détection de régression** (mutations sur **copies temporaires hors dépôt** de `plugin.py` + `tests/`, suite complète lancée ; baseline non mutée = 88 passed) :
+| Mutation | Résultat |
+|---|---|
+| `myMessage` sans `maskSecrets` | ✅ 6 failed |
+| `myLog`/`myStatus`/`myError` sans `maskSecrets` | ✅ 18 failed |
+| `setConfigItem` : retour à `str(Value)` | ✅ 1 failed |
+| D3 : boucle remise sur `dData[consommation]` | ✅ 1 failed |
+| D3 : `except` sans `myError` | ✅ 1 failed |
+| D3 : garde d'existence des PRM neutralisée | ✅ 1 failed |
+| D3 : `.get("value_year", 0)` → accès direct | ✅ 2 failed |
+| `maskValue` neutralisé (`str(value)`) | ✅ 3 failed |
+| motif `Bearer/Basic` retiré | ✅ 8 failed |
+| motif `device_code=` retiré | ✅ 5 failed |
+| motif JSON retiré | ✅ 6 failed |
+| D5 : plus d'erreur « Trop de dispositifs » | ✅ 1 failed |
+| D16 : `close()` retiré | ✅ 1 failed |
+| D2 : message « Version … non reconnue » retiré | ✅ 1 failed |
+| D1a : `onNotification` renommée | ✅ 2 failed |
+| persistance : clé `cache_checksum` renommée | ✅ 2 failed |
+| `user_code` masqué (non-régression du clair) | ✅ 1 failed |
+| PRM sur-masqué | ✅ 2 failed |
+| `Authorization` retiré de `SENSITIVE_KEYS` | ⚠️ **non détectée au 1er passage** (motif `Bearer` masquait déjà la valeur) → test ajouté (valeur sans schéma) → ✅ 1 failed |
+| `dumpDictToLog` branche non-dict : `maskSecrets(...)` → `str(...)` | ℹ️ non détectée : **mutant équivalent** (`myDebug → myMessage` re-masque ; défense en profondeur redondante) — pas de test ajouté |
+
+Bilan : 20/20 mutations non équivalentes détectées (après ajout d'1 test) ; 1 mutant équivalent documenté.
+
+**Tests ignorés / désactivés :** aucun. **Couverture :** pas de mesure chiffrée (pas de `pytest-cov` dans `requirements-dev.txt`, non ajouté pour ne pas élargir le périmètre) ; couverture fonctionnelle = chaque correctif S3/D1a/D2/D3/D5/D16 + caractérisation persistance/D12/D4/consentement, validée par les mutations ci-dessus.
+
+---
+
 ## 📊 Synthèse de Phase
 
-**Tâches complétées :** 4/5 (T3.1 ✅ ; T3.2-T3.4 ✅ 🔵 DEVon, Gate #2 en attente ; T3.5 🟢 QALvin ⏳)
+**Tâches complétées :** 5/5 côté exécution (T3.1 ✅ ; T3.2-T3.4 ✅ 🔵 DEVon ; T3.5 ✅ 🟢 QALvin — commit/push et run CI matrice 3.11 + 3.13 en attente, Gate P3-#3)
 **Critères de réussite (T3.1) :**
 - ✅ `python -m pytest -q` → caractérisation verts (42) + bugs en `xfail` attendus (45), 0 XPASS
 - ✅ `python -m py_compile plugin.py` OK

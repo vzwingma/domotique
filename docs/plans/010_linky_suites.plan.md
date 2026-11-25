@@ -206,7 +206,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Agent :** 🟢 QALvin / ⚫ MAINa
 - **Acceptation :** issue « Dependency Dashboard » de `vzwingma/domotique` liste `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` (`gh issue list --repo vzwingma/domotique --search "Dependency Dashboard"` puis `gh issue view <n>`). Si absent → corriger la regex (retour T1.2).
 
-### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — 🔄 En cours
+### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — ✅ Complétée (merge 👤 en attente)
 **Dépend de :** Phase 0 (U1/U2, Q1, Q4), Gate #1. Indépendante de la phase 1.
 **Critères de réussite :**
 - ✅ 3 fichiers Lua modifiés, 0 PRM dans le diff
@@ -397,4 +397,6 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 | P1-✅ | 2026-11-25 | Clôture phase 1 (T1.5, T1.6) | ✅ | PR #233 mergée (`e9574e3`) ; run `master` 45601836698 `success` ; `latest` redéployée par 👤, plugin Linky 2.6.1 au démarrage ; Dependency Dashboard #139 (`regex`) liste `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` |
 | P2-#2 | 2026-11-25 | Validation code phase 2 (T2.1) | ✅ GO | 3 fichiers Lua (+52) ; `rg` préfixe → 3 fichiers ; 0 nombre à 14 chiffres dans le diff ; `luaparse` OK ×3 (`luac` absent) ; code-review : 0 finding ; préfixe `'Linky'` sans espace |
 | P2-#3 | 2026-11-25 | Validation tests phase 2 (T2.2) | ✅ GO | Statique 19/19, simulation fengari 30/30, 6 mutations détectées ; runtime NAS (timer `every minute` temporaire) : chargement sans erreur, `Linky (idx 90) — OK (6 min)`. Seul indicateur dégradé = jours fériés vidés par le rechargement de `global_data.lua` (`globalData` réinitialisé → `JoursFeries Refresh` émis, comportement attendu, non lié). `Config_check` : déclaré OK par 👤 |
-| P3-#2 | 2026-11-25 | Validation code phase 3 (T3.1-T3.4) | ✅ GO (option A) | Harnais 42 verts + 45 `xfail` (CI fork run 45607810574 ✅) ; `plugin.py` +69/−20, `--runxfail` 87/87 ; code-review : 1 moyen préexistant (D17 `Debugging(1)`) → avertissement doc T4.1 + backlog ; D18 `setConfigItem/checksum` → backlog. Python 3.11 NAS non confirmé (CI 3.11 fait foi) |
+| P3-#2 | 2026-11-25 | Validation code phase 3 (T3.1-T3.4) | ✅ GO (option A) | Harnais 42 verts + 45 `xfail` (CI fork run 45607810574 ✅) ; `plugin.py` +69/−20, `--runxfail` 87/87 ; code-review : 1 moyen préexistant (D17 `Debugging(1)`) → avertissement doc T4.1 + backlog ; D18 `setConfigItem/checksum` → backlog. Python 3.11 NAS non confirmé (CI 3.11 fait foi) ; post-gate : 👤 confirme Python **3.13.5** sur le NAS → CI fork en matrice 3.11 + 3.13 (T3.5) ; runtime NAS phase 2 confirmé OK par 👤 |
+| P2-#4 | 2026-11-25 | Validation docs phase 2 (T2.3) | ✅ GO | 5 docs (README dzVents, ARCHITECTURE § 5.4/6.1/6.2, RETROCONCEPTION_dzVents, copilot-instructions DEV-5, qa.instructions) ; `rg` 5/cinq/quatre indicateurs → 0 (docs vivantes) ; `.github/tasks/todo/INSTRUCTIONS_TRAVAUX_dzVents.md` laissé (historique DEV-5) ; volet fork § 15 → T4.1 |
+| P3-#3 | 2026-11-25 | Validation tests phase 3 (T3.5) | ✅ GO | 0 `xfail` ; 88 tests verts sous 3.11.9/3.13.15/3.14.7 ; CI fork run 45611721347 matrice 3.11 + 3.13 ✅ ; 20/20 mutations non équivalentes détectées. 👤 : corriger **maintenant** `client_secret` non masqué (défense en profondeur, T3.6) avant T4.1 |

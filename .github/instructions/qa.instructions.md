@@ -53,7 +53,7 @@ Le dépôt ne fournit pas suite unitaire Lua standardisée pour dzVents. QA s'ap
 - **uuid** : conservé dans logs et headers HTTP (`X-CorrId`)
 - **Helpers** : respect des wrappers centralisés de `global_data.lua`
 - **IDs Tydom** : aucun hard-code dans script métier (uniquement `TYDOM_DEVICES`)
-- **Polling** : si polling change (timer fréquence), vérifier seuils `Health_check_dzVents.lua` (Phase < 25h, Freebox < 10 min, Tydom Temp < 90 min)
+- **Polling** : si polling change (timer fréquence), vérifier seuils `Health_check_dzVents.lua` (Phase < 25h, Freebox < 10 min, Tydom Temp < 90 min, Linky : lastUpdate < 36h puis `timedOut` faux)
 
 ## Commandes utiles (Docker Compose)
 

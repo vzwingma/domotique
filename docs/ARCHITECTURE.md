@@ -341,7 +341,7 @@ API publique officielle du gouvernement français listant les jours fériés en 
 
 ### 5.4 Plugins Python Domoticz (Linky, deCONZ)
 
-Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzwingmadomatic/domoticz`) : **Linky** (compteur Enedis) et **deCONZ** (Zigbee). Contrairement aux bridges 5.1 et 5.2, ils s'exécutent **dans le processus Domoticz** (framework de plugins Python) et **aucun script dzVents ne les référence** (ni `Config_check.lua` ni `Health_check_dzVents.lua`).
+Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzwingmadomatic/domoticz`) : **Linky** (compteur Enedis) et **deCONZ** (Zigbee). Contrairement aux bridges 5.1 et 5.2, ils s'exécutent **dans le processus Domoticz** (framework de plugins Python) et sont **supervisés côté dzVents** pour Linky uniquement (contrôle de présence par `Config_check.lua`, indicateur n° 6 de `Health_check_dzVents.lua` — voir [§ 6](#6-supervision-et-observabilité)) ; aucun script dzVents ne référence le plugin deCONZ.
 
 | Plugin | Rôle | Source embarquée par la CI | Documentation |
 |---|---|---|---|
@@ -373,7 +373,7 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 - **Persistance** : jetons OAuth et cache du plugin sont stockés par Domoticz (`Domoticz.Configuration`) dans `domoticz.db`. Le compose NAS ne monte que `domoticz.db` et `scripts/dzVents` : les plugins restent ceux de l'image. Monter tout `/opt/domoticz/userdata` masquerait `plugins/` (voir [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md)).
 - **Plateforme** : le workflow construit l'image Domoticz en `linux/arm/v7` (`DOCKER_TARGET_PLATFORM`) ; le job Tydom construit en `linux/arm64`.
 - **deCONZ** : le plugin Domoticz communique avec l'API deCONZ ; le conteneur deCONZ (ConBee III) est défini dans `_docker/envs/pi/domotique-compose.yml`, sur un hôte distinct de celui de Domoticz (`envs/nas`).
-- **Supervision** : aucune vérification automatique de la fraîcheur du dispositif Linky (le plugin met le dispositif en `TimedOut` après 1,5 jour sans données).
+- **Supervision** : le plugin Linky est supervisé par dzVents (`Config_check.lua` au démarrage, `Health_check_dzVents.lua` chaque jour à 08:00 : device préfixé `Linky` présent, mis à jour depuis moins de 36 h, non `TimedOut` — détail en [§ 6.2](#62-health_check_dzventslua-quotidien-0800)). Le plugin met lui-même le device en `TimedOut` après 1,5 jour sans donnée Enedis ; après un redémarrage de Domoticz, ce `TimedOut` reste faux jusqu'à 1,5 jour, ce que la règle des 36 h couvre. Le PRM (présent dans le nom, l'ID et la description du device) n'est jamais journalisé : les messages ne citent que l'`idx`.
 
 ---
 
@@ -381,11 +381,11 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 
 ### 6.1 Config_check.lua (boot)
 
-Déclenché au `systemStart`. Vérifie la présence de tous les devices, groupes, scènes et variables critiques. Émet `LOG_ERROR` par prérequis absent — purement informatif, n'interrompt aucun flux.
+Déclenché au `systemStart`. Vérifie la présence de tous les devices, groupes, scènes et variables critiques. Le device du plugin Linky est contrôlé par **préfixe** (contrôle 1bis : au moins un device dont le nom commence par `Linky`, prérequis `Linky*`). Émet `LOG_ERROR` par prérequis absent — purement informatif, n'interrompt aucun flux.
 
 ### 6.2 Health_check_dzVents.lua (quotidien, 08:00)
 
-Contrôle quotidien de **5 indicateurs de santé** :
+Contrôle quotidien de **6 indicateurs de santé** :
 
 | # | Indicateur | Seuil |
 |---|---|---|
@@ -394,8 +394,9 @@ Contrôle quotidien de **5 indicateurs de santé** :
 | 3 | Device `Freebox` | Dernière mise à jour < 10 minutes |
 | 4 | Device `Tydom Temperature` | Dernière mise à jour < 90 minutes |
 | 5 | `globalData.joursFeries` | Liste non vide ; déclenche `JoursFeries Refresh` sinon |
+| 6 | Plugin Linky (devices préfixés `Linky`) | Au moins un device ; dernière mise à jour < 36 heures (sinon « plugin inactif ») ; non `TimedOut` (plugin : aucune donnée Enedis depuis plus de 1,5 jour) ; erreur interne = anomalie « Linky inaccessible » |
 
-En cas d'indicateur dégradé : `LOG_ERROR` + notification Signal. Si tout est nominal : `LOG_INFO` de synthèse.
+En cas d'indicateur dégradé : `LOG_ERROR` + notification Signal. Si tout est nominal : `LOG_INFO` de synthèse. Les messages de l'indicateur 6 ne citent que l'`idx` du device (le PRM figure dans son nom/ID/description et n'est jamais journalisé). Limite : après un redémarrage de Domoticz, `TimedOut` reste faux jusqu'à 1,5 jour ; la règle des 36 h couvre ce cas.
 
 ---
 

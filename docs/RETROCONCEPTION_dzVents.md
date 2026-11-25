@@ -32,12 +32,13 @@ L'architecture est organisée implicitement par familles de scripts.
 - `Config_check.lua`
   - déclenché une fois au boot (`systemStart`) ;
   - vérifie la présence de tous les devices, groupes, scènes Domoticz et variables utilisateur critiques ;
+  - vérifie le device du plugin Linky par **préfixe** (contrôle 1bis : au moins un device dont le nom commence par `Linky`, prérequis `Linky*`) ;
   - émet un `LOG_ERROR` pour chaque prérequis absent, puis un résumé global ;
   - n'interrompt aucun flux : les erreurs sont purement informatives.
 
-- `Health_check_dzVents.lua` *(ajouté dans le lot DEV-5, seuils ajustés dans followup-health-thresholds)*
+- `Health_check_dzVents.lua` *(ajouté dans le lot DEV-5, seuils ajustés dans followup-health-thresholds, indicateurs 5 et 6 ajoutés ensuite)*
   - déclenché chaque matin à 08:00 par timer ;
-  - contrôle quotidien de quatre indicateurs de santé :
+  - contrôle quotidien de six indicateurs de santé :
     1. `scenePhase` : valeur exploitable (pas `nil` ni `'Inconnue'`) ;
        si `'Inconnue'` mais device `Phase` < 25h → état transitoire probable après redémarrage (LOG_INFO) ;
        si `'Inconnue'` et device `Phase` >= 25h → panne avérée (LOG_ERROR) ;
@@ -45,6 +46,11 @@ L'architecture est organisée implicitement par familles de scripts.
     3. device `Freebox` : dernière mise à jour < 10 minutes (polling Freebox ~1 min) ;
        seuil relevé de 5 à 10 min pour absorber les délais de polling après redémarrage nocturne ;
     4. device `Tydom Temperature` : dernière mise à jour < 90 minutes (polling Tydom ~60 min) ;
+    5. `globalData.joursFeries` : liste non vide ; si vide, émission de l'événement `JoursFeries Refresh` pour forcer le rechargement ;
+    6. plugin Linky (devices dont le nom commence par `Linky`) : aucun device préfixé → anomalie ; dernière mise à jour > 36 heures → « plugin inactif » ; sinon `timedOut` (plugin : aucune donnée Enedis depuis plus de 1,5 jour) → anomalie ; sinon nominal ;
+       les messages ne citent que l'`idx` (le PRM figure dans le nom, l'ID et la description du device : jamais journalisé) ;
+       une erreur interne produit l'anomalie « Linky inaccessible » ;
+       limite : après un redémarrage de Domoticz, `timedOut` reste faux jusqu'à 1,5 jour ; la règle des 36 heures couvre ce cas ;
   - chaque indicateur dégradé produit un `LOG_ERROR` corrélé à un `uuid` et déclenche une notification Signal ;
   - si tous les indicateurs sont nominaux, un `LOG_INFO` de synthèse est émis ;
   - n'interrompt ni ne modifie aucun flux existant.
@@ -102,8 +108,8 @@ Ces scripts jouent la partition temporelle de la maison et diffusent la phase co
 |---|---|---|---|
 | `global_data.lua` | Référentiel de constantes, helpers, table `TYDOM_DEVICES` et wrappers HTTP | Chargement global | Fonctions partagées, `globalData.scenePhase`, IDs Tydom centralisés |
 | `global_HTTP_response.lua` | Callback HTTP générique | `httpResponses` | Logs succès/erreur |
-| `Config_check.lua` | Contrôle de prérequis Domoticz au démarrage | `systemStart` | `LOG_ERROR` par prérequis absent, résumé global |
-| `Health_check_dzVents.lua` | Contrôle quotidien de santé des automatismes (scenePhase, scènes, Freebox, Tydom) | timer `at 08:00` | `LOG_ERROR` + notification Signal si indicateur dégradé ; `LOG_INFO` résumé si tout est nominal |
+| `Config_check.lua` | Contrôle de prérequis Domoticz au démarrage (dont device `Linky*` par préfixe) | `systemStart` | `LOG_ERROR` par prérequis absent, résumé global |
+| `Health_check_dzVents.lua` | Contrôle quotidien de santé des automatismes (scenePhase, scènes, Freebox, Tydom, jours fériés, plugin Linky) — 6 indicateurs | timer `at 08:00` | `LOG_ERROR` + notification Signal si indicateur dégradé ; `LOG_INFO` résumé si tout est nominal |
 | `Freebox_login.lua` | Authentification Freebox et gestion de session | timer minute, custom events, callbacks HTTP/shell | Événement `freebox_session`, logout |
 | `Freebox_statut.lua` | Supervision du WAN Freebox | custom event `freebox_session`, callback HTTP | mise à jour capteur Freebox |
 | `Freebox_LAN_statuts.lua` | Supervision LAN et détection téléphones | custom event `freebox_session`, callback HTTP | statuts TV/NAS/Domotique, nb téléphones |
@@ -434,7 +440,7 @@ Les améliorations ci-dessous, relevant de la factorisation des groupes et de l'
 | `Groupes_Volets.lua` | Réalignement du groupe de groupes volets codé localement | Utilisation de `verifyGroupeFromItem` après la cascade groupe -> items | Maintenir les appels à `verifyGroupeFromItem` à jour si la hiérarchie de groupes change |
 | `Tydom_volets_setPosition.lua` | Réalignement des groupes volets codé localement après commande | Utilisation de `verifyGroupeFromItem` pour les groupes salon, chambres et tous volets | Idem |
 | `Devices_Lampes_Groupe.lua` | Réalignement du groupe lumières codé localement | Utilisation de `verifyGroupeFromItem` pour le groupe salon | Idem |
-| `Health_check_dzVents.lua` *(nouveau)* | Aucun contrôle quotidien de santé des automatismes | Script dédié déclenché à 08:00, vérifiant `scenePhase`, fraîcheur du device `Phase`, fraîcheur Freebox (seuil 5 min) et fraîcheur Tydom (seuil 90 min) ; notification Signal si dégradé | Mettre à jour les seuils et les indicateurs si le polling ou la structure des intégrations change |
+| `Health_check_dzVents.lua` *(nouveau)* | Aucun contrôle quotidien de santé des automatismes | Script dédié déclenché à 08:00, vérifiant `scenePhase`, fraîcheur du device `Phase`, fraîcheur Freebox (seuil 10 min), fraîcheur Tydom (seuil 90 min), liste des jours fériés non vide et activité du plugin Linky (device préfixé `Linky` présent, mis à jour < 36 h, non `TimedOut`) ; notification Signal si dégradé | Mettre à jour les seuils et les indicateurs si le polling ou la structure des intégrations change |
 | Tous les scripts du périmètre DEV-5 | Logs hétérogènes (marker, niveau, format) | Homogénéisation : marker entre crochets `[Domaine] `, format `[uuid] message`, niveaux `LOG_DEBUG` / `LOG_INFO` / `LOG_ERROR` cohérents | Respecter ce format dans tout nouveau script ou modification ; ne pas journaliser directement une variable pouvant être `nil` (utiliser `tostring()`) |
 
 ## 11. Conclusion
