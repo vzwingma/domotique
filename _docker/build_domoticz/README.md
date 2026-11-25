@@ -73,7 +73,7 @@ docker run --name=domoticz -d \
 | `TZ` | Fuseau horaire (ex : `Europe/Paris`) |
 
 > **Note :** Le volume `scripts/dzVents` est optionnel. S'il est monté, il remplace les scripts embarqués dans l'image.
-> En production, les scripts sont embarqués dans l'image (pas de volume) pour garantir la cohérence image/scripts.
+> En production, le compose NAS (`_docker/envs/nas/domotique-compose.yml`) **monte** ce dossier (`/volume1/home/vinz/domoticz/scripts/dzVents` → `/opt/domoticz/userdata/scripts/dzVents/generated_scripts`) : les scripts de l'image sont alors remplacés par ceux de l'hôte.
 
 > ⚠️ **Montage de `userdata`** : l'exemple ci-dessus monte `$DOMOTICZ_PATH/database` sur **tout** `/opt/domoticz/userdata`. Ce montage **masque** les répertoires de l'image, dont `plugins/` (Linky, deCONZ) et `scripts/` : les plugins n'apparaîtraient plus dans Domoticz tant que ce répertoire hôte ne les contient pas. Le compose de production (`_docker/envs/nas`) ne monte que le fichier `domoticz.db` (et `scripts/dzVents`). Privilégier ce montage ciblé (jetons OAuth et cache du plugin Linky sont stockés dans `domoticz.db`).
 

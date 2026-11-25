@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/009_retrodoc_domoticzlinky.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔄 En cours
+**Statut :** ✅ Complété
 **Objectif Prioritaire :** MEDIUM
 **ADR associé :** aucun (initiative documentaire uniquement ; ADR prévu pour la suite S1)
 
@@ -62,7 +62,7 @@ Option **C + B3** (analyse 🟠 ARCos du 2026-11-25) : rétrodoc du code dans le
 - **Couvrir :** composant Linky (lien fork + rétrodoc) ; dans le README de build : provenance du plugin (upstream `master` non épinglé), avertissement sur le montage de tout `userdata` qui masque les plugins de l'image, correction de l'écart d'architecture annoncée (arm64 vs `linux/arm/v7` construit par la CI) après vérification.
 - **Acceptation :** liens valides, faits alignés sur le workflow CI.
 
-### Phase 2 — Revue factuelle et liens — 🔄 En cours
+### Phase 2 — Revue factuelle et liens — ✅ Complété
 **Contexte :** pas de suite de tests applicable (documentation) ; contrôle par échantillonnage contre le code.
 **Critères de réussite :**
 - ✅ ≥ 15 affirmations techniques vérifiées contre `plugin.py` / CI / Dockerfile, 0 écart bloquant
@@ -74,7 +74,7 @@ Option **C + B3** (analyse 🟠 ARCos du 2026-11-25) : rétrodoc du code dans le
 - **Couvrir :** échantillon de faits (paramètres, états, endpoints, codes HTTP, clés de persistance, types de devices, planification, sécurité) ; liens ; absence de secret ; absence de modification de code.
 - **Acceptation :** tableau fait → source → ✅/❌ ; écarts signalés (non corrigés par QALvin).
 
-### Phase 3 — Clôture — ⏳ Planifié
+### Phase 3 — Clôture — ✅ Complété
 **Contexte :** corrections éventuelles issues de la phase 2, mise à jour du statut.
 **Critères de réussite :**
 - ✅ Écarts phase 2 corrigés
@@ -137,3 +137,5 @@ Phase 3 (corrections + clôture)                    → Gate #4
 | #0 | 2026-11-25 | Choix de solution | ✅ GO | Option C + B3 ; rétrodoc en français ; statut « fork maintenu / upstream non maintenu » ; suites S1-S4 notées en backlog |
 | #1 | 2026-11-25 | Validation plan | ✅ GO | Plan validé sans ajustement ; lancement Phase 1 (DOCly) |
 | #2 | 2026-11-25 | Validation rédaction phase 1 | ✅ GO | 4/4 tâches ; rétrodoc déplacée vers `docs/` + fichier parasite supprimé par MAINa ; code-review : 0 bloquant, 3 mineurs (→ T3.1) ; correction Watchtower acceptée sans objection |
+| #3 | 2026-11-25 | Validation revue QA phase 2 | ✅ GO | 36 affirmations (34 ✅ / 2 ❌ mineurs), liens 52/52 + 33/33 ancres, 0 secret ; E1-E7 → T3.1 ; tag `v2.6.1` conservé, pas de réécriture d'historique, merge `feat/add_linky` par PR à la clôture ; fork désormais sur `feat/fork_and_retrodoc` |
+| #4 | 2026-11-25 | Validation documentation + clôture | ✅ GO | T3.1 : E1, E2, E4-E7 corrigés, E3 sans objet ; .md uniquement ; commits + PR `feat/add_linky` → `master` (domotique) et `feat/fork_and_retrodoc` → `master` (fork) ; suites S1-S4 en backlog |

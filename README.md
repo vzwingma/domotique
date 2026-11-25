@@ -92,7 +92,10 @@ Le **routeur Freebox** assure le NAT : le port public `38243` est redirigé vers
 git clone https://github.com/vzwingma/domotique.git
 cd domotique/_docker/envs/nas   # ou envs/pi pour deCONZ
 
-# Éditer domotique-compose.yml et renseigner les variables d'environnement :
+# Variables du bridge Tydom : déclarées dans stack.env (lu via env_file par le
+# service tydom-bridge du compose NAS ; elles ne sont pas dans domotique-compose.yml).
+# stack.env les référence sous forme de placeholders `${NOM}` : fournir leurs valeurs
+# via l'environnement de déploiement ou en les renseignant dans stack.env (sans le commiter) :
 #   MAC, PASSWD, AUTHAPI, PASSWDAPI pour le bridge Tydom
 
 # Démarrer la stack complète
