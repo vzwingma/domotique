@@ -99,6 +99,30 @@ return {
         end
 
         -- -----------------------------------------------
+        -- 6. Plugin Linky : activité du plugin (Touch ~50 s ; seuil 36h)
+        --    et données Enedis (TimedOut plugin après 1,5 j)
+        --    Messages : idx uniquement (le nom du device contient le PRM)
+        -- -----------------------------------------------
+        local okLinky, errLinky = pcall(function()
+            local linkyDevices = domoticz.helpers.getLinkyDevices(domoticz)
+            if #linkyDevices == 0 then
+                warn('Linky — aucun device "' .. domoticz.helpers.DEVICE_LINKY_PREFIX .. '*" trouvé')
+            end
+            for _, d in ipairs(linkyDevices) do
+                if d.lastUpdate.minutesAgo > (36 * 60) then
+                    warn('Linky (idx ' .. tostring(d.idx) .. ') — plugin inactif depuis ' .. tostring(d.lastUpdate.minutesAgo) .. ' min (seuil 36h)')
+                elseif d.timedOut then
+                    warn('Linky (idx ' .. tostring(d.idx) .. ') — aucune donnée Enedis depuis plus de 1,5 j (TimedOut)')
+                else
+                    domoticz.log('[' .. uuid .. '] Linky (idx ' .. tostring(d.idx) .. ') — OK (' .. tostring(d.lastUpdate.minutesAgo) .. ' min)', domoticz.LOG_DEBUG)
+                end
+            end
+        end)
+        if not okLinky then
+            warn('Linky inaccessible : ' .. tostring(errLinky))
+        end
+
+        -- -----------------------------------------------
         -- Résumé
         -- -----------------------------------------------
         if nbWarnings == 0 then
