@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/010_linky_suites.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phases 1-4 ✅ ; Phase 5 en cours (T5.1-T5.2 ✅, #237 mergée ; T5.3 production 👤)
+**Statut :** ✅ Complété (2026-11-25) — Gates #0, #1, P1 à P5 ✅ GO ; Phases 0-6 ✅ ; v2.7.0 en production
 **Objectif Prioritaire :** MEDIUM (S3 sécurité : HIGH dans le lot)
 **ADR associé :** `docs/adr/007-plugins-domoticz-provenance-epinglee.md` — `Acceptée` (Gate #1, 2026-11-25)
 **Annexe obligatoire :** [`010_reports/ANALYSE_ARCOS.md`](./010_reports/ANALYSE_ARCOS.md) — analyse 🟠 ARCos complète (code actuel / code cible, lignes, commandes). **Les références « § x.y » de ce plan renvoient à cette annexe.**
@@ -291,7 +291,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Agent :** 👤
 - **Acceptation :** `git tag v2.7.0 <sha-merge>` + `git push origin v2.7.0` + release GitHub ; `git ls-remote --tags https://github.com/vzwingma/DomoticzLinky v2.7.0` → SHA.
 
-### Phase 5 — Montée de pin v2.7.0 et vérification production (`domotique`) — 🔄 En cours
+### Phase 5 — Montée de pin v2.7.0 et vérification production (`domotique`) — ✅ Complété
 **Dépend de :** Phase 1 complétée (pin + Renovate) et T4.2.
 **Critères de réussite :**
 - ✅ PR Renovate (ou manuelle) **non auto-mergée** ; diff d'une ligne
@@ -315,8 +315,20 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Agent :** 🟣 DOCly
 - **Fichier(s) :** `docs/ARCHITECTURE.md` § 5.4 (v2.7.0), `_docker/build_domoticz/README.md`.
 
-### Phase 6 — Clôture — ⏳ Planifié
+### Phase 6 — Clôture — ✅ Complété
 - ⚫ MAINa : ADR 007 `Acceptée` (déjà au Gate #1) vérifié ; plan `✅ Complété` ; `docs/plans/README.md` → **COMPLÉTÉ** ; backlog résiduel (D6, D7 hors harnais, D9 pickle, D10, D13, D14, D15) reporté dans la section « Suites » ci-dessous.
+
+**Bilan des critères de succès globaux (2026-11-25) :**
+
+| # | Résultat | Preuve |
+|---|---|---|
+| 1 | ✅ | P1-#2 : 0 `guillaumezin` / `refs/heads/master`, 2 pins `ref: <sha40> # <tag>` |
+| 2 | ✅ | Blob artefact = `v2.6.1:plugin.py` (P1-#3) puis `v2.7.0:plugin.py` `7317790b` (P5-#3) |
+| 3 | ⚠️ partiel | Renovate détecte les 2 dépendances (Dependency Dashboard #139 : `v2.7.0@a7b2320`, `1.0.35@95b8f8b`) ; montée v2.7.0 non auto-mergée (PR manuelle #237). Renovate n'a **pas** produit la PR : avertissement transitoire « Could not determine new digest for update (github-tags package vzwingma/DomoticzLinky) » (12:35Z-12:50Z), disparu au passage de 12:57Z → suivi en backlog |
+| 4 | ✅ | CI fork verte (3.11 + 3.13), 111 tests, 0 `xfail` (P3-#3, T3.6) |
+| 5 | ✅ | Tests sentinelles (S3 + `client_secret`) verts, mutations détectées ; contrôle runtime `grep` optionnel non consigné séparément |
+| 6 | ✅ | 6 indicateurs (P2-#3), `Linky (idx 90) — OK` en production (P2-#3, T5.3) ; aucun PRM dans le dépôt (contrôles P2-#2, P4-#4, P5-#4) |
+| 7 | ✅ | ADR 007 `Acceptée`, ARCHITECTURE § 5.4, README, rétrodoc fork, CHANGELOG fork, index des plans |
 
 ---
 
@@ -381,7 +393,7 @@ Phase 6 (clôture)
 
 ## 🔭 Suites (backlog hors périmètre)
 
-D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant que `Mode2` ≤ 35) · D7 découpage du monolithe · D9 `pickle.loads` avant checksum (risque accepté) · D10 dépendance au proxy tiers RUSSANDOL · D13 Mode3 = 19 sans faux client · D14 jours fériés / préfixe `p` de Mode4 · D15 code mort · images `:merge` poussées par les PR `domotique` · D17 `Domoticz.Debugging(1)` dès `Mode3` ≥ 2 (y compris reset consentement) : le framework Domoticz journalise en clair `Bearer`/`refresh_token`/réponse jetons (non couvert par S3 ; avertissement documenté en T4.1) · D18 `setConfigItem` : `UnboundLocalError` sur `checksum` si la lecture de `Domoticz.Configuration()` lève · `getLinkyDevices` instancie un adaptateur par device (≈ 75 ms, 1×/jour : acceptable).
+D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant que `Mode2` ≤ 35) · D7 découpage du monolithe · D9 `pickle.loads` avant checksum (risque accepté) · D10 dépendance au proxy tiers RUSSANDOL · D13 Mode3 = 19 sans faux client · D14 jours fériés / préfixe `p` de Mode4 · D15 code mort · images `:merge` poussées par les PR `domotique` · D17 `Domoticz.Debugging(1)` dès `Mode3` ≥ 2 (y compris reset consentement) : le framework Domoticz journalise en clair `Bearer`/`refresh_token`/réponse jetons (non couvert par S3 ; avertissement documenté en T4.1) · D18 `setConfigItem` : `UnboundLocalError` sur `checksum` si la lecture de `Domoticz.Configuration()` lève · `getLinkyDevices` instancie un adaptateur par device (≈ 75 ms, 1×/jour : acceptable) · Renovate : avertissement « Could not determine new digest for update (github-tags package vzwingma/DomoticzLinky) » au passage 2.6.1 → 2.7.0, alors la PR n'a pas été créée (tags légers des deux côtés ; transitoire, disparu au passage de 12:57Z — cache probable du tag récent) — vérifier à la prochaine release du fork que la PR Renovate est bien créée (attendre ~1 h après le tag avant de conclure), sinon investiguer · Dependency Dashboard #139 : « Config Migration Needed » (migration de configuration Renovate proposée, non traitée) · droits du fichier debug `/tmp/DomoticzLinky_*.log` non vérifiés sur le NAS.
 
 ---
 
@@ -405,3 +417,5 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 | T4.2 | 2026-11-25 | Publication v2.7.0 (👤) | ✅ | fork#3 mergée (`a7b2320`) ; tag `v2.7.0` → `a7b232042a0ac725390583416043e327882510d5` ; release publiée 12:29Z ; blob `plugin.py` = `7317790b` ; run Renovate forcé (Dependency Dashboard #139, 12:35Z) sans PR v2.7.0 (cache tags) → T5.1 en montée manuelle, branche `ci/linky_v2.7.0_pin` (`ci/linky_v2.7.0` déjà mergée via #236) |
 | P5-#2 | 2026-11-25 | Validation code phase 5 (T5.1) | ✅ GO | `build-domoticz.yml` ligne 30 (+1/−1) → `a7b2320… # v2.7.0` = SHA du tag distant ; regex Renovate : 2 matches (Linky v2.7.0, deCONZ 1.0.35) ; CRLF préservés ; PR manuelle (pas d'automerge) ; revue : relecture MAINa (diff 1 ligne) |
 | P5-#3 | 2026-11-25 | Validation build v2.7.0 (T5.2) | ✅ GO | Run PR 45616307786 ✅ ; blob artefact `plugin.py` = `7317790b` (= `v2.7.0:plugin.py`), `version="2.7.0"`, checkout `a7b2320` ; deCONZ 4/4 blobs = 1.0.35 ; image PR `:merge` (≠ `latest`) ; `autoMergeRequest` null ; tous checks PR ✅. #237 mergée par 👤 (`79398a7`) ; run `master` 45617174637 ✅ → `vzwingmadomatic/domoticz:latest` |
+| T5.3 | 2026-11-25 | Vérification production v2.7.0 (👤) | ✅ | Déclaré correct par 👤 après redéploiement de `latest` : plugin 2.7.0 au démarrage, 0 `AttributeError`, collecte OK, health check Linky OK (résultats booléens, aucune sortie brute consignée) |
+| P5-#4 | 2026-11-25 | Validation docs phase 5 (T5.4) | ✅ GO | `domotique` : ARCHITECTURE § 5.4, `build_domoticz/README.md`, `README.md` → v2.7.0 (`a7b2320`), v2.6.1 en historique ; fork : `readme.md` l. 4, RETROCONCEPTION § 1/§ 15 à l'accompli ; 0 PRM ajouté ; ADR 007 laissée telle quelle (décision 👤 : un ADR décrit la décision à sa date) |
