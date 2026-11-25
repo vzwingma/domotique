@@ -194,6 +194,41 @@ Bilan : 20/20 mutations non équivalentes détectées (après ajout d'1 test) ; 
 
 ---
 
+### T3.6 — Masquage de `client_secret` (🔵 DEVon + 🟢 QALvin)
+
+**Statut :** ✅ DONE (changements **non commités, non poussés**, fork `DomoticzLinky`, branche `fix/v2.7.0`). Suite à l'écart relevé en T3.5 (défense en profondeur, sans fuite actuelle : `client_secret` absent de `plugin.py`).
+
+**🔵 DEVon — diff `plugin.py` (3 lignes modifiées, +3 / −3) :** `client_secret` ajouté à `SENSITIVE_KEYS` (comparaison `casefold`, `dumpDictToLog` à 3 profondeurs) et aux 2 motifs de `_SECRET_PATTERNS` (texte `clé=valeur` et JSON `"clé":"valeur"`). Motif `Bearer|Basic` inchangé.
+
+**🟢 QALvin — tests (`plugin.py` non modifié par QA) :**
+- `tests/conftest.py` : sentinelle `CLIENT_SECRET = "CLIENT-SECRET-SENTINEL"` + attribut `sentinels.CLIENT_SECRET`.
+- `tests/test_secrets_masking.py` : **+23 tests** (88 → 111) :
+  - `test_client_secret_message_libre_masque` : 5 gabarits (form-urlencoded en milieu / seul / casse `CLIENT_SECRET`, JSON compact / avec espaces) × 4 méthodes (`myLog`, `myStatus`, `myError`, `myDebug`) = 20 cas ;
+  - `test_client_secret_form_conserve_les_autres_parametres` : non-régression (`client_id`, `usage` restent en clair) ;
+  - `test_dump_reponse_client_secret_json_en_octets` : corps JSON (octets) via `dumpDictToLog` ;
+  - `test_dump_client_secret_imbrique` : clé `client_secret` (casse variable) à 3 profondeurs, valeur brute → masquage par nom de clé.
+
+**Preuves (`.venv`, Python 3.14.7) :**
+| Commande | Résultat |
+|---|---|
+| `python -m py_compile plugin.py` | rc 0 |
+| `python -m ruff check plugin.py tests` | `All checks passed!` |
+| `python -m pytest -q -rxX` | **111 passed**, 0 xfail / xpass / skip / échec |
+| `git status --short` | `M plugin.py`, `M tests/conftest.py`, `M tests/test_secrets_masking.py` |
+
+**Détection de régression** (copie temporaire hors dépôt de `plugin.py` + `tests/`, supprimée ensuite ; baseline = 111 passed) :
+| Mutation | Résultat |
+|---|---|
+| `client_secret` retiré de `SENSITIVE_KEYS` **et** des 2 motifs | ✅ **22 failed** (tous les nouveaux tests de fuite) |
+| retiré de `SENSITIVE_KEYS` seul | ✅ 1 failed (`test_dump_client_secret_imbrique`) |
+| retiré des 2 motifs seuls | ✅ 21 failed |
+| retiré du motif JSON seul | ✅ 9 failed |
+| retiré du motif texte seul | ✅ 12 failed |
+
+**Notes :** Python 3.11 / 3.13 et CI non réexécutés pour T3.6 (aucune syntaxe nouvelle ; CI après commit/push par ⚫ MAINa). Tests ignorés / désactivés : aucun.
+
+---
+
 ## 📊 Synthèse de Phase
 
 **Tâches complétées :** 5/5 côté exécution (T3.1 ✅ ; T3.2-T3.4 ✅ 🔵 DEVon ; T3.5 ✅ 🟢 QALvin — commit/push et run CI matrice 3.11 + 3.13 en attente, Gate P3-#3)
