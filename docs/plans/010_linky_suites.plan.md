@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/010_linky_suites.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phases 1-3 ✅ ; Phase 4 : T4.2 (tag 👤) en attente
+**Statut :** 🔄 En cours — Gate #0 ✅ GO, Gate #1 ✅ GO (2026-11-25) ; Phases 1-4 ✅ ; Phase 5 en cours (T5.1 montée manuelle)
 **Objectif Prioritaire :** MEDIUM (S3 sécurité : HIGH dans le lot)
 **ADR associé :** `docs/adr/007-plugins-domoticz-provenance-epinglee.md` — `Acceptée` (Gate #1, 2026-11-25)
 **Annexe obligatoire :** [`010_reports/ANALYSE_ARCOS.md`](./010_reports/ANALYSE_ARCOS.md) — analyse 🟠 ARCos complète (code actuel / code cible, lignes, commandes). **Les références « § x.y » de ce plan renvoient à cette annexe.**
@@ -276,7 +276,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Couvrir :** retrait de tous les `xfail` ; `py_compile` + `ruff` + `pytest` (local et CI) ; revue du diff (persistance inchangée, D12 inchangé, pas de `.py` racine supplémentaire) ; non-régression consentement.
 - **Acceptation :** 0 échec, 0 `xfail` ; lien du run CI vert ; résultats dans `PHASE_3_COMPLETION_REPORT.md`.
 
-### Phase 4 — Documentation et publication du fork — 🔄 En cours (T4.1 ✅, T4.2 👤)
+### Phase 4 — Documentation et publication du fork — ✅ Complété
 **Dépend de :** Gate P3-#3.
 **Critères de réussite :**
 - ✅ Rétrodoc, `CHANGELOG.md`, readme du fork à jour
@@ -291,7 +291,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Agent :** 👤
 - **Acceptation :** `git tag v2.7.0 <sha-merge>` + `git push origin v2.7.0` + release GitHub ; `git ls-remote --tags https://github.com/vzwingma/DomoticzLinky v2.7.0` → SHA.
 
-### Phase 5 — Montée de pin v2.7.0 et vérification production (`domotique`) — ⏳ Planifié
+### Phase 5 — Montée de pin v2.7.0 et vérification production (`domotique`) — 🔄 En cours
 **Dépend de :** Phase 1 complétée (pin + Renovate) et T4.2.
 **Critères de réussite :**
 - ✅ PR Renovate (ou manuelle) **non auto-mergée** ; diff d'une ligne
@@ -402,3 +402,5 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 | P3-#3 | 2026-11-25 | Validation tests phase 3 (T3.5) | ✅ GO | 0 `xfail` ; 88 tests verts sous 3.11.9/3.13.15/3.14.7 ; CI fork run 45611721347 matrice 3.11 + 3.13 ✅ ; 20/20 mutations non équivalentes détectées. 👤 : corriger **maintenant** `client_secret` non masqué (défense en profondeur, T3.6) avant T4.1 |
 | T3.6 | 2026-11-25 | Correctif `client_secret` (demande 👤 P3-#3) | ✅ | fork `aaf9e6e` : `SENSITIVE_KEYS` + 2 motifs ; +23 tests (111 verts) ; mutations détectées (22 échecs si retiré) ; CI run 45612874175 ✅ (3.11 + 3.13) |
 | P4-#4 | 2026-11-25 | Validation docs fork (T4.1) | ✅ GO | fork `b950888` : RETROCONCEPTION (§ 1/3/9.4/11-15), `CHANGELOG.md` 2.7.0, readme « Paramètres du plugin » + avertissements `/tmp` et D17 ; 0 « non épinglé », 0 PRM ajouté, liens externes ADR 007/ARCHITECTURE OK ; droits du fichier debug décrits comme `tempfile` par défaut (non vérifié NAS) ; pas de traduction EN. fork#3 passée *ready for review* |
+| T4.2 | 2026-11-25 | Publication v2.7.0 (👤) | ✅ | fork#3 mergée (`a7b2320`) ; tag `v2.7.0` → `a7b232042a0ac725390583416043e327882510d5` ; release publiée 12:29Z ; blob `plugin.py` = `7317790b` ; run Renovate forcé (Dependency Dashboard #139, 12:35Z) sans PR v2.7.0 (cache tags) → T5.1 en montée manuelle, branche `ci/linky_v2.7.0_pin` (`ci/linky_v2.7.0` déjà mergée via #236) |
+| P5-#2 | 2026-11-25 | Validation code phase 5 (T5.1) | ✅ GO | `build-domoticz.yml` ligne 30 (+1/−1) → `a7b2320… # v2.7.0` = SHA du tag distant ; regex Renovate : 2 matches (Linky v2.7.0, deCONZ 1.0.35) ; CRLF préservés ; PR manuelle (pas d'automerge) ; revue : relecture MAINa (diff 1 ligne) |
