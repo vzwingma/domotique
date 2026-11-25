@@ -101,12 +101,14 @@ Jusqu'a stabilisation:
 ### DEV-5 (groupes + health check)
 - Tout realignement groupe <- items passe par verifyGroupeFromItem(groupe, items, uuid, domoticz).
 - Mettre a jour les appels dans Groupes_Volets.lua, Tydom_volets_setPosition.lua, Devices_Lampes_Groupe.lua si la hierarchie change.
-- Health_check_dzVents.lua (08:00) controle 5 indicateurs:
+- Health_check_dzVents.lua (08:00) controle 6 indicateurs:
   - scenePhase exploitable
   - device Phase recemment mis a jour (< 25h)
   - Freebox recente (< 10 min)
   - Tydom Temperature recente (< 90 min)
   - globalData.joursFeries non vide (emet JoursFeries Refresh si vide)
+  - plugin Linky (devices dont le nom commence par 'Linky') : aucun device = anomalie ; lastUpdate > 36h = plugin inactif ; sinon timedOut (plugin : aucune donnee Enedis > 1,5 j) = anomalie ; messages avec idx uniquement (jamais le nom/ID/PRM)
+- Config_check.lua exige au moins un device dont le nom commence par 'Linky' (prerequis "Linky*")
 
 ## Conventions de logs
 

@@ -206,7 +206,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Agent :** 🟢 QALvin / ⚫ MAINa
 - **Acceptation :** issue « Dependency Dashboard » de `vzwingma/domotique` liste `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` (`gh issue list --repo vzwingma/domotique --search "Dependency Dashboard"` puis `gh issue view <n>`). Si absent → corriger la regex (retour T1.2).
 
-### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — 🔄 En cours
+### Phase 2 — S4 : supervision Linky dzVents (`domotique`, branche `feat/health_linky`) — ✅ Complétée (merge 👤 en attente)
 **Dépend de :** Phase 0 (U1/U2, Q1, Q4), Gate #1. Indépendante de la phase 1.
 **Critères de réussite :**
 - ✅ 3 fichiers Lua modifiés, 0 PRM dans le diff
@@ -232,7 +232,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 - **Fichier(s) (annexe § 4.4) :** `domoticz/README.md` (5 → 6 indicateurs, 2 endroits) ; `docs/ARCHITECTURE.md` § 5.4 (retirer « aucun script dzVents ne les référence » / « aucune supervision ») et § 6.2 (ligne 6) ; `docs/RETROCONCEPTION_dzVents.md` (l. ~40 « quatre » **déjà faux** → « six » + points 5 et 6 ; tableaux ~l. 106 et ~l. 437 ; section `Config_check`) ; `.github/copilot-instructions.md` § DEV-5 (6 indicateurs + seuil Linky) ; `.github/instructions/qa.instructions.md` (seuils Health check) ; fork `docs/RETROCONCEPTION.md` § 15 (supervision livrée — commit fork séparé ou phase 4).
 - **Acceptation :** `rg -n "5 indicateurs|cinq indicateurs|quatre indicateurs" README.md docs domoticz .github` → 0.
 
-### Phase 3 — S3 + S2 : correctifs du plugin (fork, branche `fix/v2.7.0`) — ⏳ Planifié
+### Phase 3 — S3 + S2 : correctifs du plugin (fork, branche `fix/v2.7.0`) — 🔄 En cours
 **Dépend de :** Phase 0 (#2 mergée, Q2, U3), Gate #1. Branche créée depuis `master` du fork à jour.
 **Exception de séquencement (décision 10 = Q1) :** 🟢 QALvin pose **d'abord** le harnais et des tests de bug en `xfail(strict=True)` (preuve des bugs), puis 🔵 DEVon corrige, puis 🟢 QALvin retire les `xfail`. **Validé par 👤 au Gate #1 (2026-11-25).**
 **Critères de réussite :**
@@ -284,7 +284,7 @@ Résultats mesurables : voir « Critères de succès globaux ».
 
 #### T4.1 - Mettre à jour la documentation du fork
 - **Agent :** 🟣 DOCly
-- **Fichier(s) :** `DomoticzLinky/docs/RETROCONCEPTION.md` (§ 1 version 2.7.0 en conservant le SHA historique `1ef6adf` ; § 11 masquage ; § 13 colonne Statut : fuites tokens « Corrigé v2.7.0 », pickle « Accepté », fichier debug « 0600 via mkstemp » — corriger la mention « non protégé » ; § 14 colonne Statut D1-D16 selon décisions ; § 15 provenance épinglée + supervision si non fait en T1.4/T2.3) ; `DomoticzLinky/CHANGELOG.md` (nouveau, Keep a Changelog, entrée 2.7.0) ; `DomoticzLinky/readme.md` (section fork : mention `tests/` + CI ; **nouvelle section « Paramètres du plugin »** demandée au Gate #0 : tableau lisible `Mode1`-`Mode6` (nom technique, libellé affiché dans Domoticz, rôle, valeurs, défaut) avec les effets de `Mode3` (debug, reset consentement/cache, faux clients) et l'avertissement « debug = fichiers `/tmp` », renvoi vers `docs/RETROCONCEPTION.md` § 3 pour le détail ; reste du guide utilisateur inchangé).
+- **Fichier(s) :** `DomoticzLinky/docs/RETROCONCEPTION.md` (§ 1 version 2.7.0 en conservant le SHA historique `1ef6adf` ; § 11 masquage ; § 13 colonne Statut : fuites tokens « Corrigé v2.7.0 », pickle « Accepté », fichier debug « 0600 via mkstemp » — corriger la mention « non protégé » ; § 14 colonne Statut D1-D16 selon décisions ; § 15 provenance épinglée + supervision si non fait en T1.4/T2.3) ; `DomoticzLinky/CHANGELOG.md` (nouveau, Keep a Changelog, entrée 2.7.0) ; `DomoticzLinky/readme.md` (section fork : mention `tests/` + CI ; **nouvelle section « Paramètres du plugin »** demandée au Gate #0 : tableau lisible `Mode1`-`Mode6` (nom technique, libellé affiché dans Domoticz, rôle, valeurs, défaut) avec les effets de `Mode3` (debug, reset consentement/cache, faux clients), l'avertissement « debug = fichiers `/tmp` » **et l'avertissement D17 : `Mode3` ≥ 2 (Avancé, reset consentement/cache, faux clients) active le debug complet du framework Domoticz, qui écrit les jetons en clair dans le log Domoticz — n'activer que ponctuellement, purger le log ensuite** (décision P3-#2), renvoi vers `docs/RETROCONCEPTION.md` § 3 pour le détail ; reste du guide utilisateur inchangé).
 - **Acceptation :** liens relatifs valides ; aucune affirmation contraire au code ; PR fork mergée par 👤.
 
 #### T4.2 - Publier v2.7.0
@@ -381,7 +381,7 @@ Phase 6 (clôture)
 
 ## 🔭 Suites (backlog hors périmètre)
 
-D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant que `Mode2` ≤ 35) · D7 découpage du monolithe · D9 `pickle.loads` avant checksum (risque accepté) · D10 dépendance au proxy tiers RUSSANDOL · D13 Mode3 = 19 sans faux client · D14 jours fériés / préfixe `p` de Mode4 · D15 code mort · images `:merge` poussées par les PR `domotique`.
+D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant que `Mode2` ≤ 35) · D7 découpage du monolithe · D9 `pickle.loads` avant checksum (risque accepté) · D10 dépendance au proxy tiers RUSSANDOL · D13 Mode3 = 19 sans faux client · D14 jours fériés / préfixe `p` de Mode4 · D15 code mort · images `:merge` poussées par les PR `domotique` · D17 `Domoticz.Debugging(1)` dès `Mode3` ≥ 2 (y compris reset consentement) : le framework Domoticz journalise en clair `Bearer`/`refresh_token`/réponse jetons (non couvert par S3 ; avertissement documenté en T4.1) · D18 `setConfigItem` : `UnboundLocalError` sur `checksum` si la lecture de `Domoticz.Configuration()` lève · `getLinkyDevices` instancie un adaptateur par device (≈ 75 ms, 1×/jour : acceptable).
 
 ---
 
@@ -396,3 +396,7 @@ D6 `except:` nus restants · D11 historique plafonné à 35 j (sans effet tant q
 | P1-#4 | 2026-11-25 | Validation docs phase 1 (T1.4) | ✅ GO | `ARCHITECTURE.md` § 5.4, `_docker/build_domoticz/README.md` (procédure de montée de version), `README.md` ; `rg` d'acceptation → 0 ; restent T1.5 (merge 👤 + build `master`) et T1.6 (Dependency Dashboard) |
 | P1-✅ | 2026-11-25 | Clôture phase 1 (T1.5, T1.6) | ✅ | PR #233 mergée (`e9574e3`) ; run `master` 45601836698 `success` ; `latest` redéployée par 👤, plugin Linky 2.6.1 au démarrage ; Dependency Dashboard #139 (`regex`) liste `vzwingma/DomoticzLinky v2.6.1` et `Smanar/Domoticz-deCONZ 1.0.35` |
 | P2-#2 | 2026-11-25 | Validation code phase 2 (T2.1) | ✅ GO | 3 fichiers Lua (+52) ; `rg` préfixe → 3 fichiers ; 0 nombre à 14 chiffres dans le diff ; `luaparse` OK ×3 (`luac` absent) ; code-review : 0 finding ; préfixe `'Linky'` sans espace |
+| P2-#3 | 2026-11-25 | Validation tests phase 2 (T2.2) | ✅ GO | Statique 19/19, simulation fengari 30/30, 6 mutations détectées ; runtime NAS (timer `every minute` temporaire) : chargement sans erreur, `Linky (idx 90) — OK (6 min)`. Seul indicateur dégradé = jours fériés vidés par le rechargement de `global_data.lua` (`globalData` réinitialisé → `JoursFeries Refresh` émis, comportement attendu, non lié). `Config_check` : déclaré OK par 👤 |
+| P3-#2 | 2026-11-25 | Validation code phase 3 (T3.1-T3.4) | ✅ GO (option A) | Harnais 42 verts + 45 `xfail` (CI fork run 45607810574 ✅) ; `plugin.py` +69/−20, `--runxfail` 87/87 ; code-review : 1 moyen préexistant (D17 `Debugging(1)`) → avertissement doc T4.1 + backlog ; D18 `setConfigItem/checksum` → backlog. Python 3.11 NAS non confirmé (CI 3.11 fait foi) ; post-gate : 👤 confirme Python **3.13.5** sur le NAS → CI fork en matrice 3.11 + 3.13 (T3.5) ; runtime NAS phase 2 confirmé OK par 👤 |
+| P2-#4 | 2026-11-25 | Validation docs phase 2 (T2.3) | ✅ GO | 5 docs (README dzVents, ARCHITECTURE § 5.4/6.1/6.2, RETROCONCEPTION_dzVents, copilot-instructions DEV-5, qa.instructions) ; `rg` 5/cinq/quatre indicateurs → 0 (docs vivantes) ; `.github/tasks/todo/INSTRUCTIONS_TRAVAUX_dzVents.md` laissé (historique DEV-5) ; volet fork § 15 → T4.1 |
+| P3-#3 | 2026-11-25 | Validation tests phase 3 (T3.5) | ✅ GO | 0 `xfail` ; 88 tests verts sous 3.11.9/3.13.15/3.14.7 ; CI fork run 45611721347 matrice 3.11 + 3.13 ✅ ; 20/20 mutations non équivalentes détectées. 👤 : corriger **maintenant** `client_secret` non masqué (défense en profondeur, T3.6) avant T4.1 |
