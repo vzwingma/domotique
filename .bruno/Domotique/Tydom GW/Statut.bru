@@ -1,11 +1,11 @@
 meta {
-  name: _Info
+  name: Statut
   type: http
   seq: 1
 }
 
 get {
-  url: http://{{tydom-bridge-url}}/_info
+  url: http://{{tydom-bridge-url}}/health/status
   body: none
   auth: inherit
 }

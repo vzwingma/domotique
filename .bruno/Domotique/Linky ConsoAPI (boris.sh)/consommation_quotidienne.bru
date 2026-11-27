@@ -1,0 +1,22 @@
+meta {
+  name: consommation_quotidienne
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://conso.boris.sh/api/consommation_quotidienne?pointId={{enedis_PRM}}&dateDebut=2026-11-01&dateFin=2026-11-27
+  body: none
+  auth: inherit
+}
+
+params:query {
+  pointId: {{enedis_PRM}}
+  dateDebut: 2026-11-01
+  dateFin: 2026-11-27
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
