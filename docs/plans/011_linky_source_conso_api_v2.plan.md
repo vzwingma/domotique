@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/011_linky_source_conso_api_v2.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🟢 Phase 2 (tests) — Gate #2 ✅ GO ; Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
+**Statut :** 🟢 Phase 2 terminée, Gate #3 en attente — Gate #2 ✅ GO ; Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
 **Objectif Prioritaire :** HIGH (plus aucune donnée Linky depuis le 24/11/2026)
 **ADR associé :** [`docs/adr/008-source-donnees-linky-conso-api-v2.md`](../adr/008-source-donnees-linky-conso-api-v2.md) — `Proposée` → `Acceptée` au Gate #1
 **Issues :** vzwingma/DomoticzLinky#1 · upstream guillaumezin/DomoticzLinky#258 (API V2) et guillaumezin/DomoticzLinky#259 (502/500)
@@ -170,7 +170,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 
 ---
 
-### Phase 2 — Tests (🟢 QALvin) — ⏳ Planifié
+### Phase 2 — Tests (🟢 QALvin) — ✅ Terminée — [rapport](./011_reports/PHASE_2_COMPLETION_REPORT.md)
 
 **Critères de réussite :**
 - ✅ `python -m pytest -q` vert, CI du fork verte
@@ -291,3 +291,5 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | #1 | 2026-11-27 | Validation plan (après Phase 0) + ADR 008 | ✅ GO (« démarre le code ») | ADR 008 → `Acceptée`. Historique complet de puissance max étalé sur plusieurs jours (≤ 1 lot de 365 j/jour) |
 | — | 2026-11-27 | Phase 1 | — | Code poussé sur `DomoticzLinky` branche `claude/project-thread-kei9q4` (`ffd2545`). 111 tests verts, ruff OK ; essai de bout en bout sur fixtures OK. Écart : nom de branche imposé par la session |
 | #2 | 2026-11-27 | Validation code | ✅ GO (« ok » + 2 remarques) | Remarques traitées : retrait `opensrcdev` (bac à sable) et options `Mode3` 10-19 ; libellés `Mode3` 3/4 explicites. Conso API passe à l'index d'adresse 1 |
+| — | 2026-11-27 | Phase 2 | — | 182 tests verts (71 nouveaux), couverture des lignes ajoutées 97,9 %, preuves de régression (adaptateur, masquage) |
+| #3 | — | Validation tests | ⏳ En attente | — |
