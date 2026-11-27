@@ -7,7 +7,7 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 ## Plans planifiés / en cours
 
-_Aucun._
+- [011 — Plugin Linky : source de données Conso API (Enedis V2)](./011_linky_source_conso_api_v2.plan.md) — **PLANIFIÉ**
 
 ## Plans suspendus
 
