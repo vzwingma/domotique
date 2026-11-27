@@ -64,7 +64,7 @@ Le système domotique repose sur **Domoticz** comme plateforme centrale, avec de
 | **Tydom Bridge** | Pilotage volets + thermostat Delta Dore | HTTP REST local |
 | **Freebox** | Détection présence réseau (smartphones) | HTTP REST local |
 | **API Jours Fériés** | Calendrier officiel des jours fériés français | HTTPS REST public |
-| **Plugins Python (Linky, deCONZ)** | Compteur Enedis ; passerelle Zigbee — exécutés dans Domoticz (voir [§ 5.4](#54-plugins-python-domoticz-linky-deconz)) | API Enedis via proxy tiers (HTTPS) ; API deCONZ (HTTP local) |
+| **Plugins Python (Linky, deCONZ)** | Compteur Enedis ; passerelle Zigbee — exécutés dans Domoticz (voir [§ 5.4](#54-plugins-python-domoticz-linky-deconz)) | Conso API (`conso.boris.sh`, API Enedis V2) ou proxy Legacy (API Enedis v5), HTTPS ; API deCONZ (HTTP local) |
 
 ---
 
@@ -345,14 +345,14 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 
 | Plugin | Rôle | Source embarquée par la CI | Documentation |
 |---|---|---|---|
-| **Linky** (`key="linky"`, v2.6.1 dans le fork) | Consommation / production Enedis (courbe de charge, pics, HP/HC) → dispositif `Linky <PRM>` | Fork `vzwingma/DomoticzLinky`, **épinglé** sur le commit `f3df258…` (tag `v2.6.1`) | [Rétroconception du plugin](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) (fork **maintenu** ; l'upstream `guillaumezin/DomoticzLinky` n'est plus maintenu ni consommé) |
+| **Linky** (`key="linky"`, v2.7.0 épinglé ; **v3.0.0** sur `master` du fork, pin à monter — [plan 011](plans/011_linky_source_conso_api_v2.plan.md)) | Consommation Enedis (courbe de charge, pics, HP/HC) → dispositif `Linky <PRM>` ; production uniquement via la source Legacy | Fork `vzwingma/DomoticzLinky`, **épinglé** sur le commit `a7b2320…` (tag `v2.7.0`) | [Rétroconception du plugin](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) (fork **maintenu** ; l'upstream `guillaumezin/DomoticzLinky` n'est plus maintenu ni consommé) |
 | **deCONZ** | Passerelle Zigbee (ConBee) | `Smanar/Domoticz-deCONZ`, **épinglé** sur le commit `95b8f8b…` (tag `1.0.35`) | [`deCONZ/README.md`](../deCONZ/README.md) |
 
 **Chaîne de construction et de déploiement :**
 
 ```
   GitHub (SHA de commit épinglé)      .github/workflows/build-domoticz.yml
-  vzwingma/DomoticzLinky @ v2.6.1 ──► jobs download-linky / download-deconz
+  vzwingma/DomoticzLinky @ v2.7.0 ──► jobs download-linky / download-deconz
   Smanar/Domoticz-deCONZ @ 1.0.35           │ artefacts linky-plugin / deconz-plugin
                                             ▼
                                   _docker/build_domoticz/linky | deconz
@@ -367,10 +367,19 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 
 **Points d'attention :**
 
-- **Provenance épinglée** ([ADR 007](adr/007-plugins-domoticz-provenance-epinglee.md)) : la CI récupère chaque plugin au **SHA de commit** de son tag (`ref: <sha> # <tag>` dans `build-domoticz.yml`) ; le SHA et la version sont tracés dans le Step Summary du job, et un artefact vide fait échouer le build (`if-no-files-found: error`). L'image est ainsi reproductible et une fusion amont n'atteint plus la production sans changement de ce dépôt. Avant l'ADR 007, la CI reprenait la tête de `master` des dépôts amont (upstream `guillaumezin` pour Linky).
+- **Provenance épinglée** ([ADR 007](adr/007-plugins-domoticz-provenance-epinglee.md)) : la CI récupère chaque plugin au **SHA de commit** de son tag (`ref: <sha> # <tag>` dans `build-domoticz.yml`) ; le SHA et la version sont tracés dans le Step Summary du job, et un artefact vide fait échouer le build (`if-no-files-found: error`). L'image est ainsi reproductible et une fusion amont n'atteint plus la production sans changement de ce dépôt. Avant l'ADR 007, la CI reprenait la tête de `master` des dépôts amont (upstream `guillaumezin` pour Linky). Historique du pin Linky : `v2.6.1` (`f3df258…`, pin initial, code identique à l'upstream), puis **`v2.7.0`** (`a7b2320…`) depuis le 2026-11-25 — montée faite manuellement, image `latest` redéployée en production ; cette version apporte le masquage des secrets dans les logs du plugin et des correctifs (voir le [`CHANGELOG.md` du fork](https://github.com/vzwingma/DomoticzLinky/blob/master/CHANGELOG.md)).
 - **Mise à jour des plugins** : Renovate (customManager regex, datasource `github-tags`) détecte les nouveaux tags et ouvre une PR, **sans automerge** : la montée de version est toujours revue manuellement. Procédure : [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md#montée-de-version-dun-plugin).
-- **Proxy Enedis tiers** : Linky n'appelle pas Enedis directement ; l'authentification (OAuth2 Device Flow) et les données transitent par un proxy hébergé par un tiers (voir la rétrodoc du plugin, § 2.2 et § 13).
-- **Persistance** : jetons OAuth et cache du plugin sont stockés par Domoticz (`Domoticz.Configuration`) dans `domoticz.db`. Le compose NAS ne monte que `domoticz.db` et `scripts/dzVents` : les plugins restent ceux de l'image. Monter tout `/opt/domoticz/userdata` masquerait `plugins/` (voir [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md)).
+- **Source des données du plugin Linky** ([ADR 008](adr/008-source-donnees-linky-conso-api-v2.md), plan 011) : Linky n'appelle jamais Enedis directement (un particulier ne peut pas contracter Data Connect) ; depuis la **v3.0.0** il dispose d'une couche source sélectionnable (paramètre `Address` du matériel), voir ci-dessous. Pourquoi : l'ancien proxy tiers est en panne (HTTP 500 depuis le 24/11/2026, dépôt inactif depuis 02/2026) et l'API Enedis Metering Data v5 qu'il relaie est remplacée par l'API « Mesure synchrone V2 ».
+
+  | Source | Service | Authentification | Statut |
+  |---|---|---|---|
+  | **Conso API** (défaut) | `conso.boris.sh/api/<type>` — API Enedis V2 : courbe de charge au pas de 15 min, puissance maximale quotidienne | jeton personnel Bearer (consentement sur conso.boris.sh, valable 3 ans, révocable chez Enedis), saisi dans les paramètres `Username` (PRM) et `Password` (jeton) du matériel | source principale ; pas de production |
+  | **Legacy** | proxy tiers (Device Flow) → API Enedis v5 | consentement affiché dans le log Domoticz | repli jusqu'à la coupure de l'API v5, puis retrait du code (futur plan) |
+
+  Un adaptateur convertit les réponses V2 vers la forme interne du plugin : le cœur (moyenne horaire, HC/HP, cache, devices `Linky <PRM>` et leur historique) est inchangé, donc le même `idx` et l'historique sont conservés lors de la migration. Détail : [rétrodoc du plugin, § 17](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md#17-source-conso-api-v300).
+- **Quota Conso API** : service gratuit à quota Enedis partagé ; un usage abusif entraîne un blocage d'IP de plusieurs mois sans recours. Le plugin applique un budget persisté : **au plus 3 requêtes par jour et par PRM** (cycle normal : 2), historique complet étalé (1 lot par jour), une seule nouvelle tentative différée de 3 h, jamais de requêtes parallèles ni de retry immédiat. Le NAS qui héberge Domoticz est le seul émetteur ; ne pas redémarrer le matériel en boucle.
+- **Migration v2.x → v3.0.0** : version incompatible — après la montée du pin, le matériel Linky doit être reconfiguré (source Conso API, PRM, jeton) ; tant que le jeton est absent, le plugin s'arrête avec un message d'erreur sans émettre de requête et le health check (indicateur 6) passe en anomalie.
+- **Persistance** : jeton Conso API (paramètre du matériel), jetons OAuth Legacy, budget d'appels (`consoapi_budget`) et cache du plugin sont stockés par Domoticz (`Domoticz.Configuration`) dans `domoticz.db`. Le compose NAS ne monte que `domoticz.db` et `scripts/dzVents` : les plugins restent ceux de l'image. Monter tout `/opt/domoticz/userdata` masquerait `plugins/` (voir [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md)).
 - **Plateforme** : le workflow construit l'image Domoticz en `linux/arm/v7` (`DOCKER_TARGET_PLATFORM`) ; le job Tydom construit en `linux/arm64`.
 - **deCONZ** : le plugin Domoticz communique avec l'API deCONZ ; le conteneur deCONZ (ConBee III) est défini dans `_docker/envs/pi/domotique-compose.yml`, sur un hôte distinct de celui de Domoticz (`envs/nas`).
 - **Supervision** : le plugin Linky est supervisé par dzVents (`Config_check.lua` au démarrage, `Health_check_dzVents.lua` chaque jour à 08:00 : device préfixé `Linky` présent, mis à jour depuis moins de 36 h, non `TimedOut` — détail en [§ 6.2](#62-health_check_dzventslua-quotidien-0800)). Le plugin met lui-même le device en `TimedOut` après 1,5 jour sans donnée Enedis ; après un redémarrage de Domoticz, ce `TimedOut` reste faux jusqu'à 1,5 jour, ce que la règle des 36 h couvre. Le PRM (présent dans le nom, l'ID et la description du device) n'est jamais journalisé : les messages ne citent que l'`idx`.

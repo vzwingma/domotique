@@ -7,7 +7,7 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 
 ## Plans planifiés / en cours
 
-- [010 — Plugin Linky : provenance CI épinglée, correctifs, sécurité des logs, supervision](./010_linky_suites.plan.md) — **EN COURS**
+- [011 — Plugin Linky : source de données Conso API (Enedis V2)](./011_linky_source_conso_api_v2.plan.md) — **PLANIFIÉ**
 
 ## Plans suspendus
 
@@ -23,3 +23,4 @@ Cet index contient uniquement la liste des plans et leur **statut global**.
 - [007 — Qualification Tydom Node 26 ARM64](./007_tydom_node26_arm64.plan.md) — **COMPLÉTÉ**
 - [008 — Harmonisation des consignes et migration des plans](./008_harmonisation-templates-et-plans.plan.md) — **COMPLÉTÉ**
 - [009 — Rétrodocumentation technique du plugin DomoticzLinky](./009_retrodoc_domoticzlinky.plan.md) — **COMPLÉTÉ**
+- [010 — Plugin Linky : provenance CI épinglée, correctifs, sécurité des logs, supervision](./010_linky_suites.plan.md) — **COMPLÉTÉ**

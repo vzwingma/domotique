@@ -3,8 +3,8 @@
 **Plan :** `docs/plans/010_linky_suites.plan.md`
 **Responsable Agent :** 🟣 DOCly (T4.1) — T4.2 : 👤
 **Date Début :** 2026-11-25
-**Date Fin :** TBD (T4.1 livrée le 2026-11-25 ; Gate P4-#4, merge de la PR fork et tag `v2.7.0` en attente)
-**Statut :** 🔄 EN_COURS — T4.1 livrée (documentation du fork modifiée, **non commitée, non poussée**) ; T4.2 (tag + release, 👤) à venir
+**Date Fin :** 2026-11-25
+**Statut :** ✅ COMPLÉTÉ — T4.1 (fork `b950888`, Gate P4-#4 GO) ; T4.2 : fork#3 mergée (`a7b2320`), tag `v2.7.0` → `a7b232042a0ac725390583416043e327882510d5`, release publiée (12:29Z), blob `plugin.py` = `7317790b9033f2c6e13be43270423710dd8f34c2`
 
 ---
 
@@ -50,7 +50,7 @@
 
 ## 📊 Synthèse de Phase
 
-**Tâches complétées :** 1/2 (T4.1 ✅ 🟣 DOCly ; T4.2 ⏳ 👤)
+**Tâches complétées :** 2/2 (T4.1 ✅ 🟣 DOCly ; T4.2 ✅ 👤 — tag + release `v2.7.0`)
 **Critères de réussite (T4.1) :**
 - ✅ Rétrodoc (§ 1, 11, 13, 14, 15), `CHANGELOG.md` et readme du fork à jour
 - ✅ Aucune affirmation contraire au code (relecture `plugin.py`) ; fichier de debug décrit tel que codé
