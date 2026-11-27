@@ -294,5 +294,5 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | — | 2026-11-27 | Phase 2 | — | 182 tests verts (71 nouveaux), couverture des lignes ajoutées 97,9 %, preuves de régression (adaptateur, masquage) |
 | #3 | 2026-11-27 | Validation tests | ✅ GO implicite (« tu peux passer à la documentation ») | Correction demandée au passage : « Russandol » → « Legacy » dans tout l'affichage (valeur `legacy`, `russandol` accepté) |
 | — | 2026-11-27 | Phase 3 | — | Fork : readme, rétrodoc § 17, CHANGELOG 3.0.0 ; domotique : ARCHITECTURE § 5.4. PR fork #5 fusionnée (`37249a9`). Phase 4 : tag `v3.0.0` + pin à faire |
-| — | 2026-11-27 | Phase 4 | — | T4.1 : PR du pin `31d64fd…` (`# v3.0.0`) ; tag `v3.0.0` à pousser côté fork (push refusé 403 depuis la session). T4.2/T4.3 à faire en production |
+| — | 2026-11-27 | Phase 4 | — | T4.1 : PR du pin `c01b94b…` (`# v3.0.0`) ; tag `v3.0.0` à pousser côté fork (push refusé 403 depuis la session). T4.2/T4.3 à faire en production |
 | — | 2026-11-27 | Revue complémentaire | 👤 | En-têtes Conso API : `User-Agent: DomoticzLinky (<PRM tronqué>)` + `From` (PR fork #7) |
