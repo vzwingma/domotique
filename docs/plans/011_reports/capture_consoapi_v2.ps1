@@ -11,7 +11,8 @@ param(
   [Parameter(Mandatory)][ValidatePattern('^\d{14}$')][string]$Prm,
   [ValidateRange(2,7)][int]$Jours = 3,
   [string]$Sortie = (Join-Path $env:TEMP 'consoapi_v2'),
-  [string]$TokenFile   # optionnel : fichier local contenant le jeton (exécution non interactive)
+  [string]$TokenFile,  # optionnel : fichier local contenant le jeton (exécution non interactive)
+  [switch]$Complement  # 2e passe : seulement la période max de puissance_conso_max_quotidienne (R6b)
 )
 
 $ErrorActionPreference = 'Stop'
@@ -53,6 +54,14 @@ $corps
 }
 
 $q = "pointId=$Prm&dateDebut=$d&dateFin=$f"
+if ($Complement) {
+  foreach ($n in 365, 1095) {
+    $dn = $fin.AddDays(-$n).ToString('yyyy-MM-dd')
+    Capture "periode_${n}j_puissance_max" "$base/puissance_conso_max_quotidienne?pointId=$Prm&dateDebut=$dn&dateFin=$f" $token
+  }
+  $token = $null; Remove-Variable tokenSec -ErrorAction SilentlyContinue
+  Write-Host "Fichiers : $Sortie"; return
+}
 # Réponses nominales (même période pour les 3 types)
 Capture '200_courbe_de_charge_consommation'   "$base/courbe_de_charge_consommation?$q"   $token
 Capture '200_puissance_conso_max_quotidienne' "$base/puissance_conso_max_quotidienne?$q" $token

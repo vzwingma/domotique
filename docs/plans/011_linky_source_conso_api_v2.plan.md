@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/011_linky_source_conso_api_v2.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** ⏳ Planifié — Gate #0 ✅ GO ; Gate #1 en attente (après Phase 0)
+**Statut :** 🟡 Phase 0 terminée (sauf R6b/R9) — Gate #0 ✅ GO ; Gate #1 en attente
 **Objectif Prioritaire :** HIGH (plus aucune donnée Linky depuis le 24/11/2026)
 **ADR associé :** [`docs/adr/008-source-donnees-linky-conso-api-v2.md`](../adr/008-source-donnees-linky-conso-api-v2.md) — `Proposée` → `Acceptée` au Gate #1
 **Issues :** vzwingma/DomoticzLinky#1 · upstream guillaumezin/DomoticzLinky#258 (API V2) et guillaumezin/DomoticzLinky#259 (502/500)
@@ -75,7 +75,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 
 ## 🛠️ Phases
 
-### Phase 0 — Investigation du contrat Conso API V2 (👤 + ⚫ MAINa / 🟠 ARCos) — 🟡 En cours
+### Phase 0 — Investigation du contrat Conso API V2 (👤 + ⚫ MAINa / 🟠 ARCos) — ✅ Terminée (R6b, R9 ouverts) — [rapport](./011_reports/PHASE_0_CONTRAT_CONSO_API_V2.md)
 
 **Contexte :** le format V2 est « totalement différent » de v5 et non documenté dans le dépôt. Travail conjoint avec 👤 ; **aucun jeton ni PRM réel dans le dépôt ni dans les rapports**. Se termine **avant** Gate #1 : le plan est ajusté selon le contrat constaté.
 
@@ -122,7 +122,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 - **Fichier(s) :** `DomoticzLinky/plugin.py` (en-tête XML, `onStart()`)
 - **Implémenter :**
   - `Address` = liste « Source des données » : `consoapi` (défaut) / `russandol` ;
-  - `Password` (`password="true"`) = jeton Conso API ; `Username` = PRM(s) séparés par des virgules (à confirmer en T0.2) ;
+  - `Password` (`password="true"`) = jeton Conso API ; `Username` = PRM(s) de 14 chiffres séparés par des virgules (format `pointId` confirmé en T0.2) ;
   - mode sandbox `Mode3` ≥ 10 inchangé (force Russandol sandbox) ;
   - `consoapi` sans jeton ou sans PRM → erreur claire au démarrage, aucune requête.
 - **Acceptation :** les 3 combinaisons (consoapi complet, consoapi incomplet, russandol) se comportent comme décrit.
@@ -135,15 +135,16 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
   - en-têtes `Authorization: Bearer <jeton>` et `User-Agent: DomoticzLinkyPlugin/<version> (+https://github.com/vzwingma/DomoticzLinky)` ;
   - étape `idle` : `start` direct (pas de Device Flow, pas de `refreshToken`) ; PRM issus de `Username` ;
   - aucune requête production en mode Conso API (`prod` → `save`) ;
-  - codes : 401 → erreur « jeton Conso API invalide ou expiré », pas de nouvelle tentative avant le prochain cycle ; 400 → erreur sans retry ; 404 → pas de données ; 429/5xx → retry existant (`setNextConnectionForLater`) ;
-  - découpage des périodes selon la limite constatée en T0.2.
+  - codes : 401 → erreur « jeton Conso API invalide ou expiré », pas de nouvelle tentative avant le prochain cycle ; 400 → erreur sans retry, message = `error.error_description` (code `ADAM-*`) sinon `message` ; 404 → pas de données ; 429/5xx → retry existant (`setNextConnectionForLater`) ;
+  - découpage : courbe ≤ 7 jours (déjà fait par `calculateDaysLeft()`) ; puissance max selon R6b (sinon lots de 365 j au lieu de 1 095 j) ;
+  - cycle quotidien existant (8 h + minutes aléatoires) conforme à la fenêtre 6 h-10 h recommandée.
 - **Acceptation :** requêtes construites conformes au contrat Phase 0 (vérifié par les tests de Phase 2) ; aucune régression des tests existants.
 
 #### T1.3 - Implémenter l'adaptateur V2 → forme interne
 - **Agent :** 🔵 DEVon
 - **Fichier(s) :** `DomoticzLinky/plugin.py` (nouvelle fonction de normalisation appelée avant `exploreDataHours()` / `exploreDataPeaks()`)
-- **Implémenter :** conversion des réponses V2 vers la structure lue aujourd'hui (horodatage, unité, pas) ; contrôle du PRM reçu si présent ; réponse inattendue → erreur explicite, pas d'exception non gérée.
-- **Acceptation :** `exploreData*` et le calcul HC/HP restent inchangés ; une réponse V2 de l'échantillon Phase 0 produit les mêmes valeurs horaires que la réponse v5 équivalente (si disponible).
+- **Implémenter :** `idPrm` → `meter_reading.usage_point_id` ; `grandeur[CONS].points[{v,d}]` → `meter_reading.interval_reading[{value,date}]` (horodatage fin d'intervalle, heure locale, inchangé) ; pas 15 min (`PT15M`) absorbé par la moyenne horaire existante ; corps d'erreur `{status,message,error}` → chemin d'erreur existant ; réponse inattendue → erreur explicite, pas d'exception non gérée.
+- **Acceptation :** `exploreData*` et le calcul HC/HP restent inchangés ; sur la fixture `200_courbe_de_charge_consommation`, Σ des 24 valeurs horaires de chaque jour = `consommation_quotidienne` du même jour (5 248 / 6 159 / 5 071 Wh).
 
 #### T1.4 - Protéger le jeton et passer en v3.0.0
 - **Agent :** 🔵 DEVon
@@ -165,7 +166,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 #### T2.1 - Ajouter les fixtures V2 anonymisées
 - **Agent :** 🟢 QALvin
 - **Fichier(s) :** `DomoticzLinky/tests/fixtures/consoapi_v2/*.json` (hors racine du fork, cf. ADR 007)
-- **Acceptation :** fixtures issues de T0.2, sans PRM ni jeton réels.
+- **Acceptation :** fixtures issues de T0.2 (8 JSON déjà anonymisés, dossier projet `plan011/fixtures_consoapi_v2/`), sans PRM ni jeton réels.
 
 #### T2.2 - Tester la source Conso API et l'adaptateur
 - **Agent :** 🟢 QALvin
@@ -176,7 +177,8 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
   - 200 nominal → valeurs horaires et pics attendus, HC/HP inclus ;
   - 400, 401, 404, 429, 500, 502 → étape et message attendus ; réponse vide ou JSON invalide ;
   - jeton ou PRM manquant au démarrage ;
-  - découpage des périodes.
+  - découpage des périodes ;
+  - doublon/trou horaire (changement d'heure) et points `n`/`iv` inhabituels sans exception.
 - **Acceptation :** tous verts ; régression détectée si on casse l'adaptateur (preuve dans le rapport).
 
 #### T2.3 - Tester le masquage et la non-régression Russandol
@@ -269,4 +271,5 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 |---|---|---|---|---|
 | #0 | 2026-11-25 | Choix de solution | ✅ GO | Option B (Conso API, V2) ; Russandol en repli ; ZLinky écarté (pas d'achat) ; pas de production ; pas de rattrapage d'historique ; échantillons V2 analysés ensemble. Diagnostic de la panne : proxy Russandol → 500 sur routes avec base, 400 sur routes sans base, sandbox 200 |
 | — | 2026-11-27 | Reprise Phase 0 | — | État revérifié : fork `master` = `a7b2320` (v2.7.0), aucune branche `feat/consoapi-v2`. Contrat « requête » établi depuis la doc publique (rapport Phase 0 § 1) ; réponses V2 non documentées → captures 👤 requises (script `capture_consoapi_v2.ps1`) |
+| — | 2026-11-27 | Phase 0 / T0.2-T0.3 | — | Captures 👤 (3 j). Écarts vs hypothèses : pas **15 min** (et non 30) ; unités W / VA / Wh ; horodatage fin d'intervalle confirmé par recoupement exact avec le quotidien ; courbe limitée à 7 j (`ADAM-DC-0015`) ; erreurs `{status,message,error}`. Cœur `exploreData*` compatible sans changement → T1.3 réduit à un adaptateur de clés. Ouverts : R6b (période max puissance), R9 (durée de vie jeton) |
 | #1 | — | Validation plan (après Phase 0) + ADR 008 `Proposée` | ⏳ En attente | — |
