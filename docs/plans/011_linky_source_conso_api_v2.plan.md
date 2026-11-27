@@ -75,7 +75,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 
 ## 🛠️ Phases
 
-### Phase 0 — Investigation du contrat Conso API V2 (👤 + ⚫ MAINa / 🟠 ARCos) — ⏳ Planifié
+### Phase 0 — Investigation du contrat Conso API V2 (👤 + ⚫ MAINa / 🟠 ARCos) — 🟡 En cours
 
 **Contexte :** le format V2 est « totalement différent » de v5 et non documenté dans le dépôt. Travail conjoint avec 👤 ; **aucun jeton ni PRM réel dans le dépôt ni dans les rapports**. Se termine **avant** Gate #1 : le plan est ajusté selon le contrat constaté.
 
@@ -268,4 +268,5 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | Gate | Date | Objet | Décision 👤 | Notes |
 |---|---|---|---|---|
 | #0 | 2026-11-25 | Choix de solution | ✅ GO | Option B (Conso API, V2) ; Russandol en repli ; ZLinky écarté (pas d'achat) ; pas de production ; pas de rattrapage d'historique ; échantillons V2 analysés ensemble. Diagnostic de la panne : proxy Russandol → 500 sur routes avec base, 400 sur routes sans base, sandbox 200 |
+| — | 2026-11-27 | Reprise Phase 0 | — | État revérifié : fork `master` = `a7b2320` (v2.7.0), aucune branche `feat/consoapi-v2`. Contrat « requête » établi depuis la doc publique (rapport Phase 0 § 1) ; réponses V2 non documentées → captures 👤 requises (script `capture_consoapi_v2.ps1`) |
 | #1 | — | Validation plan (après Phase 0) + ADR 008 `Proposée` | ⏳ En attente | — |
