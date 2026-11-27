@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/011_linky_source_conso_api_v2.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔵 Phase 1 en cours — Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
+**Statut :** 🔵 Phase 1 terminée, Gate #2 en attente — Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
 **Objectif Prioritaire :** HIGH (plus aucune donnée Linky depuis le 24/11/2026)
 **ADR associé :** [`docs/adr/008-source-donnees-linky-conso-api-v2.md`](../adr/008-source-donnees-linky-conso-api-v2.md) — `Proposée` → `Acceptée` au Gate #1
 **Issues :** vzwingma/DomoticzLinky#1 · upstream guillaumezin/DomoticzLinky#258 (API V2) et guillaumezin/DomoticzLinky#259 (502/500)
@@ -109,7 +109,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 
 ---
 
-### Phase 1 — Implémentation dans le fork (🔵 DEVon) — ⏳ Planifié
+### Phase 1 — Implémentation dans le fork (🔵 DEVon) — ✅ Terminée — [rapport](./011_reports/PHASE_1_COMPLETION_REPORT.md)
 
 **Contexte :** branche `feat/consoapi-v2` du fork. Changements limités à `plugin.py`. Le comportement Russandol doit rester identique (tests existants verts sans modification).
 
@@ -289,3 +289,5 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | — | 2026-11-27 | Phase 0 / T0.2-T0.3 | — | Captures 👤 (3 j). Écarts vs hypothèses : pas **15 min** (et non 30) ; unités W / VA / Wh ; horodatage fin d'intervalle confirmé par recoupement exact avec le quotidien ; courbe limitée à 7 j (`ADAM-DC-0015`) ; erreurs `{status,message,error}`. Cœur `exploreData*` compatible sans changement → T1.3 réduit à un adaptateur de clés. Ouverts : R6b (période max puissance), R9 (durée de vie jeton) |
 | — | 2026-11-27 | R6b, R9, quotas | 👤 | R6b : lots de **365 j** pour la puissance max (pas de test). R9 : consentement / jeton valable **3 ans**. Règles d'usage Conso API ajoutées → nouvelle tâche **T1.5** (budget ≤ 3 req/jour/PRM, une seule tentative différée, historique complet étalé sur plusieurs jours — 👤) ; le retry 5 s / horaire de v2.7.0 est exclu en mode Conso API |
 | #1 | 2026-11-27 | Validation plan (après Phase 0) + ADR 008 | ✅ GO (« démarre le code ») | ADR 008 → `Acceptée`. Historique complet de puissance max étalé sur plusieurs jours (≤ 1 lot de 365 j/jour) |
+| — | 2026-11-27 | Phase 1 | — | Code poussé sur `DomoticzLinky` branche `claude/project-thread-kei9q4` (`ffd2545`). 111 tests verts, ruff OK ; essai de bout en bout sur fixtures OK. Écart : nom de branche imposé par la session |
+| #2 | — | Validation code | ⏳ En attente | — |
