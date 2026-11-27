@@ -24,7 +24,7 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
         │          (moteur central d'automatisation)     │
         │   scripts dzVents (Lua)  ←→  BDD SQLite        │
         │   :8080 (HTTP interne)   :8443 (HTTPS interne) │
-        └──────────────┬──────────────────────────────────┘
+        └──────────────┬─────────────────────────────────┘
                        │
         ┌──────────────▼───────────┐
         │    tydom-bridge          │
@@ -34,20 +34,20 @@ Système domotique résidentiel basé sur **Domoticz** et une série de bridges 
                    │
         ┌──────────▼───────────┐
         │    Box Tydom         │
-       │    (Delta Dore)      │
-       │  volets + chauffage  │
-       └──────────────────────┘
+        │    (Delta Dore)      │
+        │  volets + chauffage  │
+        └──────────────────────┘
 
-       ┌──────────────────────┐
-       │       deCONZ         │
-       │  (passerelle Zigbee) │
-       │  port 9102 / 9143    │
-       └──────────┬───────────┘
-                  │ plugin Domoticz-deCONZ
-       ┌──────────▼───────────┐
-       │       Domoticz       │
-       │   (capteurs Zigbee)  │
-       └──────────────────────┘
+        ┌──────────────────────┐
+        │       deCONZ         │
+        │  (passerelle Zigbee) │
+        │  port 9102 / 9143    │
+        └──────────┬───────────┘
+                   │ plugin Domoticz-deCONZ
+        ┌──────────▼───────────┐
+        │       Domoticz       │
+        │   (capteurs Zigbee)  │
+        └──────────────────────┘
 ```
 
 ### Accès réseau à Domoticz
