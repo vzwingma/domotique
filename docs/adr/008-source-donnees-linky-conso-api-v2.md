@@ -118,15 +118,16 @@ Précisions :
 
 Voir le plan d'action [`docs/plans/011_linky_source_conso_api_v2.plan.md`](../plans/011_linky_source_conso_api_v2.plan.md) :
 
-- **P0** — investigation du contrat V2 avec 👤 ;
-- **P1** — implémentation dans le fork (🔵 DEVon) ;
-- **P2** — tests (🟢 QALvin) ;
-- **P3** — documentation (🟣 DOCly) ;
+- **P0** — investigation du contrat V2 avec 👤 ✅ ([rapport](../plans/011_reports/PHASE_0_CONTRAT_CONSO_API_V2.md)) ;
+- **P1** — implémentation dans le fork (🔵 DEVon) ✅ ([PR fork #5](https://github.com/vzwingma/DomoticzLinky/pull/5), fusionnée, `37249a9`) ;
+- **P2** — tests (🟢 QALvin) ✅ ;
+- **P3** — documentation (🟣 DOCly) ✅ (readme, rétrodoc § 17, CHANGELOG du fork ; `docs/ARCHITECTURE.md` § 5.4) ;
 - **P4** — livraison v3.0.0, montée de version du pin dans `domotique` selon l'[ADR 007](./007-plugins-domoticz-provenance-epinglee.md), validation en production.
 
 - **Fichiers impactés** : `plugin.py`, `readme` et `docs/RETROCONCEPTION.md` du fork `vzwingma/DomoticzLinky` ; `CHANGELOG` du fork ;
   `.github/workflows/build-domoticz.yml` (pin du SHA du tag `v3.0.0`) et `docs/ARCHITECTURE.md` § 5.4 dans `domotique`.
 - **Tâches de suivi** : voir les phases ci-dessus ; ADR passée à `Acceptée` au Gate #1 (2026-11-27).
+- **Vocabulaire** : dans le plugin et sa documentation, l'ancienne source (proxy tiers Russandol, API Enedis v5) s'affiche **« Legacy »** (valeur du paramètre `legacy`, `russandol` accepté). Le nom du proxy n'est conservé que dans cet ADR, qui date la décision.
 - **Date d'effet** : à partir de la livraison de la version 3.0.0 du fork (phase P4 du plan 011).
 
 ---

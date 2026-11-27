@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/011_linky_source_conso_api_v2.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🟢 Phase 2 terminée, Gate #3 en attente — Gate #2 ✅ GO ; Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
+**Statut :** 🟢 Phases 0-3 terminées, Phase 4 (livraison) à démarrer — Gate #2 ✅ GO ; Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
 **Objectif Prioritaire :** HIGH (plus aucune donnée Linky depuis le 24/11/2026)
 **ADR associé :** [`docs/adr/008-source-donnees-linky-conso-api-v2.md`](../adr/008-source-donnees-linky-conso-api-v2.md) — `Proposée` → `Acceptée` au Gate #1
 **Issues :** vzwingma/DomoticzLinky#1 · upstream guillaumezin/DomoticzLinky#258 (API V2) et guillaumezin/DomoticzLinky#259 (502/500)
@@ -205,7 +205,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 
 ---
 
-### Phase 3 — Documentation (🟣 DOCly) — ⏳ Planifié
+### Phase 3 — Documentation (🟣 DOCly) — ✅ Terminée — [rapport](./011_reports/PHASE_3_COMPLETION_REPORT.md)
 
 #### T3.1 - Documenter le fork
 - **Agent :** 🟣 DOCly
@@ -292,4 +292,5 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | — | 2026-11-27 | Phase 1 | — | Code poussé sur `DomoticzLinky` branche `claude/project-thread-kei9q4` (`ffd2545`). 111 tests verts, ruff OK ; essai de bout en bout sur fixtures OK. Écart : nom de branche imposé par la session |
 | #2 | 2026-11-27 | Validation code | ✅ GO (« ok » + 2 remarques) | Remarques traitées : retrait `opensrcdev` (bac à sable) et options `Mode3` 10-19 ; libellés `Mode3` 3/4 explicites. Conso API passe à l'index d'adresse 1 |
 | — | 2026-11-27 | Phase 2 | — | 182 tests verts (71 nouveaux), couverture des lignes ajoutées 97,9 %, preuves de régression (adaptateur, masquage) |
-| #3 | — | Validation tests | ⏳ En attente | — |
+| #3 | 2026-11-27 | Validation tests | ✅ GO implicite (« tu peux passer à la documentation ») | Correction demandée au passage : « Russandol » → « Legacy » dans tout l'affichage (valeur `legacy`, `russandol` accepté) |
+| — | 2026-11-27 | Phase 3 | — | Fork : readme, rétrodoc § 17, CHANGELOG 3.0.0 ; domotique : ARCHITECTURE § 5.4. PR fork #5 fusionnée (`37249a9`). Phase 4 : tag `v3.0.0` + pin à faire |
