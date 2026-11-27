@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/011_linky_source_conso_api_v2.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🟡 Phase 0 terminée — Gate #0 ✅ GO ; Gate #1 en attente
+**Statut :** 🔵 Phase 1 en cours — Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
 **Objectif Prioritaire :** HIGH (plus aucune donnée Linky depuis le 24/11/2026)
 **ADR associé :** [`docs/adr/008-source-donnees-linky-conso-api-v2.md`](../adr/008-source-donnees-linky-conso-api-v2.md) — `Proposée` → `Acceptée` au Gate #1
 **Issues :** vzwingma/DomoticzLinky#1 · upstream guillaumezin/DomoticzLinky#258 (API V2) et guillaumezin/DomoticzLinky#259 (502/500)
@@ -159,7 +159,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 - **Implémenter (mode `consoapi` uniquement, Russandol inchangé) :**
   - **≤ 3 requêtes par jour et par PRM, retries compris** : compteur `(date, PRM) → nb` persisté (`setConfigItem`), donc conservé après redémarrage du plugin ou de Domoticz ; budget épuisé → plus aucune requête avant le lendemain ;
   - cycle nominal = **2 requêtes par PRM** : courbe (≤ 7 j) + puissance max (historique court ≤ 35 j) ;
-  - **pas de récupération de l'historique complet** (`bHistoryDaysForDaysViewGrabAll` forcé à faux — cohérent avec Q4) ; lots de 365 j conservés en garde-fou ;
+  - **historique complet étalé sur plusieurs jours** (décision 👤 du 2026-11-27) : au plus **un lot de 365 j de puissance max par jour**, en plus du cycle nominal ou à sa place, sans dépasser le budget ; reprise le lendemain là où le lot précédent s'est arrêté (position persistée) ;
   - échec (429/5xx/timeout/données absentes) → **une seule** nouvelle tentative 2 à 4 h plus tard (avant 22 h), sinon lendemain 8 h + minutes et secondes aléatoires ; 400/401 → lendemain ;
   - redémarrage le même jour après un cycle réussi → aucune requête (date du dernier succès persistée) ;
   - requêtes strictement **séquentielles** (une connexion à la fois), y compris en multi-PRM ;
@@ -193,7 +193,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
   - jeton ou PRM manquant au démarrage ;
   - découpage des périodes ;
   - doublon/trou horaire (changement d'heure) et points `n`/`iv` inhabituels sans exception ;
-  - budget T1.5 : 500 répétés, 429, timeout, 401, redémarrage le même jour → ≤ 3 requêtes/jour/PRM ; une seule tentative différée ; pas d'historique complet.
+  - budget T1.5 : 500 répétés, 429, timeout, 401, redémarrage le même jour → ≤ 3 requêtes/jour/PRM ; une seule tentative différée ; historique complet étalé (≤ 1 lot/jour).
 - **Acceptation :** tous verts ; régression détectée si on casse l'adaptateur (preuve dans le rapport).
 
 #### T2.3 - Tester le masquage et la non-régression Russandol
@@ -287,5 +287,5 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | #0 | 2026-11-25 | Choix de solution | ✅ GO | Option B (Conso API, V2) ; Russandol en repli ; ZLinky écarté (pas d'achat) ; pas de production ; pas de rattrapage d'historique ; échantillons V2 analysés ensemble. Diagnostic de la panne : proxy Russandol → 500 sur routes avec base, 400 sur routes sans base, sandbox 200 |
 | — | 2026-11-27 | Reprise Phase 0 | — | État revérifié : fork `master` = `a7b2320` (v2.7.0), aucune branche `feat/consoapi-v2`. Contrat « requête » établi depuis la doc publique (rapport Phase 0 § 1) ; réponses V2 non documentées → captures 👤 requises (script `capture_consoapi_v2.ps1`) |
 | — | 2026-11-27 | Phase 0 / T0.2-T0.3 | — | Captures 👤 (3 j). Écarts vs hypothèses : pas **15 min** (et non 30) ; unités W / VA / Wh ; horodatage fin d'intervalle confirmé par recoupement exact avec le quotidien ; courbe limitée à 7 j (`ADAM-DC-0015`) ; erreurs `{status,message,error}`. Cœur `exploreData*` compatible sans changement → T1.3 réduit à un adaptateur de clés. Ouverts : R6b (période max puissance), R9 (durée de vie jeton) |
-| — | 2026-11-27 | R6b, R9, quotas | 👤 | R6b : lots de **365 j** pour la puissance max (pas de test). R9 : consentement / jeton valable **3 ans**. Règles d'usage Conso API ajoutées → nouvelle tâche **T1.5** (budget ≤ 3 req/jour/PRM, une seule tentative différée, pas d'historique complet) ; le retry 5 s / horaire de v2.7.0 est exclu en mode Conso API |
-| #1 | — | Validation plan (après Phase 0) + ADR 008 `Proposée` | ⏳ En attente | — |
+| — | 2026-11-27 | R6b, R9, quotas | 👤 | R6b : lots de **365 j** pour la puissance max (pas de test). R9 : consentement / jeton valable **3 ans**. Règles d'usage Conso API ajoutées → nouvelle tâche **T1.5** (budget ≤ 3 req/jour/PRM, une seule tentative différée, historique complet étalé sur plusieurs jours — 👤) ; le retry 5 s / horaire de v2.7.0 est exclu en mode Conso API |
+| #1 | 2026-11-27 | Validation plan (après Phase 0) + ADR 008 | ✅ GO (« démarre le code ») | ADR 008 → `Acceptée`. Historique complet de puissance max étalé sur plusieurs jours (≤ 1 lot de 365 j/jour) |

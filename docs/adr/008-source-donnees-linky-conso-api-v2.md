@@ -3,7 +3,7 @@
 ---
 
 **Date :** 2026-11-25  
-**Statut :** Proposée
+**Statut :** Acceptée (Gate #1 du plan 011, 2026-11-27)
 **Décideurs :** 🟠 ARCos + 👤 Développeur humain
 
 ---
@@ -46,7 +46,7 @@ Précisions :
 - **Pas de Device Flow** en mode Conso API.
 - **Pas de récupération de la production** (pas d'installation solaire) en mode Conso API.
 - **Pas de rattrapage d'historique** : un trou de données est accepté.
-- **Cadence** : 1 cycle par jour avec décalage aléatoire, **au plus 3 requêtes par jour et par PRM, retries compris** (compteur persisté), une seule nouvelle tentative différée de quelques heures, jamais de requêtes en boucle ni en parallèle, pas de récupération de l'historique complet ; en-tête `User-Agent` identifiant le projet (exigence de Conso API). Motif : blocage automatique de l'IP, durable et sans recours, en cas d'abus.
+- **Cadence** : 1 cycle par jour avec décalage aléatoire, **au plus 3 requêtes par jour et par PRM, retries compris** (compteur persisté), une seule nouvelle tentative différée de quelques heures, jamais de requêtes en boucle ni en parallèle, historique complet étalé sur plusieurs jours (au plus un lot de 365 j par jour) ; en-tête `User-Agent` identifiant le projet (exigence de Conso API). Motif : blocage automatique de l'IP, durable et sans recours, en cas d'abus.
 - **Cœur du plugin conservé** (cache, HC/HP, devices `Linky <PRM>` et leur historique) grâce à un **adaptateur** qui convertit la réponse V2 vers la forme interne actuelle.
 - **Format V2** : établi en Phase 0 ([rapport](../plans/011_reports/PHASE_0_CONTRAT_CONSO_API_V2.md)) — pas 15 min en W horodaté en fin d'intervalle, courbe ≤ 7 j par requête, puissance max par lots de 365 j ; jeton valable 3 ans.
 
@@ -126,7 +126,7 @@ Voir le plan d'action [`docs/plans/011_linky_source_conso_api_v2.plan.md`](../pl
 
 - **Fichiers impactés** : `plugin.py`, `readme` et `docs/RETROCONCEPTION.md` du fork `vzwingma/DomoticzLinky` ; `CHANGELOG` du fork ;
   `.github/workflows/build-domoticz.yml` (pin du SHA du tag `v3.0.0`) et `docs/ARCHITECTURE.md` § 5.4 dans `domotique`.
-- **Tâches de suivi** : voir les phases ci-dessus ; passage de l'ADR à `Acceptée` au Gate #1 (⚫ MAINa).
+- **Tâches de suivi** : voir les phases ci-dessus ; ADR passée à `Acceptée` au Gate #1 (2026-11-27).
 - **Date d'effet** : à partir de la livraison de la version 3.0.0 du fork (phase P4 du plan 011).
 
 ---
