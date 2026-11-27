@@ -46,9 +46,9 @@ Précisions :
 - **Pas de Device Flow** en mode Conso API.
 - **Pas de récupération de la production** (pas d'installation solaire) en mode Conso API.
 - **Pas de rattrapage d'historique** : un trou de données est accepté.
-- **Cadence** : 1 cycle par jour avec décalage aléatoire ; en-tête `User-Agent` identifiant le projet (exigence de Conso API).
+- **Cadence** : 1 cycle par jour avec décalage aléatoire, **au plus 3 requêtes par jour et par PRM, retries compris** (compteur persisté), une seule nouvelle tentative différée de quelques heures, jamais de requêtes en boucle ni en parallèle, pas de récupération de l'historique complet ; en-tête `User-Agent` identifiant le projet (exigence de Conso API). Motif : blocage automatique de l'IP, durable et sans recours, en cas d'abus.
 - **Cœur du plugin conservé** (cache, HC/HP, devices `Linky <PRM>` et leur historique) grâce à un **adaptateur** qui convertit la réponse V2 vers la forme interne actuelle.
-- **Format V2 à fixer** : le format exact (horodatage début/fin d'intervalle, unités, période maximale par requête, format d'erreur, PRM) sera établi par une phase d'investigation conjointe avec 👤 **avant** l'implémentation.
+- **Format V2** : établi en Phase 0 ([rapport](../plans/011_reports/PHASE_0_CONTRAT_CONSO_API_V2.md)) — pas 15 min en W horodaté en fin d'intervalle, courbe ≤ 7 j par requête, puissance max par lots de 365 j ; jeton valable 3 ans.
 
 ---
 
@@ -107,7 +107,7 @@ Précisions :
 - Quotas partagés (5 requêtes/s, 10 000 requêtes/h) et risque de blocage IP en cas d'abus.
 - Version **incompatible** 3.0.0 : reconfiguration du matériel nécessaire.
 - En mode Conso API : pas de production, pas de rattrapage d'historique (un trou de données est accepté).
-- Le format V2 n'est pas encore entièrement caractérisé : l'adaptateur dépend du résultat de la phase d'investigation.
+- Budget d'appels strict : une panne prolongée côté Enedis/Conso API se traduit par un trou de données (pas de relance agressive).
 
 ### Neutres
 - Documentation à mettre à jour : `readme` et `RETROCONCEPTION` du fork, `CHANGELOG`, `docs/ARCHITECTURE.md` § 5.4.

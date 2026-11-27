@@ -1,6 +1,6 @@
 # Plan 011 — Phase 0 : contrat Conso API V2
 
-**Statut :** ✅ T0.1/T0.2 faits (captures 👤 du 2026-11-27, période 23→26/11/2026) — reste R6b (période max puissance) et R9 (durée de vie du jeton).
+**Statut :** ✅ Terminée (captures 👤 du 2026-11-27, période 23→26/11/2026 ; R6b et R9 tranchés par 👤).
 **Date :** 2026-11-27
 **Sources :** captures `capture_consoapi_v2.ps1` (8 réponses, PRM masqué, aucun jeton) ; `https://conso.boris.sh/documentation`, `/migration-2026`, `/exemples` (lues le 2026-11-27). Aucun jeton ni PRM réel dans ce document.
 
@@ -82,16 +82,30 @@ Message à afficher : `error.error_description` si présent, sinon `message`.
 
 Derrière **Cloudflare** ; `Content-Type: application/json` ; **aucun en-tête de quota**. `User-Agent` projet accepté.
 
-## 3. Non déterminé
+## 3. Points ouverts / tranchés
 
 | # | Point | Suite |
 |---|---|---|
-| R6b | Période max `puissance_conso_max_quotidienne` | `pwsh .\capture_consoapi_v2.ps1 -Prm <PRM> -Complement` (2 requêtes) ; à défaut, découpage défensif à 365 j |
-| R9 | Durée de vie du jeton | 👤 : décoder localement la 2ᵉ partie du JWT, noter seulement `exp` |
+| R6b | Période max `puissance_conso_max_quotidienne` | **Tranché 👤 : lots de 365 j**, sans test supplémentaire (économie de quota) |
+| R9 | Durée de vie du jeton | **3 ans** (durée du consentement, indiquée par 👤) |
 | R10 | Passage heure d'été/hiver (doublon/trou à 02:xx) | non observable avant mars 2027 ; adaptateur tolérant ; comportement de `exploreDataHours()` sur doublon/trou à couvrir par un test (T2.2) |
 | R11 | Points avec `n` ≠ `B` / `iv` ≠ `0` (qualité / invalidité) | non observés ; adaptateur : conserver la valeur, journaliser en debug |
 
-## 4. Correspondance V2 → forme interne (adaptateur T1.3)
+## 4. Règles d'usage (quota, blocage d'IP)
+
+Source : `https://conso.boris.sh/blocage-ip` + règles formalisées par 👤.
+
+- **1 appel par jour et par PRM ; 2 à 3 au maximum, retries compris.**
+- Jamais de requêtes en boucle ni en parallèle.
+- Pas de retry automatique après chaque erreur : une nouvelle tentative quelques heures plus tard au plus, sinon le lendemain.
+- Données mises à jour une fois par jour (J disponible vers 8 h à J+1).
+- Comportements fautifs cités : relances sans limite, synchronisations massives ou répétées (notamment après redémarrage).
+- Sanction : blocage automatique de l'IP sous 12 h, pendant plusieurs mois voire définitivement, sans déblocage sur demande.
+- Historique complet : la page recommande l'extension « Conso Downloader » plutôt que des requêtes en masse.
+
+**Impact v2.7.0 :** retry après 5 s sur 429/500 sans limite, et relance horaire jusqu'à 22 h après un échec, récupération périodique de l'historique complet → **incompatibles**. Traitement : tâche T1.5 du plan.
+
+## 5. Correspondance V2 → forme interne (adaptateur T1.3)
 
 ```text
 V2                                   → interne (lu par exploreData*)
