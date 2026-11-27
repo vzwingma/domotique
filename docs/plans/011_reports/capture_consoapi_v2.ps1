@@ -10,16 +10,21 @@
 param(
   [Parameter(Mandatory)][ValidatePattern('^\d{14}$')][string]$Prm,
   [ValidateRange(2,7)][int]$Jours = 3,
-  [string]$Sortie = (Join-Path $env:TEMP 'consoapi_v2')
+  [string]$Sortie = (Join-Path $env:TEMP 'consoapi_v2'),
+  [string]$TokenFile   # optionnel : fichier local contenant le jeton (exécution non interactive)
 )
 
 $ErrorActionPreference = 'Stop'
 $base   = 'https://conso.boris.sh/api'
 $ua     = 'DomoticzLinkyPlugin/3.0.0-dev (+https://github.com/vzwingma/DomoticzLinky)'
 $masque = '00000000000000'
-$tokenSec = Read-Host 'Jeton Conso API' -AsSecureString
-$token = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-  [Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenSec))
+if ($TokenFile) {
+  $token = (Get-Content -Raw -LiteralPath $TokenFile).Trim()
+} else {
+  $tokenSec = Read-Host 'Jeton Conso API' -AsSecureString
+  $token = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenSec))
+}
 
 New-Item -ItemType Directory -Force -Path $Sortie | Out-Null
 $fin   = (Get-Date).Date.AddDays(-1)            # J-1 : données de J dispo vers 8 h à J+1
@@ -32,7 +37,7 @@ function Capture([string]$nom, [string]$url, [string]$jeton) {
   $resp = Invoke-WebRequest -Uri $url -Headers $headers -SkipHttpErrorCheck
   $entetes = ($resp.Headers.GetEnumerator() |
     ForEach-Object { "$($_.Key): $($_.Value -join ', ')" }) -join "`n"
-  $corps = "$($resp.Content)" -replace $Prm, $masque
+  $corps = ("$($resp.Content)" -replace $Prm, $masque).Replace($token, '<JETON>')
   $urlMasquee = $url -replace $Prm, $masque
   @"
 # $nom
@@ -62,5 +67,5 @@ Capture 'err_400_periode_inversee' "$base/courbe_de_charge_consommation?pointId=
 Capture 'err_401_jeton_invalide'   "$base/courbe_de_charge_consommation?$q" 'jeton.invalide.test'
 Capture 'err_type_inconnu'         "$base/type_inexistant?$q" $token
 
-$token = $null; Remove-Variable tokenSec
+$token = $null; Remove-Variable tokenSec -ErrorAction SilentlyContinue
 Write-Host "Fichiers : $Sortie (vérifier l'absence de jeton/PRM avant partage)"
