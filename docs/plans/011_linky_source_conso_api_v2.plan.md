@@ -132,7 +132,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 - **Fichier(s) :** `DomoticzLinky/plugin.py` (constantes, `getData()`, `handleConnection()` étapes `idle`/`start`/`getdatahours`/`getdatapeakdays`/`prod`)
 - **Implémenter :**
   - hôte `conso.boris.sh:443`, chemin `/api/<type>`, paramètres `pointId`, `dateDebut`, `dateFin` ;
-  - en-têtes `Authorization: Bearer <jeton>` et `User-Agent: DomoticzLinkyPlugin/<version> (+https://github.com/vzwingma/DomoticzLinky)` ;
+  - en-têtes `Authorization: Bearer <jeton>`, `User-Agent: DomoticzLinky (<PRM tronqué>)` (4 derniers chiffres remplacés par `xxxx`, ex. `2131273503xxxx`) et `From: https://github.com/vzwingma/DomoticzLinky` (exigence de la doc Conso API, demande 👤 du 2026-11-27) ;
   - étape `idle` : `start` direct (pas de Device Flow, pas de `refreshToken`) ; PRM issus de `Username` ;
   - aucune requête production en mode Conso API (`prod` → `save`) ;
   - codes : 401 → erreur « jeton Conso API invalide ou expiré », pas de nouvelle tentative avant le lendemain ; 400 → erreur sans retry, message = `error.error_description` (code `ADAM-*`) sinon `message` ; 404 → pas de données ; 429/5xx/timeout → **une seule** nouvelle tentative différée (T1.5), jamais le retry 5 s actuel (`setNextConnectionForLater(iInterval)`) ;
@@ -294,3 +294,4 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | — | 2026-11-27 | Phase 2 | — | 182 tests verts (71 nouveaux), couverture des lignes ajoutées 97,9 %, preuves de régression (adaptateur, masquage) |
 | #3 | 2026-11-27 | Validation tests | ✅ GO implicite (« tu peux passer à la documentation ») | Correction demandée au passage : « Russandol » → « Legacy » dans tout l'affichage (valeur `legacy`, `russandol` accepté) |
 | — | 2026-11-27 | Phase 3 | — | Fork : readme, rétrodoc § 17, CHANGELOG 3.0.0 ; domotique : ARCHITECTURE § 5.4. PR fork #5 fusionnée (`37249a9`). Phase 4 : tag `v3.0.0` + pin à faire |
+| — | 2026-11-27 | Revue complémentaire | 👤 | En-têtes Conso API : `User-Agent: DomoticzLinky (<PRM tronqué>)` + `From` (PR fork #7) |
