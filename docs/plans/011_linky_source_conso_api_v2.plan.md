@@ -2,7 +2,7 @@
 
 **Document :** `docs/plans/011_linky_source_conso_api_v2.plan.md`
 **Date de création :** 2026-11-25
-**Statut :** 🔵 Phase 1 terminée, Gate #2 en attente — Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
+**Statut :** 🟢 Phase 2 (tests) — Gate #2 ✅ GO ; Gate #0 ✅ GO ; Gate #1 ✅ GO (2026-11-27)
 **Objectif Prioritaire :** HIGH (plus aucune donnée Linky depuis le 24/11/2026)
 **ADR associé :** [`docs/adr/008-source-donnees-linky-conso-api-v2.md`](../adr/008-source-donnees-linky-conso-api-v2.md) — `Proposée` → `Acceptée` au Gate #1
 **Issues :** vzwingma/DomoticzLinky#1 · upstream guillaumezin/DomoticzLinky#258 (API V2) et guillaumezin/DomoticzLinky#259 (502/500)
@@ -42,7 +42,7 @@ Décisions 👤 associées :
 ### Hors périmètre (backlog)
 
 - Message clair pour les réponses 5xx HTML du proxy Russandol (aujourd'hui la page HTML est recopiée dans le log).
-- Retrait du code Russandol / v5 et des constantes sandbox : quand la coupure v5 sera constatée (futur plan).
+- Retrait du code Russandol / v5 : quand la coupure v5 sera constatée (futur plan). *Le bac à sable `opensrcdev` et les « Faux client » de `Mode3` ont été retirés dès la revue du Gate #2 (demande 👤 du 2026-11-27).*
 - Lecture TIC locale (ZLinky + deCONZ) ; production ; alimentation de la vue « jours » par `consommation_quotidienne`.
 
 ---
@@ -123,7 +123,7 @@ Constantes d'adresses l. 137-160 · `SENSITIVE_KEYS`/masquage l. 166-183 · `get
 - **Implémenter :**
   - `Address` = liste « Source des données » : `consoapi` (défaut) / `russandol` ;
   - `Password` (`password="true"`) = jeton Conso API ; `Username` = PRM(s) de 14 chiffres séparés par des virgules (format `pointId` confirmé en T0.2) ;
-  - mode sandbox `Mode3` ≥ 10 inchangé (force Russandol sandbox) ;
+  - ~~mode sandbox `Mode3` ≥ 10 inchangé~~ → bac à sable et faux clients **retirés** (revue Gate #2) ; libellés `Mode3` 3/4 clarifiés ;
   - `consoapi` sans jeton ou sans PRM → erreur claire au démarrage, aucune requête.
 - **Acceptation :** les 3 combinaisons (consoapi complet, consoapi incomplet, russandol) se comportent comme décrit.
 
@@ -290,4 +290,4 @@ Phase 4 (livraison + 3 cycles en prod) → Gate #4
 | — | 2026-11-27 | R6b, R9, quotas | 👤 | R6b : lots de **365 j** pour la puissance max (pas de test). R9 : consentement / jeton valable **3 ans**. Règles d'usage Conso API ajoutées → nouvelle tâche **T1.5** (budget ≤ 3 req/jour/PRM, une seule tentative différée, historique complet étalé sur plusieurs jours — 👤) ; le retry 5 s / horaire de v2.7.0 est exclu en mode Conso API |
 | #1 | 2026-11-27 | Validation plan (après Phase 0) + ADR 008 | ✅ GO (« démarre le code ») | ADR 008 → `Acceptée`. Historique complet de puissance max étalé sur plusieurs jours (≤ 1 lot de 365 j/jour) |
 | — | 2026-11-27 | Phase 1 | — | Code poussé sur `DomoticzLinky` branche `claude/project-thread-kei9q4` (`ffd2545`). 111 tests verts, ruff OK ; essai de bout en bout sur fixtures OK. Écart : nom de branche imposé par la session |
-| #2 | — | Validation code | ⏳ En attente | — |
+| #2 | 2026-11-27 | Validation code | ✅ GO (« ok » + 2 remarques) | Remarques traitées : retrait `opensrcdev` (bac à sable) et options `Mode3` 10-19 ; libellés `Mode3` 3/4 explicites. Conso API passe à l'index d'adresse 1 |
