@@ -345,14 +345,14 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 
 | Plugin | Rôle | Source embarquée par la CI | Documentation |
 |---|---|---|---|
-| **Linky** (`key="linky"`, v2.7.0 épinglé ; **v3.0.0** sur `master` du fork, pin à monter — [plan 011](plans/011_linky_source_conso_api_v2.plan.md)) | Consommation Enedis (courbe de charge, pics, HP/HC) → dispositif `Linky <PRM>` ; production uniquement via la source Legacy | Fork `vzwingma/DomoticzLinky`, **épinglé** sur le commit `a7b2320…` (tag `v2.7.0`) | [Rétroconception du plugin](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) (fork **maintenu** ; l'upstream `guillaumezin/DomoticzLinky` n'est plus maintenu ni consommé) |
+| **Linky** (`key="linky"`, **v3.0.0** épinglé — [plan 011](plans/011_linky_source_conso_api_v2.plan.md)) | Consommation Enedis (courbe de charge, pics, HP/HC) → dispositif `Linky <PRM>` ; production uniquement via la source Legacy | Fork `vzwingma/DomoticzLinky`, **épinglé** sur le commit `31d64fd…` (tag `v3.0.0`) | [Rétroconception du plugin](https://github.com/vzwingma/DomoticzLinky/blob/master/docs/RETROCONCEPTION.md) (fork **maintenu** ; l'upstream `guillaumezin/DomoticzLinky` n'est plus maintenu ni consommé) |
 | **deCONZ** | Passerelle Zigbee (ConBee) | `Smanar/Domoticz-deCONZ`, **épinglé** sur le commit `95b8f8b…` (tag `1.0.35`) | [`deCONZ/README.md`](../deCONZ/README.md) |
 
 **Chaîne de construction et de déploiement :**
 
 ```
   GitHub (SHA de commit épinglé)      .github/workflows/build-domoticz.yml
-  vzwingma/DomoticzLinky @ v2.7.0 ──► jobs download-linky / download-deconz
+  vzwingma/DomoticzLinky @ v3.0.0 ──► jobs download-linky / download-deconz
   Smanar/Domoticz-deCONZ @ 1.0.35           │ artefacts linky-plugin / deconz-plugin
                                             ▼
                                   _docker/build_domoticz/linky | deconz
@@ -367,7 +367,7 @@ Deux plugins Python sont embarqués dans l'image Docker Domoticz du projet (`vzw
 
 **Points d'attention :**
 
-- **Provenance épinglée** ([ADR 007](adr/007-plugins-domoticz-provenance-epinglee.md)) : la CI récupère chaque plugin au **SHA de commit** de son tag (`ref: <sha> # <tag>` dans `build-domoticz.yml`) ; le SHA et la version sont tracés dans le Step Summary du job, et un artefact vide fait échouer le build (`if-no-files-found: error`). L'image est ainsi reproductible et une fusion amont n'atteint plus la production sans changement de ce dépôt. Avant l'ADR 007, la CI reprenait la tête de `master` des dépôts amont (upstream `guillaumezin` pour Linky). Historique du pin Linky : `v2.6.1` (`f3df258…`, pin initial, code identique à l'upstream), puis **`v2.7.0`** (`a7b2320…`) depuis le 2026-11-25 — montée faite manuellement, image `latest` redéployée en production ; cette version apporte le masquage des secrets dans les logs du plugin et des correctifs (voir le [`CHANGELOG.md` du fork](https://github.com/vzwingma/DomoticzLinky/blob/master/CHANGELOG.md)).
+- **Provenance épinglée** ([ADR 007](adr/007-plugins-domoticz-provenance-epinglee.md)) : la CI récupère chaque plugin au **SHA de commit** de son tag (`ref: <sha> # <tag>` dans `build-domoticz.yml`) ; le SHA et la version sont tracés dans le Step Summary du job, et un artefact vide fait échouer le build (`if-no-files-found: error`). L'image est ainsi reproductible et une fusion amont n'atteint plus la production sans changement de ce dépôt. Avant l'ADR 007, la CI reprenait la tête de `master` des dépôts amont (upstream `guillaumezin` pour Linky). Historique du pin Linky : `v2.6.1` (`f3df258…`, pin initial, code identique à l'upstream), puis `v2.7.0` (`a7b2320…`, 2026-11-25), puis **`v3.0.0`** (`31d64fd…`) depuis le 2026-11-27 (la CI suivait brièvement `master` entre les deux) ; la v2.7.0 apporte le masquage des secrets dans les logs du plugin et des correctifs (voir le [`CHANGELOG.md` du fork](https://github.com/vzwingma/DomoticzLinky/blob/master/CHANGELOG.md)).
 - **Mise à jour des plugins** : Renovate (customManager regex, datasource `github-tags`) détecte les nouveaux tags et ouvre une PR, **sans automerge** : la montée de version est toujours revue manuellement. Procédure : [`_docker/build_domoticz/README.md`](../_docker/build_domoticz/README.md#montée-de-version-dun-plugin).
 - **Source des données du plugin Linky** ([ADR 008](adr/008-source-donnees-linky-conso-api-v2.md), plan 011) : Linky n'appelle jamais Enedis directement (un particulier ne peut pas contracter Data Connect) ; depuis la **v3.0.0** il dispose d'une couche source sélectionnable (paramètre `Address` du matériel), voir ci-dessous. Pourquoi : l'ancien proxy tiers est en panne (HTTP 500 depuis le 24/11/2026, dépôt inactif depuis 02/2026) et l'API Enedis Metering Data v5 qu'il relaie est remplacée par l'API « Mesure synchrone V2 ».
 

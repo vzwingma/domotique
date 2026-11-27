@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v7
         with:
             repository: vzwingma/DomoticzLinky
-            ref: 'master'
+            ref: 31d64fd4966f2da82c73693e09e9e7811138b6bd # v3.0.0
       - 
         name: Trace Linky provenance
         run: |
